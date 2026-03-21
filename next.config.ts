@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
   experimental: {
     typedEnv: true
   },
+  cacheLife: {
+    'knowledge-base': {
+      stale: 300,
+      revalidate: 3600,
+      expire: 86400
+    }
+  },
   images: {
     remotePatterns: [
       {

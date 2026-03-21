@@ -1,0 +1,8 @@
+const SummarySkeleton = () => (
+  <div>
+    <h2>AI Summary</h2>
+    <div>Generating summary...</div>
+  </div>
+)
+
+export default SummarySkeleton

@@ -3,7 +3,14 @@
 import useUpdateSearchParams from '@/shared/hooks/useUpdateSearchParams'
 import { useSearchParams } from 'next/navigation'
 
-const STATUSES = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED']
+enum TicketStatus {
+  All = 'ALL',
+  Open = 'OPEN',
+  InProgress = 'IN_PROGRESS',
+  Resolved = 'RESOLVED'
+}
+
+const STATUSES = Object.values(TicketStatus)
 
 const TicketFilterBar = () => {
   const searchParams = useSearchParams()

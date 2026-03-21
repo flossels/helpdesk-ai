@@ -1,0 +1,25 @@
+import { getTicketById } from '@/lib/placeholderData'
+import { notFound } from 'next/navigation'
+
+type Props = {
+  ticketId: string
+}
+
+const TicketHeader = async ({ ticketId }: Props) => {
+  const ticket = await getTicketById(ticketId)
+  if (!ticket) notFound()
+
+  return (
+    <header>
+      <h1>{ticket.subject}</h1>
+      <dl className="my-6 grid grid-cols-1 gap-x-6 gap-y-3">
+        <dt className="col-end-1">Status:</dt>
+        <dd>{ticket.status}</dd>
+        <dt className="col-end-1">Priority:</dt>
+        <dd>{ticket.priority}</dd>
+      </dl>
+    </header>
+  )
+}
+
+export default TicketHeader
