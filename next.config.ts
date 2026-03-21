@@ -1,8 +1,23 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
   reactCompiler: true,
-};
+  typedRoutes: true,
+  logging: {
+    browserToTerminal: 'warn'
+  },
+  experimental: {
+    typedEnv: true
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com'
+      }
+    ]
+  }
+}
 
-export default nextConfig;
+export default nextConfig

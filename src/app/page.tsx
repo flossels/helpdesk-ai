@@ -1,7 +1,8 @@
 export default function Home() {
   return (
     <main>
-      <div>Hello world!</div>
+      <h1>HelpDesk AI</h1>
+      <p>Coming soon.</p>
     </main>
-  );
+  )
 }
