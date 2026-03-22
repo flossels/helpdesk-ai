@@ -1,6 +1,6 @@
 'use client'
 
-import { replyToTicketAction } from '@/app/(dashboard)/actions/replyToTickets'
+import { replyToTicketAction } from '@/app/(dashboard)/actions/replyToTicket'
 import SubmitButton from '@/shared/components/SubmitButton'
 import { useActionState, useRef } from 'react'
 
