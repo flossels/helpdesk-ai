@@ -15,7 +15,12 @@ const config: KnipConfig = {
       'src/proxy.ts'
     ]
   },
-  ignore: ['src/lib/db.ts', 'src/app/(dashboard)/actions/revalidateArticles.ts'],
+  ignore: [
+    'src/lib/db.ts',
+    'src/app/(dashboard)/actions/revalidateArticles.ts',
+    'src/shared/components/ui/*.tsx',
+    'src/lib/placeholderData.ts'
+  ],
   ignoreDependencies: ['postcss']
 }
 

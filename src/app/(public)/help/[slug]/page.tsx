@@ -3,6 +3,7 @@
 import { notFound } from 'next/navigation'
 import { cacheLife, cacheTag } from 'next/cache'
 import { getPublishedArticles, getArticleBySlug } from '@/lib/placeholderData'
+import cn from '@/shared/lib/cn'
 
 export async function generateStaticParams() {
   const articles = await getPublishedArticles()
@@ -31,7 +32,7 @@ export default async function ArticlePage({ params }: PageProps<'/help/[slug]'>)
   if (!article) notFound()
 
   return (
-    <article>
+    <article className={cn('prose dark:prose-invert max-w-none')}>
       <h1>{article.title}</h1>
       <p>{article.content}</p>
     </article>

@@ -9,6 +9,13 @@ export enum TicketStatus {
   Closed = 'CLOSED'
 }
 
+export enum TicketPriority {
+  Low = 'LOW',
+  Medium = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT'
+}
+
 let nextTrackingNumber = 4
 
 type Ticket = {
@@ -17,7 +24,7 @@ type Ticket = {
   subject: string
   description: string
   status: TicketStatus
-  priority: string
+  priority: TicketPriority
   categoryId: string
   assigneeId: string | null
   createdAt: Date
@@ -39,7 +46,7 @@ const TICKETS: Ticket[] = [
     subject: 'Cannot reset password',
     description: 'I requested a password reset but never received the email.',
     status: TicketStatus.Open,
-    priority: 'HIGH',
+    priority: TicketPriority.HIGH,
     categoryId: 'cat-1',
     assigneeId: null,
     createdAt: new Date('2026-03-15T10:30:00'),
@@ -51,7 +58,7 @@ const TICKETS: Ticket[] = [
     subject: 'Billing invoice missing',
     description: 'My March invoice is not showing in the billing portal.',
     status: TicketStatus.InProgress,
-    priority: 'MEDIUM',
+    priority: TicketPriority.Medium,
     categoryId: 'cat-2',
     assigneeId: 'user-1',
     createdAt: new Date('2026-03-16T14:15:00'),
@@ -63,7 +70,7 @@ const TICKETS: Ticket[] = [
     subject: 'Feature request: dark mode',
     description: 'Would love a dark mode option for the agent dashboard.',
     status: TicketStatus.Resolved,
-    priority: 'LOW',
+    priority: TicketPriority.Low,
     categoryId: 'cat-3',
     assigneeId: 'user-1',
     createdAt: new Date('2026-03-10T09:00:00'),

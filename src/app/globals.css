@@ -1,1 +1,70 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: var(--color-slate-50);
+  --foreground: var(--color-slate-800);
+  --border-color: var(--color-slate-300);
+  --border-radius: var(--radius-lg);
+}
+
+:root:where(.dark),
+:root:where(:not(.light)) {
+  @media (prefers-color-scheme: dark) {
+    --background: var(--color-slate-950);
+    --foreground: var(--color-slate-300);
+    --border-color: var(--color-slate-600);
+  }
+}
+
+:root.dark {
+  --background: var(--color-slate-950);
+  --foreground: var(--color-slate-300);
+  --border-color: var(--color-slate-600);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-poppins);
+}
+
+@layer base {
+  * {
+    @apply border-(--border-color);
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground relative flex h-screen max-h-screen flex-col overflow-hidden overscroll-none font-sans text-base antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-bold;
+  }
+
+  h1 {
+    @apply text-5xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+}

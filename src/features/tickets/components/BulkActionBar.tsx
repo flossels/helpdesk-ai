@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { bulkUpdateStatus } from '@/app/(dashboard)/actions/bulkUpdateStatus'
 import { TicketStatus } from '@/lib/placeholderData'
+import Button from '@/shared/components/ui/Button'
 
 type Props = {
   ticketIds: string[]
@@ -64,10 +65,12 @@ const BulkActionBar = ({ ticketIds }: Props) => {
       {selected.size > 0 && (
         <div>
           <span>{selected.size} selected</span>
-          <button onClick={handleBulkResolve} disabled={isPending}>
+          <Button onClick={handleBulkResolve} isLoading={isPending}>
             {isPending ? 'Updating...' : 'Mark as Resolved'}
-          </button>
-          <button onClick={() => setSelected(new Set())}>Cancel</button>
+          </Button>
+          <Button variant="ghost" onClick={() => setSelected(new Set())}>
+            Cancel
+          </Button>
         </div>
       )}
     </div>

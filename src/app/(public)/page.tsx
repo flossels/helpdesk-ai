@@ -1,6 +1,6 @@
 import { cacheLife } from 'next/cache'
 
-export default function HomePage() {
+export default async function HomePage() {
   'use cache'
   cacheLife('max')
 

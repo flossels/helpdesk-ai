@@ -1,6 +1,7 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
+import Button from '@/shared/components/ui/Button'
 
 type Props = {
   label: string
@@ -11,9 +12,9 @@ const SubmitButton = ({ label, pendingLabel }: Props) => {
   const { pending } = useFormStatus()
 
   return (
-    <button type="submit" disabled={pending}>
+    <Button type="submit" isLoading={pending}>
       {pending ? pendingLabel : label}
-    </button>
+    </Button>
   )
 }
 
