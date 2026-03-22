@@ -1,7 +1,11 @@
-import { getTicketThread } from '@/lib/placeholderData'
+import { getReplies } from '@/lib/placeholderData'
 
-const TicketThread = async () => {
-  const messages = await getTicketThread()
+type Props = {
+  ticketId: string
+}
+
+const TicketThread = async ({ ticketId }: Props) => {
+  const messages = await getReplies(ticketId)
 
   return (
     <div>

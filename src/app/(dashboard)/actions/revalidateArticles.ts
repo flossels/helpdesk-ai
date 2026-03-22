@@ -1,7 +1,7 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { updateTag } from 'next/cache'
 
-const revalidateArticles = async () => revalidateTag('articles', 'max')
+const revalidateArticles = async () => updateTag('articles')
 
 export default revalidateArticles
