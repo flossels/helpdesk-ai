@@ -1,21 +1,36 @@
-import type { TicketStatus } from './types'
+import { useOptimistic, useTransition } from 'react'
+import { fetchFilteredTickets } from './lib/fetchFilteredTickets'
+import type { Ticket, TicketStatus } from './types'
 
 type FilterValue = TicketStatus | 'ALL'
 
 type Props = {
   value: FilterValue
-  onChange: (value: FilterValue) => void
+  tickets: Ticket[]
+  onFiltered: (filter: FilterValue, results: Ticket[]) => void
 }
 
-export function StatusFilter({ value, onChange }: Props) {
+export function StatusFilter({ value, tickets, onFiltered }: Props) {
+  const [optimisticFilter, setOptimisticFilter] = useOptimistic(value)
+  const [, startTransition] = useTransition()
+
+  const handleChange = (newFilter: FilterValue) => {
+    startTransition(async () => {
+      setOptimisticFilter(newFilter)
+      const results = await fetchFilteredTickets(newFilter, tickets)
+
+      onFiltered(newFilter, results)
+    })
+  }
+
   return (
     <div>
       <label htmlFor="status-filter">Filter by status:{' '}</label>
       <select
         id="status-filter"
-        value={value}
+        value={optimisticFilter}
         onChange={(e) =>
-          onChange(e.target.value as FilterValue)
+          handleChange(e.target.value as FilterValue,)
         }
       >
         <option value="ALL">All</option>
