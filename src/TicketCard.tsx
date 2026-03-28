@@ -1,0 +1,24 @@
+import { StatusBadge } from './StatusBadge'
+import type { Ticket} from './types'
+import { TicketAge } from './TicketAge'
+
+type Props = Pick<Ticket, 'trackingId' | 'subject' | 'status' | 'priority' | 'assigneeName' | 'createdAt'>
+
+export function TicketCard(ticket: Props) {
+  return (
+    <div>
+      <div>
+        <strong>{ticket.trackingId}</strong>
+        <StatusBadge status={ticket.status} />
+      </div>
+      <p>{ticket.subject}</p>
+      <div>
+        <span>Priority: {ticket.priority}</span>
+        {ticket.assigneeName && (
+          <span> | Assigned to {ticket.assigneeName}</span>
+        )}
+        <span> | <TicketAge createdAt={ticket.createdAt} /></span>
+      </div>
+    </div>
+  )
+}
