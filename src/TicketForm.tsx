@@ -1,7 +1,11 @@
 import { type SubmitEvent, useRef, useState } from 'react'
-import type { Ticket, TicketPriority } from './types'
+import type { TicketPriority } from './types.ts'
 
-type NewTicket = Pick<Ticket, 'subject' | 'priority' | 'description'>
+type NewTicket = {
+  subject: string
+  description: string
+  priority: TicketPriority
+}
 
 type Props = {
   onSubmit: (ticket: NewTicket) => void

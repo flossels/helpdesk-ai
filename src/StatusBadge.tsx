@@ -1,4 +1,4 @@
-import type { TicketStatus } from './types'
+import type { TicketStatus } from './types.ts'
 
 const statusLabels = {
   OPEN: 'Open',

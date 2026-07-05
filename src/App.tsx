@@ -1,12 +1,11 @@
+import { sampleTickets, type Ticket, type TicketPriority, type TicketStatus } from './types.ts'
 import { useEffect, useState } from 'react'
-import { StatusFilter } from './StatusFilter'
-import { TicketForm } from './TicketForm'
-import { TicketList } from './TicketList'
-import type { Ticket, TicketStatus } from './types'
-import { sampleTickets } from './types'
-import { Greeting } from './Greeting'
-import { TogglePanel } from './TogglePanel'
-import { Counter } from './Counter'
+import { StatusFilter } from './StatusFilter.tsx'
+import { TicketForm } from './TicketForm.tsx'
+import { TicketList } from './TicketList.tsx'
+import { Greeting } from './Greeting.tsx'
+import { TogglePanel } from './TogglePanel.tsx'
+import { Counter } from './Counter.tsx'
 
 type FilterValue = TicketStatus | 'ALL'
 
@@ -26,9 +25,13 @@ function App() {
 
   const filteredTickets = tickets
     .filter((t) => filter === 'ALL' ? true : t.status === filter)
-    .filter((t) => t.subject.toLowerCase().includes(debouncedSearch.toLowerCase()))
+    .filter((t) =>
+      t.subject
+      .toLowerCase()
+      .includes(debouncedSearch.toLowerCase())
+    )
 
-  function handleAddTicket(newTicket: Pick<Ticket, 'subject' | 'description' | 'priority'>) {
+  function handleAddTicket(newTicket: { subject: string, description: string, priority: TicketPriority }) {
     const ticket: Ticket = {
       ...newTicket,
       id: crypto.randomUUID(),
@@ -41,15 +44,15 @@ function App() {
 
   return (
     <div>
-      <h1>HelpDesk AI — Ticket Board</h1>
-      <Greeting name='Maria' ticketCount={sampleTickets.filter((t) => t.status !== 'RESOLVED').length} />
+      <h1>HelpDesk AI: Ticket Board</h1>
+      <Greeting name='Maria' ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length} />
       <input
         type="text"
         placeholder="Search tickets..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <StatusFilter value={filter} onChange={setFilter}/>
+      <StatusFilter value={filter} onChange={setFilter} />
       <TicketForm onSubmit={handleAddTicket} />
       <h2>Tickets ({filteredTickets.length})</h2>
       <TicketList tickets={filteredTickets} />

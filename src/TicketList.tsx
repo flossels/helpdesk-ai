@@ -1,5 +1,5 @@
 import { TicketCard } from './TicketCard'
-import type { Ticket } from './types'
+import type { Ticket } from './types.ts'
 
 type Props = {
   tickets: Ticket[]

@@ -20,7 +20,7 @@ type Props = {
 }
 
 export function TicketAge({ createdAt }: Props) {
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(getTimestamp(createdAt))
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => getTimestamp(createdAt))
 
   useEffect(() => {
     const timer = setInterval(() => {
