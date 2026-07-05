@@ -1,5 +1,4 @@
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'WAITING' | 'RESOLVED' | 'CLOSED'
-
 type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 
 type Ticket = {
@@ -38,7 +37,7 @@ const ticket: Ticket = {
   subject: 'Login not working',
   status: 'IN_PROGRESS',
   priority: 'HIGH',
-  assigneeId: null,
+  assigneeId: null
 }
 
 console.log(getStatusMessage(ticket))

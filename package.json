@@ -1,5 +1,5 @@
 {
-  "name": "helpdesk-ai",
+  "name": "ts-playground",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,9 +9,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.33.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.22.0",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
   "devDependencies": {
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
   }
 }

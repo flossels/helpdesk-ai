@@ -1,10 +1,13 @@
 type ApiResponse<T> = { success: true, data: T } | { success: false, error: string }
 
-function createTicket(subject: string): ApiResponse<{ ticketId: string, trackingId: string }> {
+function createTicket(subject: string): ApiResponse<{
+  ticketId: string,
+  trackingId: string
+}> {
   if (subject.length < 5) {
     return {
       success: false,
-      error: 'Subject must be at least 5 characters.',
+      error: 'Subject must be at least 5 characters.'
     }
   }
 
@@ -12,8 +15,8 @@ function createTicket(subject: string): ApiResponse<{ ticketId: string, tracking
     success: true,
     data: {
       ticketId: crypto.randomUUID(),
-      trackingId: 'HD-0001',
-    },
+      trackingId: 'HD-0001'
+    }
   }
 }
 
