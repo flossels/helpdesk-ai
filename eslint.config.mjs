@@ -29,6 +29,17 @@ const eslintConfig = defineConfig([
         }
       ],
       '@typescript-eslint/consistent-type-imports': 'error',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^\\.\\.?/(?!.*\\.css$)',
+              message: 'Use the @/ alias, not relative imports.'
+            }
+          ]
+        }
+      ],
       'no-console': ['warn', { allow: ['warn', 'error'] }]
     }
   },

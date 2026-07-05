@@ -14,8 +14,7 @@ const config: KnipConfig = {
       'src/app/**/forbidden.tsx',
       'src/proxy.ts'
     ]
-  },
-  ignoreDependencies: ['postcss']
+  }
 }
 
 export default config
