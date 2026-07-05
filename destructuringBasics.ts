@@ -1,5 +1,4 @@
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'WAITING' | 'RESOLVED' | 'CLOSED'
-
 type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 
 type Assignee = {
@@ -25,8 +24,6 @@ type Ticket = {
   tags: string[]
 }
 
-// --- Sample data ---
-
 const ticket: Ticket = {
   id: 'clx1abc',
   trackingId: 'HD-0042',
@@ -43,33 +40,19 @@ const ticket: Ticket = {
   tags: ['auth', 'password', 'urgent']
 }
 
-// --- Object destructuring ---
-
 const { trackingId, subject, status } = ticket
 console.log(`${trackingId}: ${subject} [${status}]`)
-
-// --- Renaming ---
 
 const { id: ticketId } = ticket
 console.log(`Ticket ID: ${ticketId}`)
 
-// --- Nested destructuring ---
-
 const { category: { name: categoryName } } = ticket
 console.log(`Category: ${categoryName}`)
-
-// --- Array destructuring ---
 
 const [firstTag, secondTag] = ticket.tags
 console.log(`Tags: ${firstTag}, ${secondTag}`)
 
-// --- Function parameter destructuring ---
-
-function formatTicket({
-  trackingId,
-  subject,
-  priority
-}: Pick<Ticket, 'trackingId' | 'subject' | 'priority'>) {
+function formatTicket({ trackingId, subject, priority }: Pick<Ticket, 'trackingId' | 'subject' | 'priority'>) {
   return `[${priority}] ${trackingId}: ${subject}`
 }
 

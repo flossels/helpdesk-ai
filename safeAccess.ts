@@ -46,7 +46,6 @@ const tickets: Ticket[] = [
   },
 ]
 
-// --- Optional chaining ---
 for (const ticket of tickets) {
   const assignee = ticket.assignee?.name ?? 'Unassigned'
   const category = ticket.category?.name ?? 'Uncategorized'
@@ -62,7 +61,6 @@ for (const ticket of tickets) {
   )
 }
 
-// --- ?? vs || demonstration ---
 const ticket = tickets[1]
 const buggyCount = ticket?.replyCount || 99
 const correctCount = ticket?.replyCount ?? 99

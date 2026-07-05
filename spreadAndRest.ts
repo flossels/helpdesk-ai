@@ -1,5 +1,4 @@
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'WAITING' | 'RESOLVED' | 'CLOSED'
-
 type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 
 type Ticket = {
@@ -20,8 +19,6 @@ const ticket: Ticket = {
   assigneeId: null
 }
 
-// --- Immutable status update ---
-
 const assigned: Ticket = {
   ...ticket,
   status: 'IN_PROGRESS',
@@ -29,28 +26,17 @@ const assigned: Ticket = {
 }
 
 console.log('Original status:', ticket.status)
-// OPEN — unchanged
 console.log('Updated status:', assigned.status)
-// IN_PROGRESS
-
-// --- Array spread ---
 
 const tags = ['auth', 'password']
 const withUrgent = [...tags, 'urgent']
 console.log('Tags:', withUrgent)
-// ['auth', 'password', 'urgent']
-
-// --- Rest in destructuring ---
 
 const { id, ...ticketWithoutId } = assigned
 console.log('Removed id, keys left:', Object.keys(ticketWithoutId))
-// ['trackingId', 'subject', 'status', ...]
-
-// --- Rest in function parameters ---
 
 function logTicket(label: string, ...fields: string[]) {
   console.log(`[${label}]`, fields.join(', '))
 }
 
 logTicket('Ticket', 'HD-0042', 'HIGH', 'OPEN')
-// [Ticket] HD-0042, HIGH, OPEN
