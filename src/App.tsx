@@ -1,4 +1,4 @@
-import { sampleTickets, type Ticket, type TicketPriority, type TicketStatus } from './types.ts'
+import { type FilterValue, sampleTickets, type Ticket, type TicketPriority, type TicketStatus } from './types.ts'
 import { useEffect, useState } from 'react'
 import { StatusFilter } from './StatusFilter.tsx'
 import { TicketForm } from './TicketForm.tsx'
@@ -6,8 +6,6 @@ import { TicketList } from './TicketList.tsx'
 import { Greeting } from './Greeting.tsx'
 import { TogglePanel } from './TogglePanel.tsx'
 import { Counter } from './Counter.tsx'
-
-type FilterValue = TicketStatus | 'ALL'
 
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>(sampleTickets)

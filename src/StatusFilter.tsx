@@ -1,6 +1,4 @@
-import type { TicketStatus } from './types'
-
-type FilterValue = TicketStatus | 'ALL'
+import type { FilterValue } from './types'
 
 type Props = {
   value: FilterValue

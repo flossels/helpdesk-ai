@@ -12,6 +12,8 @@ export type Ticket = {
   createdAt: Date
 }
 
+export type FilterValue = TicketStatus | 'ALL'
+
 export const sampleTickets: Ticket[] = [
   {
     id: '1',
