@@ -11,7 +11,7 @@ function formatAge(seconds: number): string {
   return `${hours}h ago`
 }
 
-function getTimestamp (createdAt: Date) {
+function getTimestamp(createdAt: Date) {
   return Math.floor((Date.now() - createdAt.getTime()) / 1000)
 }
 

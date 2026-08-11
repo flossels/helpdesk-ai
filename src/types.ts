@@ -14,6 +14,10 @@ export type Ticket = {
 
 export type FilterValue = TicketStatus | 'ALL'
 
+const SECOND = 1000
+const MINUTE = 60 * SECOND
+const HOUR = 60 * MINUTE
+
 export const sampleTickets: Ticket[] = [
   {
     id: '1',
@@ -22,7 +26,7 @@ export const sampleTickets: Ticket[] = [
     description: 'Users report a blank page.',
     status: 'OPEN',
     priority: 'HIGH',
-    createdAt: new Date('2025-03-20T09:00:00')
+    createdAt: new Date(Date.now() - 12 * SECOND)
   },
   {
     id: '2',
@@ -32,7 +36,7 @@ export const sampleTickets: Ticket[] = [
     status: 'IN_PROGRESS',
     priority: 'MEDIUM',
     assigneeName: 'Daniel',
-    createdAt: new Date('2025-03-19T14:30:00')
+    createdAt: new Date(Date.now() - 25 * MINUTE)
   },
   {
     id: '3',
@@ -42,6 +46,6 @@ export const sampleTickets: Ticket[] = [
     status: 'RESOLVED',
     priority: 'LOW',
     assigneeName: 'Sophia',
-    createdAt: new Date('2025-03-18T11:00:00')
+    createdAt: new Date(Date.now() - 3 * HOUR)
   }
 ]

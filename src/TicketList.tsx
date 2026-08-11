@@ -1,4 +1,4 @@
-import { TicketCard } from './TicketCard'
+import { TicketCard } from './TicketCard.tsx'
 import type { Ticket } from './types.ts'
 
 type Props = {

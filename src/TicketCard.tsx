@@ -1,6 +1,6 @@
-import { StatusBadge } from './StatusBadge'
-import type { Ticket } from './types.ts'
+import { StatusBadge } from './StatusBadge.tsx'
 import { TicketAge } from './TicketAge.tsx'
+import type { Ticket } from './types.ts'
 
 type Props = Pick<Ticket, 'trackingId' | 'subject' | 'status' | 'priority' | 'assigneeName' | 'createdAt'>
 

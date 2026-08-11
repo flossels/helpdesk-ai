@@ -1,5 +1,5 @@
 type Props = {
-  name: string,
+  name: string
   ticketCount: number
 }
 

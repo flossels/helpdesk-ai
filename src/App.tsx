@@ -1,4 +1,9 @@
-import { type FilterValue, sampleTickets, type Ticket, type TicketPriority, type TicketStatus } from './types.ts'
+import {
+  type FilterValue,
+  sampleTickets,
+  type Ticket,
+  type TicketPriority
+} from './types.ts'
 import { useEffect, useState } from 'react'
 import { StatusFilter } from './StatusFilter.tsx'
 import { TicketForm } from './TicketForm.tsx'
@@ -25,11 +30,15 @@ function App() {
     .filter((t) => filter === 'ALL' ? true : t.status === filter)
     .filter((t) =>
       t.subject
-      .toLowerCase()
-      .includes(debouncedSearch.toLowerCase())
+        .toLowerCase()
+        .includes(debouncedSearch.toLowerCase())
     )
 
-  function handleAddTicket(newTicket: { subject: string, description: string, priority: TicketPriority }) {
+  function handleAddTicket(newTicket: {
+    subject: string
+    description: string
+    priority: TicketPriority
+  }) {
     const ticket: Ticket = {
       ...newTicket,
       id: crypto.randomUUID(),
@@ -43,7 +52,10 @@ function App() {
   return (
     <div>
       <h1>HelpDesk AI: Ticket Board</h1>
-      <Greeting name='Maria' ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length} />
+      <Greeting
+        name="Maria"
+        ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length}
+      />
       <input
         type="text"
         placeholder="Search tickets..."
