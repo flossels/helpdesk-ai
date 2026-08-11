@@ -52,7 +52,7 @@ for (const ticket of tickets) {
   const replies = ticket._count?.replies ?? 0
   const firstTag = ticket.tags?.[0] ?? 'no tags'
 
-  console.log(`${ticket.trackingId}: ${ticket.subject}`,)
+  console.log(`${ticket.trackingId}: ${ticket.subject}`)
   console.log(
     `  Assignee: ${assignee}`,
     `| Category: ${category}`,
