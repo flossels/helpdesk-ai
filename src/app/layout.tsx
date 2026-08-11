@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   description: 'AI-powered support portal for teams'
 }
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en">
       <body>{children}</body>

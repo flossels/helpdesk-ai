@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
   typedRoutes: true,
+  agentRules: false,
   logging: {
     browserToTerminal: 'warn'
   },
