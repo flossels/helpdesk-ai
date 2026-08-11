@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "validate": "tsc --noEmit && pnpm lint && pnpm format:check && pnpm knip",
+    "verify": "pnpm validate && pnpm build",
     "validate:fix": "pnpm lint:fix && pnpm format"
   },
   "dependencies": {
