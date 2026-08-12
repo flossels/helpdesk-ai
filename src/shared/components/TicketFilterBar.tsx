@@ -2,8 +2,10 @@
 
 import { useSearchParams } from 'next/navigation'
 import { useUpdateSearchParams } from '@/shared/hooks/useUpdateSearchParams'
+import { TICKET_STATUSES } from '@/shared/types/ticket'
+import type { TicketStatus } from '@/shared/types/ticket'
 
-const STATUSES = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED']
+const STATUSES: Array<TicketStatus | 'ALL'> = ['ALL', ...TICKET_STATUSES]
 
 export function TicketFilterBar() {
   const searchParams = useSearchParams()

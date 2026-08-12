@@ -16,7 +16,7 @@ export default async function TicketsPage({ searchParams }: PageProps<'/tickets'
         {' | '}
         Search: {search ?? 'None'}
       </p>
-      <TicketList />
+      <TicketList status={status?.toString()} search={search?.toString()} />
     </div>
   )
 }

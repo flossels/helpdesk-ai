@@ -1,8 +1,8 @@
-export default function Home() {
-  return (
-    <main>
-      <h1>HelpDesk AI</h1>
-      <p>Coming soon.</p>
-    </main>
-  )
+import { cacheLife } from 'next/cache'
+
+export default async function HomePage() {
+  'use cache'
+  cacheLife('max')
+
+  return <h1>Welcome to HelpDesk AI</h1>
 }

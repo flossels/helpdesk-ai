@@ -1,7 +1,10 @@
-import { getTicketThread } from '@/lib/placeholderData'
+import { getReplies } from '@/lib/placeholderData'
 
-export async function TicketThread() {
-  const messages = await getTicketThread()
+type Props = Pick<PageProps<'/tickets/[ticketId]'>, 'params'>
+
+export async function TicketThread({ params }: Props) {
+  const { ticketId } = await params
+  const messages = await getReplies(ticketId)
 
   return (
     <div>
