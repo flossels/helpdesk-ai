@@ -1,16 +1,12 @@
-import {
-  type FilterValue,
-  sampleTickets,
-  type Ticket,
-  type TicketPriority
-} from './types.ts'
+import { sampleTickets } from './types'
+import type { FilterValue, Ticket } from './types'
 import { useEffect, useState } from 'react'
-import { StatusFilter } from './StatusFilter.tsx'
-import { TicketForm } from './TicketForm.tsx'
-import { TicketList } from './TicketList.tsx'
-import { Greeting } from './Greeting.tsx'
-import { TogglePanel } from './TogglePanel.tsx'
-import { Counter } from './Counter.tsx'
+import { StatusFilter } from './StatusFilter'
+import { TicketForm } from './TicketForm'
+import { TicketList } from './TicketList'
+import { Greeting } from './Greeting'
+import { TogglePanel } from './TogglePanel'
+import { Counter } from './Counter'
 
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>(sampleTickets)
@@ -21,7 +17,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(
       () => setDebouncedSearch(search),
-      300,
+      300
     )
     return () => clearTimeout(timer)
   }, [search])
@@ -34,11 +30,7 @@ function App() {
         .includes(debouncedSearch.toLowerCase())
     )
 
-  function handleAddTicket(newTicket: {
-    subject: string
-    description: string
-    priority: TicketPriority
-  }) {
+  function handleAddTicket(newTicket: Pick<Ticket, 'subject' | 'description' | 'priority'>) {
     const ticket: Ticket = {
       ...newTicket,
       id: crypto.randomUUID(),

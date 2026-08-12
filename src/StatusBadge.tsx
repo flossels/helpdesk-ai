@@ -1,11 +1,11 @@
-import type { TicketStatus } from './types.ts'
+import type { TicketStatus } from './types'
 
 const statusLabels = {
   OPEN: 'Open',
   IN_PROGRESS: 'In Progress',
   WAITING: 'Waiting',
   RESOLVED: 'Resolved',
-  CLOSED: 'Closed',
+  CLOSED: 'Closed'
 } satisfies Record<TicketStatus, string>
 
 type Props = {

@@ -1,5 +1,6 @@
-import { type SubmitEvent, useRef, useState } from 'react'
-import type { TicketPriority } from './types.ts'
+import { useRef, useState } from 'react'
+import type { SubmitEvent } from 'react'
+import type { TicketPriority } from './types'
 
 type NewTicket = {
   subject: string
@@ -38,9 +39,7 @@ export function TicketForm({ onSubmit }: Props) {
           id="subject"
           type="text"
           value={subject}
-          onChange={(e) =>
-            setSubject(e.target.value)
-          }
+          onChange={(e) => setSubject(e.target.value)}
         />
       </div>
       <div>
@@ -48,9 +47,7 @@ export function TicketForm({ onSubmit }: Props) {
         <textarea
           id="description"
           value={description}
-          onChange={(e) =>
-            setDescription(e.target.value)
-          }
+          onChange={(e) => setDescription(e.target.value)}
         />
       </div>
       <div>
@@ -58,9 +55,7 @@ export function TicketForm({ onSubmit }: Props) {
         <select
           id="priority"
           value={priority}
-          onChange={(e) =>
-            setPriority(e.target.value as TicketPriority)
-          }
+          onChange={(e) => setPriority(e.target.value as TicketPriority)}
         >
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>

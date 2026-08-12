@@ -1,4 +1,4 @@
-import type { FilterValue } from './types.ts'
+import type { FilterValue } from './types'
 
 type Props = {
   value: FilterValue
