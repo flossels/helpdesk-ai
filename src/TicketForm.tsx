@@ -1,69 +1,51 @@
-import { useRef, useState } from 'react'
-import type { SubmitEvent } from 'react'
-import type { TicketPriority } from './types'
-
-type NewTicket = {
-  subject: string
-  description: string
-  priority: TicketPriority
-}
+import { useActionState, useRef } from 'react'
+import { submitTicket } from './lib/submitTicket'
+import type { FormState } from './lib/submitTicket'
+import { SubmitButton } from './SubmitButton'
+import type { Ticket } from './types'
 
 type Props = {
-  onSubmit: (ticket: NewTicket) => void
+  onCreated: (ticket: Ticket) => void
 }
 
-export function TicketForm({ onSubmit }: Props) {
-  const [subject, setSubject] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<TicketPriority>('MEDIUM')
-  const subjectRef = useRef<HTMLInputElement>(null)
+export function TicketForm({ onCreated }: Props) {
+  const formRef = useRef<HTMLFormElement>(null)
+  const [state, formAction] = useActionState<FormState, FormData>(
+    async (prevState, formData) => {
+      const result = await submitTicket(prevState, formData)
+      if (result?.ticket) {
+        onCreated(result.ticket)
+        formRef.current?.reset()
+      }
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-
-    if (!subject.trim() || !description.trim()) return
-
-    onSubmit({ subject, description, priority })
-    setSubject('')
-    setDescription('')
-    setPriority('MEDIUM')
-    subjectRef.current?.focus()
-  }
+      return result
+    },
+    null
+  )
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form ref={formRef} action={formAction}>
       <div>
         <label htmlFor="subject">Subject</label>
-        <input
-          ref={subjectRef}
-          id="subject"
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
+        <input id="subject" name="subject" type="text" />
       </div>
       <div>
         <label htmlFor="description">Description</label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <textarea id="description" name="description" />
       </div>
       <div>
         <label htmlFor="priority">Priority</label>
-        <select
-          id="priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as TicketPriority)}
-        >
+        <select id="priority" name="priority" defaultValue="MEDIUM">
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>
           <option value="HIGH">High</option>
           <option value="URGENT">Urgent</option>
         </select>
       </div>
-      <button type="submit">Add Ticket</button>
+
+      {state && <p>{state.message}</p>}
+
+      <SubmitButton label="Add Ticket" />
     </form>
   )
 }

@@ -1,67 +1,61 @@
+import { Suspense, useState } from 'react'
 import { sampleTickets } from './types'
 import type { FilterValue, Ticket } from './types'
-import { useEffect, useState } from 'react'
+import { useTicketFilters } from './hooks/useTicketFilters'
+import { Greeting } from './Greeting'
 import { StatusFilter } from './StatusFilter'
 import { TicketForm } from './TicketForm'
 import { TicketList } from './TicketList'
-import { Greeting } from './Greeting'
 import { TogglePanel } from './TogglePanel'
 import { Counter } from './Counter'
+import { ThemeProvider } from './provider/ThemeProvider'
+import { ErrorBoundary } from './ErrorBoundary'
+import { ThemeToggle } from './ThemeToggle'
 
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>(sampleTickets)
-  const [filter, setFilter] = useState<FilterValue>('ALL')
-  const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [results, setResults] = useState<Ticket[]>(sampleTickets)
+  const { search, setSearch, status, setStatus, debouncedSearch } = useTicketFilters()
 
-  useEffect(() => {
-    const timer = setTimeout(
-      () => setDebouncedSearch(search),
-      300
-    )
-    return () => clearTimeout(timer)
-  }, [search])
+  const visibleTickets = results.filter((t) =>
+    t.subject.toLowerCase().includes(debouncedSearch.toLowerCase())
+  )
 
-  const filteredTickets = tickets
-    .filter((t) => filter === 'ALL' ? true : t.status === filter)
-    .filter((t) =>
-      t.subject
-        .toLowerCase()
-        .includes(debouncedSearch.toLowerCase())
-    )
+  function handleFilter(filter: FilterValue, filtered: Ticket[]) {
+    setResults(filtered)
+    setStatus(filter)
+  }
 
-  function handleAddTicket(newTicket: Pick<Ticket, 'subject' | 'description' | 'priority'>) {
-    const ticket: Ticket = {
-      ...newTicket,
-      id: crypto.randomUUID(),
-      trackingId: `HD-${Date.now()}`,
-      status: 'OPEN',
-      createdAt: new Date()
-    }
+  function handleAddTicket(ticket: Ticket) {
     setTickets((prev) => [ticket, ...prev])
+    setResults((prev) => [ticket, ...prev])
   }
 
   return (
-    <div>
-      <h1>HelpDesk AI: Ticket Board</h1>
-      <Greeting
-        name="Maria"
-        ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length}
-      />
-      <input
-        type="text"
-        placeholder="Search tickets..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <StatusFilter value={filter} onChange={setFilter} />
-      <TicketForm onSubmit={handleAddTicket} />
-      <h2>Tickets ({filteredTickets.length})</h2>
-      <TicketList tickets={filteredTickets} />
-      <TogglePanel title="Counter">
-        <Counter />
-      </TogglePanel>
-    </div>
+    <ThemeProvider>
+      <div>
+        <h1>HelpDesk AI: Ticket Board</h1>
+        <ThemeToggle />
+        <Greeting name='Maria' ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length} />
+        <input
+          type="text"
+          placeholder="Search tickets..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <StatusFilter value={status} tickets={tickets} onFiltered={handleFilter} />
+        <TicketForm onCreated={handleAddTicket} />
+        <h2>Tickets ({visibleTickets.length})</h2>
+        <ErrorBoundary fallback={<p>Something went wrong.</p>}>
+          <Suspense fallback={<p>Loading tickets...</p>}>
+            <TicketList tickets={visibleTickets} />
+          </Suspense>
+        </ErrorBoundary>
+        <TogglePanel title="Counter">
+          <Counter />
+        </TogglePanel>
+      </div>
+    </ThemeProvider>
   )
 }
 
