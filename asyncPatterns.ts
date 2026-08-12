@@ -6,6 +6,8 @@ type Ticket = {
   subject: string
 }
 
+// --- Simulated async operations ---
+
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -25,6 +27,8 @@ async function fetchTicket(id: string): Promise<ApiResponse<Ticket>> {
   }
 }
 
+// --- Using async/await with try/catch ---
+
 async function loadTicket(id: string) {
   const result = await fetchTicket(id)
 
@@ -32,6 +36,8 @@ async function loadTicket(id: string) {
 
   console.log(`Loaded: ${result.data.trackingId}, ${result.data.subject}`)
 }
+
+// --- Promise.all for parallel fetching ---
 
 async function loadMultiple(ids: string[]) {
   const results = await Promise.all(ids.map((id) => fetchTicket(id)))
@@ -45,6 +51,8 @@ async function loadMultiple(ids: string[]) {
   }
 }
 
+// --- try/catch with unknown error ---
+
 async function riskyOperation() {
   try {
     throw new Error('Database connection lost')
@@ -54,6 +62,8 @@ async function riskyOperation() {
     console.log('Cleanup complete')
   }
 }
+
+// --- Run everything ---
 
 async function main() {
   console.log('--- Single ticket ---')
