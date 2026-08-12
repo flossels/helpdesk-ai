@@ -1,12 +1,15 @@
-import { Modal } from '@/shared/components/Modal'
+'use client'
 
-export default async function TicketPreview({ params }: PageProps<'/tickets/[ticketId]'>) {
-  const { ticketId } = await params
+import { useParams, useRouter } from 'next/navigation'
+import { Dialog } from '@/shared/components/ui/Dialog'
+
+export default function TicketPreview() {
+  const { ticketId } = useParams<{ ticketId: string }>()
+  const router = useRouter()
 
   return (
-    <Modal>
-      <h2>Ticket Preview: {ticketId}</h2>
+    <Dialog open animated={false} onClose={() => router.back()} title={`Ticket Preview: ${ticketId}`}>
       <p>Quick summary of the ticket. Click through for the full view.</p>
-    </Modal>
+    </Dialog>
   )
 }

@@ -1,18 +1,45 @@
+import Link from 'next/link'
+import { cn } from '@/shared/lib/cn'
+import { Logo } from '@/shared/components/Logo'
+import { ThemeToggle } from '@/shared/components/ui/ThemeToggle'
+
 // Read once at module scope. Inside the component this would be an unstable
 // value during prerendering, which the build rejects from Chapter 7 on.
 const currentYear = new Date().getFullYear()
 
 export default function PublicLayout({ children }: LayoutProps<'/'>) {
   return (
-    <div className="flex flex-col gap-6">
-      <header className="border-b pb-2">
-        <nav>
-          <span>HelpDesk AI</span>
+    <div className={cn('flex min-h-screen flex-col')}>
+      <header className={cn('border-b border-slate-200 dark:border-slate-700')}>
+        <nav className={cn('mx-auto flex max-w-5xl items-center justify-between p-4')}>
+          <Link href="/">
+            <Logo />
+          </Link>
+          <div className={cn('flex items-center gap-6 text-sm')}>
+            <Link href="/about" className={cn('text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white')}>
+              About
+            </Link>
+            <Link href="/submit" className={cn('text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white')}>
+              Submit a Ticket
+            </Link>
+            <a
+              href="/login"
+              className={cn('rounded-(--border-radius) bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-500')}
+            >
+              Log in
+            </a>
+            <ThemeToggle />
+          </div>
         </nav>
       </header>
-      <main className="flex grow py-6">{children}</main>
-      <footer className="border-t pt-2">
-        <p>&copy; {currentYear} HelpDesk AI</p>
+      <main className={cn('mx-auto w-full max-w-5xl grow p-4')}>{children}</main>
+      <footer className={cn('border-t border-slate-200 dark:border-slate-700')}>
+        <div className={cn('mx-auto flex max-w-5xl flex-col gap-2 p-4 text-sm text-slate-500', 'sm:flex-row sm:justify-between')}>
+          <p>&copy; {currentYear} HelpDesk AI</p>
+          <Link href="/about" className={cn('hover:text-slate-900 dark:hover:text-white')}>
+            About
+          </Link>
+        </div>
       </footer>
     </div>
   )

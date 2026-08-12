@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
       revalidate: 21600,
       expire: 86400
     }
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com'
+      }
+    ]
   }
 }
 

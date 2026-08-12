@@ -1,6 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { Field, Input, Label } from '@headlessui/react'
+import { Button } from '@/shared/components/ui/Button'
+import { cn } from '@/shared/lib/cn'
 import { bulkUpdateStatus } from '@/app/(dashboard)/actions/bulkUpdateStatus'
 
 type Props = {
@@ -45,32 +48,48 @@ export function BulkActionBar({ ticketIds }: Props) {
   }
 
   return (
-    <div>
-      <label>
-        <input type="checkbox" checked={allSelected} onChange={toggleAll} />
-        Select all
-      </label>
+    <div className={cn('space-y-2')}>
+      <Field className={cn('flex items-center justify-between gap-3')}>
+        <Label className={cn('flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300')}>
+          <Input
+            type="checkbox"
+            checked={allSelected}
+            onChange={toggleAll}
+            className={cn('size-4 rounded border-slate-300 text-blue-600')}
+          />
+          Select all
+        </Label>
 
-      <ul>
+        {selected.size > 0 && (
+          <div className={cn('flex items-center gap-3')}>
+            <span className={cn('text-sm text-slate-500')}>{selected.size} selected</span>
+            <Button size="sm" onClick={handleBulkResolve} isLoading={isPending}>
+              {isPending ? 'Updating...' : 'Mark as Resolved'}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+              Cancel
+            </Button>
+          </div>
+        )}
+      </Field>
+
+      <ul className={cn('flex flex-wrap gap-x-4 gap-y-1')}>
         {ticketIds.map((id) => (
           <li key={id}>
-            <input type="checkbox" checked={selected.has(id)} onChange={() => toggleOne(id)} />
-            {id}
+            <Field>
+              <Label className={cn('flex items-center gap-1 text-xs text-slate-500')}>
+                <Input
+                  type="checkbox"
+                  checked={selected.has(id)}
+                  onChange={() => toggleOne(id)}
+                  className={cn('size-3 rounded border-slate-300 text-blue-600')}
+                />
+                {id}
+              </Label>
+            </Field>
           </li>
         ))}
       </ul>
-
-      {selected.size > 0 && (
-        <div>
-          <span>{selected.size} selected</span>
-          <button type="button" onClick={handleBulkResolve} disabled={isPending}>
-            {isPending ? 'Updating...' : 'Mark as Resolved'}
-          </button>
-          <button type="button" onClick={() => setSelected(new Set())}>
-            Cancel
-          </button>
-        </div>
-      )}
     </div>
   )
 }

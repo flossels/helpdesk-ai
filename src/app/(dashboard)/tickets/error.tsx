@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/shared/components/ui/Button'
 import type { ErrorInfo } from 'next/error'
 
 export default function TicketsError({ error, retry }: ErrorInfo) {
@@ -9,7 +10,7 @@ export default function TicketsError({ error, retry }: ErrorInfo) {
     <div>
       <h2>Something went wrong</h2>
       <p>{message}</p>
-      <button onClick={retry}>Try again</button>
+      <Button onClick={retry}>Try again</Button>
     </div>
   )
 }
