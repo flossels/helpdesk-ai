@@ -1,15 +1,16 @@
+import { Suspense } from 'react'
 import { SidebarNav } from '@/shared/components/SidebarNav'
+import { CollapsibleSidebar } from '@/shared/components/CollapsibleSidebar'
 
 export default function DashboardLayout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex gap-6">
-      <aside className="border-r pr-4">
-        <SidebarNav />
-      </aside>
-      <div>
-        <header>Dashboard Header</header>
-        <main>{children}</main>
-      </div>
+      <Suspense>
+        <CollapsibleSidebar>
+          <SidebarNav />
+        </CollapsibleSidebar>
+      </Suspense>
+      <main className="flex-1">{children}</main>
     </div>
   )
 }

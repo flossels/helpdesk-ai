@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import Link from 'next/link'
 import { TicketFilterBar } from '@/shared/components/TicketFilterBar'
+import { TicketList } from '@/shared/components/TicketList'
 
 export default async function TicketsPage({ searchParams }: PageProps<'/tickets'>) {
   const { status, search } = await searchParams
@@ -16,17 +16,7 @@ export default async function TicketsPage({ searchParams }: PageProps<'/tickets'
         {' | '}
         Search: {search ?? 'None'}
       </p>
-      <ul>
-        <li>
-          <Link href="/tickets/HD-1001">HD-1001: Login page broken</Link>
-        </li>
-        <li>
-          <Link href="/tickets/HD-1002">HD-1002: Cannot reset password</Link>
-        </li>
-        <li>
-          <Link href="/tickets/HD-1003">HD-1003: Dashboard loads slowly</Link>
-        </li>
-      </ul>
+      <TicketList />
     </div>
   )
 }

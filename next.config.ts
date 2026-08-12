@@ -5,11 +5,20 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
   agentRules: false,
+  cacheComponents: true,
+  partialPrefetching: true,
   logging: {
     browserToTerminal: 'warn'
   },
   experimental: {
     typedEnv: true
+  },
+  cacheLife: {
+    articles: {
+      stale: 300,
+      revalidate: 21600,
+      expire: 86400
+    }
   }
 }
 
