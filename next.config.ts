@@ -12,7 +12,8 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     typedEnv: true,
-    authInterrupts: true
+    authInterrupts: true,
+    exposeTestingApiInProductionBuild: true
   },
   cacheLife: {
     articles: {

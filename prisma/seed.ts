@@ -3,7 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
-config({ path: '.env.local' })
+config({ path: process.env.ENV_FILE ?? '.env.local' })
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL

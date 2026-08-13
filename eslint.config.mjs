@@ -58,7 +58,13 @@ const eslintConfig = defineConfig([
       'no-console': ['warn', { allow: ['warn', 'error'] }]
     }
   },
-  globalIgnores(['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'])
+  globalIgnores(['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  {
+    files: ['**/__tests__/**', 'tests/**'],
+    rules: {
+      'import/order': 'off'
+    }
+  }
 ])
 
 export default eslintConfig

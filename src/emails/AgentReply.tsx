@@ -18,7 +18,7 @@ export function AgentReply({ trackingId, agentName, replyHtml, ticketUrl }: Prop
               <Text className="text-lg font-semibold text-slate-900">
                 {agentName} replied to {trackingId}
               </Text>
-              <Section className="text-slate-700" dangerouslySetInnerHTML={{ __html: replyHtml }} />
+              <div className="text-slate-700" dangerouslySetInnerHTML={{ __html: replyHtml }} />
               <Hr className="my-6 border-slate-200" />
               <Button href={ticketUrl} className="rounded-md bg-blue-600 px-5 py-3 text-white">
                 View the conversation
