@@ -83,7 +83,7 @@ export function CreateTicketForm({ categories }: Props) {
         <Field>
           <Label className={labelClasses}>Subject</Label>
           <Input {...register('subject')} className={inputClasses} />
-          {errors?.subject && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.subject.message}</p>}
+          {errors?.subject && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.subject.message}</Description>}
           <AiTitleSuggestion
             description={description ?? ''}
             onUse={(title) => setValue('subject', title, { shouldValidate: true })}
@@ -93,7 +93,7 @@ export function CreateTicketForm({ categories }: Props) {
         <Field>
           <Label className={labelClasses}>Email</Label>
           <Input type="email" {...register('email')} className={inputClasses} />
-          {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</p>}
+          {errors?.email && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</Description>}
         </Field>
 
         <Field>
@@ -102,7 +102,9 @@ export function CreateTicketForm({ categories }: Props) {
             Include what you expected to happen and what actually happened.
           </Description>
           <Textarea {...register('description')} rows={4} className={inputClasses} />
-          {errors?.description && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.description.message}</p>}
+          {errors?.description && (
+            <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.description.message}</Description>
+          )}
         </Field>
 
         <Field>

@@ -14,7 +14,7 @@ export function ThemeToggle() {
   return (
     <div className={cn('ms-auto flex items-center gap-2')}>
       <SunIcon className="size-5" />
-      <Toggle checked={isDark} onChange={(checked) => setTheme(checked ? 'dark' : 'light')} />
+      <Toggle label="Dark mode" checked={isDark} onChange={(checked) => setTheme(checked ? 'dark' : 'light')} />
       <MoonIcon className="size-5" />
     </div>
   )

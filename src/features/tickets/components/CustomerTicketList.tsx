@@ -26,7 +26,7 @@ export function CustomerTicketList({ tickets }: Props) {
           >
             <TicketStatusBadge status={ticket.status} />
             <span className={cn('flex-1 truncate text-sm font-medium text-slate-900 dark:text-slate-100')}>{ticket.subject}</span>
-            <span className={cn('shrink-0 text-xs text-slate-400')}>
+            <span className={cn('shrink-0 text-xs text-slate-500 dark:text-slate-400')}>
               <RelativeTime date={ticket.updatedAt} />
             </span>
           </Link>

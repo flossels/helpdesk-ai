@@ -34,7 +34,7 @@ export function SearchableSelect<T>({ items, value, onChange, displayValue, plac
           displayValue={(item: T | null) => (item ? displayValue(item) : '')}
           placeholder={placeholder}
         />
-        <ComboboxButton className={cn('absolute inset-y-0 right-0 flex items-center pr-2')}>
+        <ComboboxButton aria-label="Show options" className={cn('absolute inset-y-0 right-0 flex items-center pr-2')}>
           <ChevronUpDownIcon className="size-4 text-slate-400" />
         </ComboboxButton>
       </div>

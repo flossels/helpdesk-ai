@@ -49,7 +49,7 @@ export async function TicketList({ searchParams }: Props) {
               {ticket.assignee ? (
                 <Avatar name={ticket.assignee.name ?? 'Unassigned'} image={ticket.assignee.image} size={24} />
               ) : null}
-              <span className={cn('text-xs text-slate-400')}>
+              <span className={cn('text-xs text-slate-500 dark:text-slate-400')}>
                 <RelativeTime date={ticket.createdAt} />
               </span>
             </Link>

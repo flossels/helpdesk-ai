@@ -5,6 +5,11 @@ import { SidebarNav } from '@/app/(dashboard)/_components/SidebarNav'
 import { CollapsibleSidebar } from '@/app/(dashboard)/_components/CollapsibleSidebar'
 import { SidebarProvider } from '@/app/(dashboard)/_components/SidebarProvider'
 import { DashboardMain } from '@/app/(dashboard)/_components/DashboardMain'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false }
+}
 
 export default function DashboardLayout({ children }: LayoutProps<'/'>) {
   return (
@@ -23,7 +28,7 @@ export default function DashboardLayout({ children }: LayoutProps<'/'>) {
           >
             <ThemeToggle />
           </header>
-          <main className={cn('p-4')}>
+          <main id="main-content" className={cn('p-4')}>
             <Suspense fallback={null}>{children}</Suspense>
           </main>
         </DashboardMain>

@@ -12,7 +12,7 @@ export function DashboardMetrics({ initial }: Props) {
   const metrics = useDashboardMetrics(initial)
 
   return (
-    <div className={cn('flex gap-12')}>
+    <div aria-live="polite" className={cn('flex gap-12')}>
       <div>
         <div className={cn('text-sm text-slate-500')}>Open tickets</div>
         <div className={cn('text-3xl font-semibold text-slate-900 dark:text-slate-100')}>{metrics.openTickets}</div>

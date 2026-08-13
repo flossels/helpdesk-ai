@@ -90,7 +90,7 @@ export function BulkActionBar({ tickets }: Props) {
                   onChange={() => toggleOne(ticket.id)}
                   className={cn('size-3 rounded border-slate-300 text-blue-600')}
                 />
-                <span className={cn('font-mono text-slate-400')}>{ticket.trackingId}</span>
+                <span className={cn('font-mono text-slate-500 dark:text-slate-400')}>{ticket.trackingId}</span>
                 {ticket.subject}
               </Label>
             </Field>
