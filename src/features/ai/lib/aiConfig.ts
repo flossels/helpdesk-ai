@@ -33,3 +33,12 @@ export const AVAILABLE_MODELS: AvailableModel[] = [
     description: 'Third provider. Fast, with a one-million-token context.'
   }
 ]
+
+export const EMBEDDING_CONFIG = {
+  model: 'openai/text-embedding-3-small',
+  dimensions: 1536,
+  maxChunkTokens: 500,
+  overlapTokens: 50,
+  topK: 5,
+  similarityThreshold: 0.3
+}

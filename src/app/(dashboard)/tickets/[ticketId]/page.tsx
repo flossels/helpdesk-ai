@@ -19,6 +19,7 @@ import { toUIMessages } from '@/features/copilot/lib/loadConversation'
 import { CategorizationBanner } from '@/features/ai/components/CategorizationBanner'
 import { getCategorizationSuggestion } from '@/features/ai/queries/getCategorizationSuggestion'
 import { getLatestTicketConversation } from '@/features/copilot/queries/getConversations'
+import { SuggestReplyButton } from '@/features/ai/components/SuggestReplyButton'
 import type { Metadata } from 'next'
 import type { TicketStatus } from '@/shared/types/ticket'
 
@@ -79,14 +80,16 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
         <CategorizationBanner ticketId={ticketId} suggestion={suggestion} />
       )}
 
-      {canUseAi && <TicketSummary ticketId={ticketId} />}
-
       {canUseAi && (
-        <CopilotPanel
-          ticketId={ticketId}
-          conversationId={latestChat?.id ?? crypto.randomUUID()}
-          initialMessages={latestChat ? toUIMessages(latestChat.messages) : []}
-        />
+        <>
+          <TicketSummary ticketId={ticketId} />
+          <SuggestReplyButton ticketId={ticketId} />
+          <CopilotPanel
+            ticketId={ticketId}
+            conversationId={latestChat?.id ?? crypto.randomUUID()}
+            initialMessages={latestChat ? toUIMessages(latestChat.messages) : []}
+          />
+        </>
       )}
 
       <TicketReplyForm ticketId={ticketId} cannedResponses={cannedResponses} />

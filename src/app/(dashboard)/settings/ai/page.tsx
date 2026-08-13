@@ -4,6 +4,7 @@ import { hasScope } from '@/shared/lib/authorization'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { getAiSettings } from '@/features/ai/queries/getAiSettings'
 import { AiSettingsForm } from '@/features/ai/components/AiSettingsForm'
+import { ReindexButton } from '@/features/ai/components/ReindexButton'
 
 export default async function AiSettingsPage() {
   const user = await getCurrentUser()
@@ -19,6 +20,7 @@ export default async function AiSettingsPage() {
         Choose the model every AI feature runs on and cap what this organization may spend each month.
       </p>
       <AiSettingsForm settings={settings} />
+      <ReindexButton />
     </div>
   )
 }

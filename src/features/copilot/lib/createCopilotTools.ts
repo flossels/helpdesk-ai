@@ -8,8 +8,10 @@ import { logActivity } from '@/shared/lib/logActivity'
 import { TICKET_PRIORITIES, TICKET_STATUSES } from '@/shared/types/ticket'
 import { getModel } from '@/features/ai/lib/getModel'
 import { formatTicketThread } from '@/features/ai/lib/formatTicketThread'
-import { DRAFT_REPLY_PROMPT } from '@/features/ai/lib/prompts'
+import { buildRagPrompt, DRAFT_REPLY_PROMPT } from '@/features/ai/lib/prompts'
 import { getTicketThread } from '@/features/tickets/queries/getTicketThread'
+import { embedQuery, searchArticleEmbeddings, searchTicketEmbeddings } from '@/features/ai/lib/searchEmbeddings'
+import { retrieveContext } from '@/features/ai/lib/retrieveContext'
 import type { Scope } from '@/shared/types/scopes'
 import type { ToolApprovalStatus } from 'ai'
 
@@ -43,34 +45,33 @@ export function createCopilotTools(ctx: CopilotContext) {
       status: z.enum(TICKET_STATUSES).optional(),
       priority: z.enum(TICKET_PRIORITIES).optional()
     }),
-    execute: ({ query, status, priority }) =>
-      db.ticket.findMany({
+    execute: async ({ query, status, priority }) => {
+      const chunks = await searchTicketEmbeddings(await embedQuery(query), ctx.organizationId)
+      const ids = [...new Set(chunks.map((c) => c.ticketId))]
+      return db.ticket.findMany({
         where: {
+          id: { in: ids },
           organizationId: ctx.organizationId,
           isDeleted: false,
           status,
-          priority,
-          OR: [{ subject: { contains: query, mode: 'insensitive' } }, { description: { contains: query, mode: 'insensitive' } }]
+          priority
         },
         select: ticketSelect,
         take: 10
       })
+    }
   })
 
   const searchKnowledge = tool({
     description: 'Search published knowledge base articles by keyword. Returns up to 5 articles with their slug and an excerpt.',
     inputSchema: z.object({ query: z.string().describe('Keywords to match in title or body') }),
     execute: async ({ query }) => {
-      const articles = await db.article.findMany({
-        where: {
-          organizationId: ctx.organizationId,
-          status: 'PUBLISHED',
-          OR: [{ title: { contains: query, mode: 'insensitive' } }, { contentText: { contains: query, mode: 'insensitive' } }]
-        },
-        select: { slug: true, title: true, contentText: true },
-        take: 5
-      })
-      return articles.map((a) => ({ slug: a.slug, title: a.title, excerpt: a.contentText.slice(0, 300) }))
+      const chunks = await searchArticleEmbeddings(await embedQuery(query), ctx.organizationId)
+      return chunks.map((c) => ({
+        slug: c.articleSlug,
+        title: c.articleTitle,
+        excerpt: c.chunkText.slice(0, 300)
+      }))
     }
   })
 
@@ -111,13 +112,19 @@ export function createCopilotTools(ctx: CopilotContext) {
       const ticket = await getTicketThread(ticketId, ctx.organizationId)
       if (!ticket) return { error: 'Ticket not found.' }
 
+      const thread = formatTicketThread(ticket)
+      const context = await retrieveContext(`${ticket.subject} ${thread}`, ctx.organizationId)
+
       const result = await generateText({
         model: getModel(ctx.model),
-        instructions: DRAFT_REPLY_PROMPT,
-        prompt: `Tone: ${tone ?? 'professional'}\n\n${formatTicketThread(ticket)}`,
+        instructions: DRAFT_REPLY_PROMPT + buildRagPrompt(context),
+        prompt: `Tone: ${tone ?? 'professional'}\n\n${thread}`,
         maxOutputTokens: 3000
       })
-      return { draft: result.text.trim() }
+      return {
+        draft: result.text.trim(),
+        sources: [...context.articleChunks.map((c) => c.articleTitle), ...context.ticketChunks.map((c) => c.trackingId)]
+      }
     }
   })
 

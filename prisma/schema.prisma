@@ -143,6 +143,7 @@ model Ticket {
   notes                InternalNote[]
   tags                 TicketTag[]
   copilotConversations CopilotConversation[]
+  embeddings           TicketEmbedding[]
 
   @@index([organizationId, status])
   @@index([organizationId, priority])
@@ -227,6 +228,7 @@ model Article {
   category     Category?    @relation(fields: [categoryId], references: [id])
   author       User         @relation(fields: [authorId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  embeddings   ArticleEmbedding[]
 
   @@index([organizationId, status])
 }
@@ -370,4 +372,28 @@ model CopilotMessage {
   conversation CopilotConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
+}
+
+model ArticleEmbedding {
+  id         String @id @default(cuid())
+  articleId  String
+  chunkIndex Int
+  chunkText  String
+  embedding  Unsupported("vector(1536)")
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+}
+
+model TicketEmbedding {
+  id         String @id @default(cuid())
+  ticketId   String
+  chunkIndex Int
+  chunkText  String
+  embedding  Unsupported("vector(1536)")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
 }
