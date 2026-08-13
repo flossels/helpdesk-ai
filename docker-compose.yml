@@ -1,6 +1,7 @@
 services:
   db:
     image: pgvector/pgvector:pg16-trixie
+    restart: unless-stopped
     environment:
       POSTGRES_USER: helpdesk
       POSTGRES_PASSWORD: helpdesk
@@ -9,6 +10,72 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U helpdesk']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      secrets:
+        - database_url
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    # The runtime secrets are the ones the dev server already reads. The
+    # four values below override the file's localhost addresses with the
+    # service names on the Compose network.
+    env_file: .env.local
+    environment:
+      DATABASE_URL: postgresql://helpdesk:helpdesk@db:5432/helpdesk?schema=public
+      REDIS_URL: redis://redis:6379
+      APP_URL: http://localhost:3000
+      AUTH_URL: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  migrate:
+    build:
+      context: .
+      target: builder
+      secrets:
+        - database_url
+    command: >
+      sh -c "pnpm prisma migrate deploy && echo 'Migrations complete'"
+    environment:
+      DATABASE_URL: postgresql://helpdesk:helpdesk@db:5432/helpdesk?schema=public
+      # The CLI resolves its datasource from DIRECT_URL. The build passed
+      # it as a secret, so nothing carries it into the image: set it here.
+      DIRECT_URL: postgresql://helpdesk:helpdesk@db:5432/helpdesk?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - migration
+
+# The build secret from section 25.3, read from the same variable.
+secrets:
+  database_url:
+    environment: BUILD_DATABASE_URL
 
 volumes:
   pgdata:
+  redisdata:

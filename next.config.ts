@@ -33,6 +33,8 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  output: process.env.VERCEL || process.env.E2E ? undefined : 'standalone',
+  deploymentId: process.env.DEPLOYMENT_ID,
   reactStrictMode: true,
   reactCompiler: true,
   typedRoutes: true,

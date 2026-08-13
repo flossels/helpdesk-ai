@@ -1,0 +1,13 @@
+node_modules
+# Build output stays out of the context, except the compiler cache the
+# CI pipeline restores (section 25.8).
+.next
+!.next/cache
+.git
+.env*
+*.md
+.vscode
+.idea
+coverage
+playwright-report
+test-results

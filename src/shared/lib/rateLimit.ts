@@ -32,10 +32,10 @@ function rateLimitMemory(key: string, config: RateLimitConfig): RateLimitResult 
   return { allowed: true, remaining: config.maxRequests - entry.count, resetAt: new Date(entry.resetAt) }
 }
 
-// Pick the backend per call: Redis when it is configured (serverless,
-// multi-instance), otherwise the in-memory store. Choosing at call time
-// keeps tests and local dev free of any Redis dependency.
-const useRedis = Boolean(process.env.UPSTASH_REDIS_REST_URL)
+// Pick the backend per call: Redis when either client is configured, the
+// native one on our server or the REST one on Vercel, otherwise the
+// in-memory store, which keeps tests and local dev free of any Redis.
+const useRedis = Boolean(process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL)
 
 export async function rateLimit(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
   const result = useRedis ? await rateLimitRedis(key, config) : rateLimitMemory(key, config)

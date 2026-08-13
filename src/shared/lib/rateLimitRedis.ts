@@ -1,12 +1,21 @@
 import 'server-only'
 
-import { Redis } from '@upstash/redis'
+import { Redis as Upstash } from '@upstash/redis'
+import { redis as ioredis } from '@/shared/lib/redis'
 import type { RateLimitConfig, RateLimitResult } from '@/shared/lib/rateLimit'
 
-let client: Redis | null = null
+// Both clients answer the two commands the counter needs. The native
+// client serves the self-hosted stack over its socket, the REST client
+// serves Vercel; REDIS_URL decides, once per process.
+type Counter = {
+  incr(key: string): Promise<number>
+  expire(key: string, seconds: number): Promise<unknown>
+}
 
-function redis(): Redis {
-  client ??= Redis.fromEnv()
+let client: Counter | null = null
+
+function counter(): Counter {
+  client ??= process.env.REDIS_URL ? ioredis : Upstash.fromEnv()
   return client
 }
 
@@ -15,9 +24,9 @@ export async function rateLimitRedis(key: string, config: RateLimitConfig): Prom
   const windowKey = `rate:${key}:${window}`
   const resetAt = new Date((window + 1) * config.windowMs)
 
-  const count = await redis().incr(windowKey)
+  const count = await counter().incr(windowKey)
   if (count === 1) {
-    await redis().expire(windowKey, Math.ceil(config.windowMs / 1000))
+    await counter().expire(windowKey, Math.ceil(config.windowMs / 1000))
   }
 
   return {

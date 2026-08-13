@@ -33,8 +33,14 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <Toaster richColors />
         <WebVitalsReporter />
         <ConsentBanner />
-        <SpeedInsights />
-        <Analytics />
+        {/* VERCEL is set on the platform and nowhere else, so the two
+            widgets render only where their scripts exist. */}
+        {process.env.VERCEL && (
+          <>
+            <SpeedInsights />
+            <Analytics />
+          </>
+        )}
       </body>
     </html>
   )
