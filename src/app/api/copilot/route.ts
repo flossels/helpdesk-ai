@@ -21,6 +21,8 @@ import { sanitizeAiInput } from '@/features/ai/lib/sanitizeAiInput'
 import { validateAiOutput } from '@/features/ai/lib/validateAiOutput'
 import type { UIMessage } from 'ai'
 
+export const maxDuration = 60
+
 const bodySchema = z.object({
   conversationId: z.string().min(1),
   ticketId: z.string().min(1).optional(),
