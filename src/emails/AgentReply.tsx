@@ -1,13 +1,13 @@
 import { Html, Head, Body, Container, Section, Text, Button, Hr, Tailwind } from 'react-email'
 
 type Props = {
-  trackingId: string
-  agentName: string
+  heading: string
   replyHtml: string
+  cta: string
   ticketUrl: string
 }
 
-export function AgentReply({ trackingId, agentName, replyHtml, ticketUrl }: Props) {
+export function AgentReply({ heading, replyHtml, cta, ticketUrl }: Props) {
   return (
     <Html>
       <Head />
@@ -15,13 +15,11 @@ export function AgentReply({ trackingId, agentName, replyHtml, ticketUrl }: Prop
         <Body className="bg-slate-50 font-sans">
           <Container className="mx-auto max-w-lg p-6">
             <Section>
-              <Text className="text-lg font-semibold text-slate-900">
-                {agentName} replied to {trackingId}
-              </Text>
+              <Text className="text-lg font-semibold text-slate-900">{heading}</Text>
               <div className="text-slate-700" dangerouslySetInnerHTML={{ __html: replyHtml }} />
               <Hr className="my-6 border-slate-200" />
               <Button href={ticketUrl} className="rounded-md bg-blue-600 px-5 py-3 text-white">
-                View the conversation
+                {cta}
               </Button>
             </Section>
           </Container>

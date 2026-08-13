@@ -12,9 +12,10 @@ import { hasScope } from '@/shared/lib/authorization'
 import { logActivity } from '@/shared/lib/logActivity'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
-import { sendEmail } from '@/shared/lib/sendEmail'
+import { sendLocalizedEmail } from '@/shared/lib/sendLocalizedEmail'
 import { replyToTicketSchema } from '@/features/tickets/schemas'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
+import { resolveRecipientLocale } from '@/i18n/resolveLocale'
 import { AgentReply } from '@/emails/AgentReply'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { ReplyToTicketInput } from '@/features/tickets/schemas'
@@ -43,7 +44,12 @@ export async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnTy
 
     const ticket = await db.ticket.findFirst({
       where: { id: parsed.data.ticketId, organizationId: user.organizationId },
-      select: { id: true, trackingId: true, email: true }
+      select: {
+        id: true,
+        trackingId: true,
+        email: true,
+        customer: { select: { preferredLocale: true } }
+      }
     })
     if (!ticket) return { success: false, error: 'Ticket not found.' }
 
@@ -87,17 +93,24 @@ export async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnTy
         content: parsed.data.content,
         extensions: [StarterKit]
       })
+      const locale = await resolveRecipientLocale(ticket.customer?.preferredLocale)
 
       after(() =>
-        sendEmail({
+        sendLocalizedEmail({
           to: ticket.email as string,
-          subject: `Re: your ticket ${ticket.trackingId}`,
-          template: AgentReply({
-            trackingId: ticket.trackingId,
-            agentName: user.name ?? 'Support',
-            replyHtml,
-            ticketUrl
-          })
+          locale,
+          subjectKey: 'agentReplySubject',
+          trackingId: ticket.trackingId,
+          template: (t) =>
+            AgentReply({
+              heading: t('agentReplyHeading', {
+                agentName: user.name ?? 'Support',
+                trackingId: ticket.trackingId
+              }),
+              replyHtml,
+              cta: t('viewConversationCta'),
+              ticketUrl
+            })
         }).catch((error) => {
           Sentry.captureException(error)
           console.error('Reply email failed:', error)

@@ -10,6 +10,6 @@ export async function findOrCreateCustomer(email: string, name?: string) {
       name: name ?? normalized.split('@')[0] ?? normalized,
       role: 'CUSTOMER'
     },
-    select: { id: true }
+    select: { id: true, preferredLocale: true }
   })
 }

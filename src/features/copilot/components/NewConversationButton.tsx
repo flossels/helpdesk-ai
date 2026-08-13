@@ -1,7 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { Button } from '@/shared/components/ui/Button'
+import { useRouter } from '@/i18n/navigation'
 
 export function NewConversationButton() {
   const router = useRouter()

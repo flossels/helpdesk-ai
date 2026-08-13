@@ -16,7 +16,7 @@ const ticketSelect = {
   slaDeadline: true,
   category: { select: { id: true, name: true, color: true } },
   assignee: { select: { id: true, name: true, image: true } },
-  customer: { select: { id: true, name: true, email: true } }
+  customer: { select: { id: true, name: true, email: true, preferredLocale: true } }
 } satisfies Prisma.TicketSelect
 
 export type TicketWithRelations = Omit<Prisma.TicketGetPayload<{ select: typeof ticketSelect }>, 'status' | 'priority'> & {

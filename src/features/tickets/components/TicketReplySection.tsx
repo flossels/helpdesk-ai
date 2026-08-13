@@ -1,4 +1,6 @@
 import { forbidden, notFound } from 'next/navigation'
+import { hasLocale } from 'next-intl'
+import { routing } from '@/i18n/routing'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { getTicketById } from '@/features/tickets/queries/getTicketById'
 import { getCannedResponses } from '@/features/settings/queries/getCannedResponses'
@@ -17,6 +19,8 @@ export async function TicketReplySection({ params }: Props) {
   if (!ticket) notFound()
 
   const cannedResponses = await getCannedResponses(user.organizationId)
+  const stored = ticket.customer?.preferredLocale
+  const customerLocale = hasLocale(routing.locales, stored) ? stored : undefined
 
-  return <TicketReplyForm ticketId={ticketId} cannedResponses={cannedResponses} />
+  return <TicketReplyForm ticketId={ticketId} cannedResponses={cannedResponses} customerLocale={customerLocale} />
 }

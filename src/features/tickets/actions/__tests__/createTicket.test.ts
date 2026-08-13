@@ -19,7 +19,7 @@ vi.mock('@/features/tickets/lib/computeSlaDeadline', () => ({
   computeSlaDeadline: vi.fn(async () => null)
 }))
 vi.mock('@/features/tickets/lib/findOrCreateCustomer', () => ({
-  findOrCreateCustomer: vi.fn(async () => ({ id: 'customer-1' }))
+  findOrCreateCustomer: vi.fn(async () => ({ id: 'customer-1', preferredLocale: 'de' }))
 }))
 
 vi.mock('@/shared/lib/logActivity', () => ({ logActivity: vi.fn() }))
@@ -32,8 +32,8 @@ vi.mock('@/shared/lib/dispatchWebhooks', () => ({
 vi.mock('@/features/ai/actions/categorizeTicket', () => ({
   categorizeTicket: vi.fn()
 }))
-vi.mock('@/shared/lib/sendEmail', () => ({
-  sendEmail: vi.fn(async () => undefined)
+vi.mock('@/shared/lib/sendLocalizedEmail', () => ({
+  sendLocalizedEmail: vi.fn(async () => undefined)
 }))
 vi.mock('@/emails/TicketCreated', () => ({ TicketCreated: vi.fn() }))
 
@@ -41,7 +41,7 @@ import { createTicket } from '@/features/tickets/actions/createTicket'
 import { after } from 'next/server'
 import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
-import { sendEmail } from '@/shared/lib/sendEmail'
+import { sendLocalizedEmail } from '@/shared/lib/sendLocalizedEmail'
 
 const mockAfter = vi.mocked(after)
 
@@ -126,6 +126,12 @@ describe('createTicket', () => {
 
     expect(categorizeTicket).toHaveBeenCalledWith('ticket-1', 'org-1')
     expect(dispatchWebhooks).toHaveBeenCalledWith('org-1', expect.objectContaining({ type: 'ticket.created' }))
-    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: validInput.email }))
+    expect(sendLocalizedEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: validInput.email,
+        locale: 'de',
+        subjectKey: 'ticketCreatedSubject'
+      })
+    )
   })
 })

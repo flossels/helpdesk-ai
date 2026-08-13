@@ -11,9 +11,10 @@ const statusStyles = {
 
 type Props = {
   status: TicketStatus
+  label?: string
 }
 
-export function TicketStatusBadge({ status }: Props) {
+export function TicketStatusBadge({ status, label }: Props) {
   return (
     <span
       className={cn(
@@ -21,7 +22,7 @@ export function TicketStatusBadge({ status }: Props) {
         statusStyles[status]
       )}
     >
-      {status.replace('_', ' ')}
+      {label ?? status.replace('_', ' ')}
     </span>
   )
 }
