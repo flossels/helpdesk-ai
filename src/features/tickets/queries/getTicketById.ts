@@ -12,6 +12,7 @@ const ticketSelect = {
   description: true,
   status: true,
   priority: true,
+  sentiment: true,
   slaDeadline: true,
   category: { select: { id: true, name: true, color: true } },
   assignee: { select: { id: true, name: true, image: true } },

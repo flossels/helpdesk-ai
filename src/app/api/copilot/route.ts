@@ -1,8 +1,8 @@
-import { createUIMessageStreamResponse, streamText, toUIMessageStream, convertToModelMessages } from 'ai'
+import { createUIMessageStreamResponse, stepCountIs, streamText, toUIMessageStream, convertToModelMessages } from 'ai'
 import { z } from 'zod'
 import { db } from '@/shared/lib/db'
 import { requireAuthApi } from '@/features/ai/lib/requireAuthApi'
-import { isWithinBudget } from '@/features/ai/lib/checkBudget'
+import { budgetExceeded, getRemainingBudget } from '@/features/ai/lib/checkBudget'
 import { getModel, resolveModelId } from '@/features/ai/lib/getModel'
 import { trackUsage } from '@/features/ai/lib/trackUsage'
 import { buildCopilotPrompt } from '@/features/ai/lib/buildCopilotPrompt'
@@ -11,6 +11,7 @@ import { trimMessages } from '@/features/copilot/lib/trimMessages'
 import { estimateContextTokens } from '@/features/copilot/lib/estimateContextTokens'
 import { messageText } from '@/features/copilot/lib/messageText'
 import { appendMessage, ensureConversation } from '@/features/copilot/lib/saveConversation'
+import { COPILOT_TOOL_APPROVAL, createCopilotTools } from '@/features/copilot/lib/createCopilotTools'
 import type { UIMessage } from 'ai'
 
 const bodySchema = z.object({
@@ -30,7 +31,8 @@ export async function POST(request: Request) {
   if (!parsed.success) return new Response('Bad request', { status: 400 })
   const { messages, ticketId, conversationId } = parsed.data
 
-  if (!(await isWithinBudget(user.organizationId))) {
+  const remainingBudget = await getRemainingBudget(user.organizationId)
+  if (remainingBudget <= 0) {
     return new Response('Token budget exceeded', { status: 403 })
   }
 
@@ -57,8 +59,18 @@ export async function POST(request: Request) {
   const instructions = buildCopilotPrompt(ticket)
   const trimmed = trimMessages(messages, estimateContextTokens(instructions), CONTEXT_LIMIT)
 
+  const tools = createCopilotTools({
+    organizationId: user.organizationId,
+    userId: user.id,
+    model: modelId,
+    scopes: user.scopes
+  })
+
   const result = streamText({
     model: getModel(modelId),
+    tools,
+    toolApproval: COPILOT_TOOL_APPROVAL,
+    stopWhen: [stepCountIs(5), budgetExceeded(remainingBudget)],
     instructions,
     messages: await convertToModelMessages(trimmed),
     maxOutputTokens: 4000,

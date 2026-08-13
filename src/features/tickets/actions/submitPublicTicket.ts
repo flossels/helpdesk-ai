@@ -13,6 +13,7 @@ import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustome
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
 import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
 import { TicketCreated } from '@/emails/TicketCreated'
+import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { PublicTicketInput } from '@/features/tickets/schemas'
 
@@ -88,6 +89,8 @@ export async function submitPublicTicket(
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
       }).catch((error) => console.error('Webhook dispatch failed:', error))
     )
+
+    after(() => categorizeTicket(ticket.id, category.organizationId))
 
     const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
 

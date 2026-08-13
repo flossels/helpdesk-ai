@@ -16,6 +16,8 @@ import { getCannedResponses } from '@/features/settings/queries/getCannedRespons
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { CopilotPanel } from '@/features/copilot/components/CopilotPanel'
 import { toUIMessages } from '@/features/copilot/lib/loadConversation'
+import { CategorizationBanner } from '@/features/ai/components/CategorizationBanner'
+import { getCategorizationSuggestion } from '@/features/ai/queries/getCategorizationSuggestion'
 import { getLatestTicketConversation } from '@/features/copilot/queries/getConversations'
 import type { Metadata } from 'next'
 import type { TicketStatus } from '@/shared/types/ticket'
@@ -48,6 +50,7 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
   if (!ticket) notFound()
 
   const canUseAi = hasScope(user.scopes, 'ai:use')
+  const suggestion = await getCategorizationSuggestion(ticketId, user.organizationId)
   const cannedResponses = await getCannedResponses(user.organizationId)
   const attachments = await getAttachments('ticket', ticketId, user.organizationId)
   const latestChat = canUseAi ? await getLatestTicketConversation(ticketId, user.id) : null
@@ -71,6 +74,10 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
           <TicketThread ticketId={ticketId} />
         </Suspense>
       </ThreadErrorBoundary>
+
+      {suggestion && hasScope(user.scopes, 'tickets:write') && (
+        <CategorizationBanner ticketId={ticketId} suggestion={suggestion} />
+      )}
 
       {canUseAi && <TicketSummary ticketId={ticketId} />}
 

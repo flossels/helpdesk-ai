@@ -3,6 +3,8 @@ import { SlaCountdown } from '@/features/tickets/components/SlaCountdown'
 import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
 import { getTicketById } from '@/features/tickets/queries/getTicketById'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
+import { SentimentBadge } from '@/features/ai/components/SentimentBadge'
+import type { Sentiment } from '@/features/ai/schemas/categorization'
 
 type Props = {
   ticketId: string
@@ -23,6 +25,14 @@ export async function TicketHeader({ ticketId }: Props) {
         <dd>
           <TicketPriorityBadge priority={ticket.priority} />
         </dd>
+        {ticket.sentiment && (
+          <>
+            <dt className="col-end-1">Sentiment:</dt>
+            <dd>
+              <SentimentBadge sentiment={ticket.sentiment as Sentiment} />
+            </dd>
+          </>
+        )}
         {ticket.slaDeadline && (
           <>
             <dt className="col-end-1">Response due:</dt>

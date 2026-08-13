@@ -1,7 +1,7 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/components/ui/Button'
 import { ChatMessageList } from '@/features/copilot/components/ChatMessageList'
@@ -16,13 +16,14 @@ type Props = {
 }
 
 export function CopilotChat({ conversationId, initialMessages, ticketId, placeholder }: Props) {
-  const { messages, sendMessage, status, stop, error, regenerate } = useChat({
+  const { messages, sendMessage, status, stop, error, regenerate, addToolApprovalResponse } = useChat({
     id: conversationId,
     messages: initialMessages,
     transport: new DefaultChatTransport({
       api: '/api/copilot',
       body: { ticketId, conversationId }
-    })
+    }),
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses
   })
 
   const isStreaming = status === 'streaming' || status === 'submitted'
@@ -34,7 +35,7 @@ export function CopilotChat({ conversationId, initialMessages, ticketId, placeho
           {ticketId ? 'Ask about this ticket, or request a reply draft.' : 'Ask anything about your work in HelpDesk AI.'}
         </div>
       ) : (
-        <ChatMessageList messages={messages} />
+        <ChatMessageList messages={messages} onApproval={(id, approved) => addToolApprovalResponse({ id, approved })} />
       )}
 
       {error && (

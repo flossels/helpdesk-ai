@@ -10,6 +10,7 @@ import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
 import { createTicketSchema } from '@/features/tickets/schemas'
+import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
 import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
 import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
@@ -83,6 +84,8 @@ export async function createTicket(input: CreateTicketInput): Promise<ReturnType
       type: 'ticket.created',
       data: { ticketId: ticket.id }
     })
+
+    after(() => categorizeTicket(ticket.id, user.organizationId!))
 
     after(() =>
       dispatchWebhooks(user.organizationId!, {

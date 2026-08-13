@@ -9,9 +9,10 @@ const FOLLOW_THRESHOLD = 80
 
 type Props = {
   messages: UIMessage[]
+  onApproval: (id: string, approved: boolean) => void
 }
 
-export function ChatMessageList({ messages }: Props) {
+export function ChatMessageList({ messages, onApproval }: Props) {
   const listRef = useRef<HTMLDivElement>(null)
   const followRef = useRef(true)
 
@@ -31,7 +32,7 @@ export function ChatMessageList({ messages }: Props) {
       className={cn('min-h-0 flex-1 space-y-3 overflow-y-auto p-3')}
     >
       {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} />
+        <ChatMessage key={message.id} message={message} onApproval={onApproval} />
       ))}
     </div>
   )
