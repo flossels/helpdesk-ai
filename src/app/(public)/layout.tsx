@@ -31,7 +31,7 @@ export default function PublicLayout({ children }: LayoutProps<'/'>) {
           </div>
         </nav>
       </header>
-      <main className={cn('mx-auto w-full max-w-5xl grow p-4')}>
+      <main id="main-content" className={cn('mx-auto w-full max-w-5xl grow p-4')}>
         <Suspense fallback={null}>{children}</Suspense>
       </main>
       <footer className={cn('border-t border-slate-200 dark:border-slate-700')}>

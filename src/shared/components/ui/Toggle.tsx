@@ -4,15 +4,17 @@ import { Switch } from '@headlessui/react'
 import { cn } from '@/shared/lib/cn'
 
 type Props = {
+  label: string
   checked?: boolean
   onChange?: (checked: boolean) => void
   disabled?: boolean
 }
 
-export function Toggle({ checked, onChange, disabled = false }: Props) {
+export function Toggle({ label, checked, onChange, disabled = false }: Props) {
   return (
     <Switch
       as="div"
+      aria-label={label}
       checked={checked}
       onChange={onChange}
       className={cn(
