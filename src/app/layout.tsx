@@ -1,5 +1,6 @@
 import './globals.css'
 import { ThemeProvider } from 'next-themes'
+import { SessionProvider } from 'next-auth/react'
 import { cn } from '@/shared/lib/cn'
 import { inter, poppins } from '@/shared/lib/fonts'
 import type { Metadata } from 'next'
@@ -13,9 +14,11 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={cn(inter.variable, poppins.variable)} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   )

@@ -4,9 +4,9 @@ import { cache } from 'react'
 import { db } from '@/shared/lib/db'
 import type { TicketReplyItem } from '@/features/tickets/types'
 
-export const getReplies = cache(async (ticketId: string): Promise<TicketReplyItem[]> => {
+export const getReplies = cache(async (ticketId: string, organizationId: string): Promise<TicketReplyItem[]> => {
   const replies = await db.ticketReply.findMany({
-    where: { ticketId },
+    where: { ticketId, ticket: { organizationId } },
     select: {
       id: true,
       contentText: true,

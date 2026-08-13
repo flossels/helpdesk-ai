@@ -1,14 +1,19 @@
+import { forbidden } from 'next/navigation'
 import Link from 'next/link'
 import { RelativeTime } from '@/shared/components/RelativeTime'
 import { cn } from '@/shared/lib/cn'
 import { BulkActionBar } from '@/features/tickets/components/BulkActionBar'
-import { TicketStatusBadge } from '@/features/tickets/components/TicketStatusBadge'
-import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
 import { getTickets } from '@/features/tickets/queries/getTickets'
+import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
+import { TicketStatusBadge } from '@/features/tickets/components/TicketStatusBadge'
+import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import type { TicketFilters } from '@/features/tickets/types'
 
 export async function TicketList({ status, search }: TicketFilters) {
-  const tickets = await getTickets({ status, search })
+  const user = await getCurrentUser()
+  if (!user?.organizationId) forbidden()
+
+  const tickets = await getTickets({ organizationId: user.organizationId, status, search })
   if (!tickets.length) return <p>No tickets found.</p>
 
   const bulkTickets = tickets.map((ticket) => ({

@@ -3,7 +3,9 @@
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { hasScope } from '@/shared/lib/authorization'
 import { replyToTicketSchema } from '@/features/tickets/schemas'
+import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { ReplyToTicketInput } from '@/features/tickets/schemas'
 
@@ -13,6 +15,12 @@ type ReturnType = ActionResult<{
 
 async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
   try {
+    const user = await getCurrentUser()
+    if (!user) return { success: false, error: 'Not authenticated.' }
+    if (!hasScope(user.scopes, 'tickets:write') || !user.organizationId) {
+      return { success: false, error: 'Insufficient permissions.' }
+    }
+
     const parsed = replyToTicketSchema.safeParse(input)
 
     if (!parsed.success) {
@@ -23,12 +31,16 @@ async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
       }
     }
 
-    const author = await db.user.findFirstOrThrow({ where: { role: 'AGENT' } })
+    const ticket = await db.ticket.findFirst({
+      where: { id: parsed.data.ticketId, organizationId: user.organizationId },
+      select: { id: true }
+    })
+    if (!ticket) return { success: false, error: 'Ticket not found.' }
 
     const reply = await db.ticketReply.create({
       data: {
-        ticketId: parsed.data.ticketId,
-        authorId: author.id,
+        ticketId: ticket.id,
+        authorId: user.id,
         content: {
           type: 'doc',
           content: [{ type: 'paragraph', content: [{ type: 'text', text: parsed.data.content }] }]

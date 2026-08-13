@@ -22,3 +22,8 @@ export const bulkTicketUpdateSchema = z.object({
   status: z.enum(TICKET_STATUSES)
 })
 export type BulkTicketUpdateInput = z.infer<typeof bulkTicketUpdateSchema>
+export const customerReplySchema = z.object({
+  ticketId: z.string().min(1),
+  body: z.string().min(1, 'Write a reply before sending.').max(5000, 'Keep the reply under 5000 characters.')
+})
+export type CustomerReplyInput = z.infer<typeof customerReplySchema>

@@ -11,7 +11,8 @@ const nextConfig: NextConfig = {
     browserToTerminal: 'warn'
   },
   experimental: {
-    typedEnv: true
+    typedEnv: true,
+    authInterrupts: true
   },
   cacheLife: {
     articles: {

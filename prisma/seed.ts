@@ -1,6 +1,7 @@
 import { config } from 'dotenv'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
+import { hash } from 'bcryptjs'
 
 config({ path: '.env.local' })
 
@@ -26,6 +27,7 @@ async function main() {
     data: {
       name: 'Dana Ortiz',
       email: 'dana@acme.test',
+      password: await hash('Start2026!', 10),
       role: 'AGENT'
     }
   })
@@ -42,6 +44,7 @@ async function main() {
     data: {
       name: 'Priya Raman',
       email: 'priya@acme.test',
+      password: await hash('Start2026!', 10),
       role: 'AGENT'
     }
   })
@@ -50,6 +53,7 @@ async function main() {
     data: {
       name: 'Tomas Ferreira',
       email: 'tomas@acme.test',
+      password: await hash('Start2026!', 10),
       role: 'AGENT'
     }
   })
@@ -65,6 +69,7 @@ async function main() {
     data: {
       name: 'Sam Rivera',
       email: 'sam@customer.test',
+      password: await hash('Start2026!', 10),
       role: 'CUSTOMER'
     }
   })

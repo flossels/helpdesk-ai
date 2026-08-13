@@ -23,7 +23,9 @@ export default function DashboardLayout({ children }: LayoutProps<'/'>) {
           >
             <ThemeToggle />
           </header>
-          <main className={cn('p-4')}>{children}</main>
+          <main className={cn('p-4')}>
+            <Suspense fallback={null}>{children}</Suspense>
+          </main>
         </DashboardMain>
       </div>
     </SidebarProvider>

@@ -26,7 +26,7 @@ type ScopeInfo = {
   category: 'tickets' | 'knowledge' | 'admin' | 'ai'
 }
 
-export const SCOPES = {
+const SCOPES = {
   'tickets:read': {
     label: 'View Tickets',
     description: 'Read and search tickets',

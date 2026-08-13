@@ -16,12 +16,15 @@
     "validate:fix": "pnpm lint:fix && pnpm format"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.3",
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "next": "16.3.2",
+    "next-auth": "5.0.0-beta.31",
     "next-themes": "^0.4.6",
     "qs": "^6.15.3",
     "react": "19.2.8",

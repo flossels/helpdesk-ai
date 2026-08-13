@@ -6,7 +6,9 @@ import {
   ClockIcon as ClockIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid
 } from '@heroicons/react/24/solid'
-import { getCurrentUser } from '@/shared/lib/placeholderData'
+import { cn } from '@/shared/lib/cn'
+import { ScopeGate } from '@/features/auth/components/ScopeGate'
+import { SignOutButton } from '@/features/auth/components/SignOutButton'
 import { NavLink } from '@/app/(dashboard)/_components/NavLink'
 import type { ComponentType } from 'react'
 import type { Route } from 'next'
@@ -27,39 +29,42 @@ const NAV_ITEMS: NavItem<Route>[] = [
   { href: '/activity', label: 'Activity', icon: ClockIcon, activeIcon: ClockIconSolid }
 ]
 
-export async function SidebarNav() {
-  const user = await getCurrentUser()
-
+export function SidebarNav() {
   return (
-    <nav>
-      <ul>
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon
-          const ActiveIcon = item.activeIcon
-          return (
-            <li key={item.href}>
+    <div className={cn('flex h-full flex-col')}>
+      <nav className={cn('flex-1')}>
+        <ul>
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon
+            const ActiveIcon = item.activeIcon
+            return (
+              <li key={item.href}>
+                <NavLink
+                  href={item.href}
+                  icon={<Icon className="size-5 shrink-0" />}
+                  activeIcon={<ActiveIcon className="size-5 shrink-0" />}
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            )
+          })}
+          <ScopeGate scope="settings:manage">
+            <li>
               <NavLink
-                href={item.href}
-                icon={<Icon className="size-5 shrink-0" />}
-                activeIcon={<ActiveIcon className="size-5 shrink-0" />}
+                href="/settings"
+                icon={<Cog6ToothIcon className="size-5 shrink-0" />}
+                activeIcon={<Cog6ToothIconSolid className="size-5 shrink-0" />}
               >
-                {item.label}
+                Settings
               </NavLink>
             </li>
-          )
-        })}
-        {user.role === 'admin' && (
-          <li>
-            <NavLink
-              href="/settings"
-              icon={<Cog6ToothIcon className="size-5 shrink-0" />}
-              activeIcon={<Cog6ToothIconSolid className="size-5 shrink-0" />}
-            >
-              Settings
-            </NavLink>
-          </li>
-        )}
-      </ul>
-    </nav>
+          </ScopeGate>
+        </ul>
+      </nav>
+      <div className={cn('border-t border-slate-200 pt-4 dark:border-slate-600')}>
+        <SignOutButton />
+      </div>
+    </div>
   )
 }

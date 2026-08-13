@@ -3,8 +3,10 @@
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { hasScope } from '@/shared/lib/authorization'
 import { createTicketSchema } from '@/features/tickets/schemas'
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
+import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
 
@@ -15,9 +17,13 @@ type ReturnType = ActionResult<{
 
 async function createTicket(input: CreateTicketInput): Promise<ReturnType> {
   try {
-    // 1. Validate input
-    const parsed = createTicketSchema.safeParse(input)
+    const user = await getCurrentUser()
+    if (!user) return { success: false, error: 'Not authenticated.' }
+    if (!hasScope(user.scopes, 'tickets:write')) {
+      return { success: false, error: 'Insufficient permissions.' }
+    }
 
+    const parsed = createTicketSchema.safeParse(input)
     if (!parsed.success) {
       return {
         success: false,
@@ -26,31 +32,20 @@ async function createTicket(input: CreateTicketInput): Promise<ReturnType> {
       }
     }
 
-    const organization = await db.organization.findFirstOrThrow()
-    const customer = await db.user.findFirstOrThrow({
-      where: { role: 'CUSTOMER' }
-    })
-
-    // 2. Auth: placeholder
-    // Auth + scope check arrives in Chapter 12
-
-    // 3. Create the ticket
     const ticket = await db.ticket.create({
       data: {
         trackingId: await generateTrackingId(),
         subject: parsed.data.subject,
         description: parsed.data.description,
         categoryId: parsed.data.categoryId,
-        customerId: customer.id,
-        organizationId: organization.id
+        customerId: user.id,
+        organizationId: user.organizationId!
       },
       select: { id: true, trackingId: true }
     })
 
-    // 4. Invalidate cache
     revalidatePath('/tickets')
 
-    // 5. Return success
     return {
       success: true,
       data: {

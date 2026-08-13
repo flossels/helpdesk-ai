@@ -22,9 +22,9 @@ export type TicketWithRelations = Omit<Prisma.TicketGetPayload<{ select: typeof 
   priority: TicketPriority
 }
 
-export const getTicketById = cache(async (id: string): Promise<TicketWithRelations | null> => {
-  return (await db.ticket.findUnique({
-    where: { id },
+export const getTicketById = cache(async (id: string, organizationId: string): Promise<TicketWithRelations | null> => {
+  return (await db.ticket.findFirst({
+    where: { id, organizationId },
     select: ticketSelect
   })) as unknown as TicketWithRelations | null
 })

@@ -1,7 +1,9 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { cn } from '@/shared/lib/cn'
 import { Logo } from '@/shared/components/Logo'
 import { ThemeToggle } from '@/shared/components/ui/ThemeToggle'
+import { HeaderAuth } from '@/features/auth/components/HeaderAuth'
 
 // Read once at module scope. Inside the component this would be an unstable
 // value during prerendering, which the build rejects from Chapter 7 on.
@@ -22,17 +24,16 @@ export default function PublicLayout({ children }: LayoutProps<'/'>) {
             <Link href="/submit" className={cn('text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white')}>
               Submit a Ticket
             </Link>
-            <a
-              href="/login"
-              className={cn('rounded-(--border-radius) bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-500')}
-            >
-              Log in
-            </a>
+            <Suspense fallback={null}>
+              <HeaderAuth />
+            </Suspense>
             <ThemeToggle />
           </div>
         </nav>
       </header>
-      <main className={cn('mx-auto w-full max-w-5xl grow p-4')}>{children}</main>
+      <main className={cn('mx-auto w-full max-w-5xl grow p-4')}>
+        <Suspense fallback={null}>{children}</Suspense>
+      </main>
       <footer className={cn('border-t border-slate-200 dark:border-slate-700')}>
         <div className={cn('mx-auto flex max-w-5xl flex-col gap-2 p-4 text-sm text-slate-500', 'sm:flex-row sm:justify-between')}>
           <p>&copy; {currentYear} HelpDesk AI</p>

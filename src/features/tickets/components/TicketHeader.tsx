@@ -1,12 +1,17 @@
-import { notFound } from 'next/navigation'
+import { forbidden, notFound } from 'next/navigation'
 import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
 import { getTicketById } from '@/features/tickets/queries/getTicketById'
+import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 
-type Props = Pick<PageProps<'/tickets/[ticketId]'>, 'params'>
+type Props = {
+  ticketId: string
+}
 
-export async function TicketHeader({ params }: Props) {
-  const { ticketId } = await params
-  const ticket = await getTicketById(ticketId)
+export async function TicketHeader({ ticketId }: Props) {
+  const user = await getCurrentUser()
+  if (!user?.organizationId) forbidden()
+
+  const ticket = await getTicketById(ticketId, user.organizationId)
   if (!ticket) notFound()
 
   return (
