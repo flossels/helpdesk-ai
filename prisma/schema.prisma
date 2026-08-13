@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  image     String?
+  password  String?
+  role      String   @default("CUSTOMER")
+  createdAt DateTime @default(now())
+
+  memberships     OrgMember[]
+  assignedTickets Ticket[]       @relation("AssignedTickets")
+  createdTickets  Ticket[]       @relation("CreatedTickets")
+  replies         TicketReply[]
+  internalNotes   InternalNote[]
+  articles        Article[]
+  attachments     Attachment[]
+  activityLogs    ActivityLog[]
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  logo        String?
+  domain      String?
+  aiModel     String   @default("openai/gpt-5.6-terra")
+  tokenBudget Int      @default(100000)
+  createdAt   DateTime @default(now())
+
+  members         OrgMember[]
+  categories      Category[]
+  tags            Tag[]
+  tickets         Ticket[]
+  articles        Article[]
+  cannedResponses CannedResponse[]
+  slaRules        SlaRule[]
+  webhooks        Webhook[]
+  activityLogs    ActivityLog[]
+  attachments     Attachment[]
+}
+
+model OrgMember {
+  userId         String
+  organizationId String
+  role           String   @default("AGENT")
+  customScopes   Json?
+  joinedAt       DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, organizationId])
+}
+
+model Category {
+  id             String  @id @default(cuid())
+  name           String
+  description    String?
+  color          String
+  organizationId String
+  slaMinutes     Int?
+
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tickets         Ticket[]
+  articles        Article[]
+  cannedResponses CannedResponse[]
+
+  @@index([organizationId])
+}
+
+model Tag {
+  id             String @id @default(cuid())
+  name           String
+  color          String
+  organizationId String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tickets      TicketTag[]
+
+  @@index([organizationId])
+}
+
+model Ticket {
+  id             String    @id @default(cuid())
+  trackingId     String    @unique
+  subject        String
+  description    String
+  status         String    @default("OPEN")
+  priority       String    @default("MEDIUM")
+  categoryId     String
+  assigneeId     String?
+  customerId     String
+  organizationId String
+  sentiment      String?
+  isDeleted      Boolean   @default(false)
+  slaDeadline    DateTime?
+  resolvedAt     DateTime?
+  closedAt       DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  category     Category       @relation(fields: [categoryId], references: [id])
+  assignee     User?          @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  customer     User           @relation("CreatedTickets", fields: [customerId], references: [id])
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  replies      TicketReply[]
+  notes        InternalNote[]
+  tags         TicketTag[]
+
+  @@index([organizationId, status])
+  @@index([organizationId, priority])
+  @@index([assigneeId])
+  @@index([customerId])
+}
+
+model TicketTag {
+  ticketId String
+  tagId    String
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([ticketId, tagId])
+}
+
+model TicketReply {
+  id          String   @id @default(cuid())
+  ticketId    String
+  authorId    String
+  content     Json
+  contentText String
+  isAiDraft   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id])
+
+  @@index([ticketId])
+}
+
+model InternalNote {
+  id          String   @id @default(cuid())
+  ticketId    String
+  authorId    String
+  content     Json
+  contentText String
+  createdAt   DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id])
+
+  @@index([ticketId])
+}
+
+model Attachment {
+  id             String   @id @default(cuid())
+  entityType     String
+  entityId       String
+  fileName       String
+  fileKey        String
+  fileType       String
+  fileSize       Int
+  status         String   @default("PENDING")
+  organizationId String
+  uploadedById   String?
+  createdAt      DateTime @default(now())
+
+  uploadedBy   User?        @relation(fields: [uploadedById], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+  @@index([organizationId])
+}
+
+model Article {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  content        Json
+  contentText    String
+  excerpt        String?
+  status         String   @default("DRAFT")
+  isPublic       Boolean  @default(false)
+  categoryId     String?
+  authorId       String
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  author       User         @relation(fields: [authorId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
+}
+
+model CannedResponse {
+  id             String  @id @default(cuid())
+  title          String
+  content        Json
+  categoryId     String?
+  organizationId String
+
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model SlaRule {
+  id                String @id @default(cuid())
+  priority          String
+  responseMinutes   Int
+  resolutionMinutes Int
+  organizationId    String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, priority])
+}
+
+model Webhook {
+  id             String   @id @default(cuid())
+  organizationId String
+  url            String
+  secret         String
+  events         Json
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model ActivityLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  action         String
+  entityType     String
+  entityId       String
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@index([organizationId, createdAt])
+  @@index([entityType, entityId])
+}

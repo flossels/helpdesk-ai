@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import { TicketFilterBar } from '@/shared/components/TicketFilterBar'
-import { TicketList } from '@/shared/components/TicketList'
+import { TicketFilterBar } from '@/features/tickets/components/TicketFilterBar'
+import { TicketList } from '@/features/tickets/components/TicketList'
 
 export default async function TicketsPage({ searchParams }: PageProps<'/tickets'>) {
   const { status, search } = await searchParams

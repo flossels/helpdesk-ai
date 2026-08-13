@@ -2,8 +2,8 @@
 
 import { notFound } from 'next/navigation'
 import { cacheLife, cacheTag } from 'next/cache'
+import { getPublishedArticles, getArticleBySlug } from '@/shared/lib/placeholderData'
 import { cn } from '@/shared/lib/cn'
-import { getPublishedArticles, getArticleBySlug } from '@/lib/placeholderData'
 import type { Metadata } from 'next'
 
 export async function generateStaticParams() {

@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { TrackingStatus } from '@/shared/components/TrackingStatus'
+import { TrackingStatus } from '@/features/tracking/components/TrackingStatus'
 
 export default function TrackingPage({ params }: PageProps<'/track/[trackingId]'>) {
   return (

@@ -1,4 +1,4 @@
-import { NavLink } from '@/shared/components/NavLink'
+import { NavLink } from '@/app/(dashboard)/_components/NavLink'
 
 export default function SettingsLayout({ children }: LayoutProps<'/settings'>) {
   return (

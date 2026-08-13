@@ -1,4 +1,4 @@
-import { CreateTicketForm } from '@/shared/components/CreateTicketForm'
+import { CreateTicketForm } from '@/features/tickets/components/CreateTicketForm'
 
 export default function SubmitPage() {
   return (
