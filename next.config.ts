@@ -1,5 +1,36 @@
 import type { NextConfig } from 'next'
 
+// A static CSP, set as a response header rather than with a per-request
+// nonce. A nonce would force every page into dynamic rendering and undo
+// the static prerendering from Chapter 21, so script-src allows inline
+// scripts; React's escaping plus the strict directives below carry the
+// XSS defense. ('unsafe-eval' is development-only: React uses eval
+// there to produce its enhanced error messages.)
+const isDev = process.env.NODE_ENV === 'development'
+
+const contentSecurityPolicy = [
+  `default-src 'self'`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  `style-src 'self' 'unsafe-inline'`,
+  `img-src 'self' blob: data: https://*.googleusercontent.com`,
+  `font-src 'self'`,
+  `connect-src 'self' https://api-eu.mixpanel.com`,
+  `object-src 'none'`,
+  `frame-ancestors 'none'`,
+  `form-action 'self'`,
+  `base-uri 'self'`,
+  `upgrade-insecure-requests`
+].join('; ')
+
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }
+]
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
@@ -30,7 +61,9 @@ const nextConfig: NextConfig = {
         hostname: '*.googleusercontent.com'
       }
     ]
-  }
+  },
+  poweredByHeader: false,
+  headers: async () => [{ source: '/(.*)', headers: securityHeaders }]
 }
 
 export default nextConfig

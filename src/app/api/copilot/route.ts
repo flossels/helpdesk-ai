@@ -1,6 +1,8 @@
 import { createUIMessageStreamResponse, stepCountIs, streamText, toUIMessageStream, convertToModelMessages } from 'ai'
 import { z } from 'zod'
 import { db } from '@/shared/lib/db'
+import { rateLimit } from '@/shared/lib/rateLimit'
+import { verifyOrigin } from '@/shared/lib/verifyOrigin'
 import { requireAuthApi } from '@/features/ai/lib/requireAuthApi'
 import { budgetExceeded, getRemainingBudget } from '@/features/ai/lib/checkBudget'
 import { getModel, resolveModelId } from '@/features/ai/lib/getModel'
@@ -12,6 +14,8 @@ import { estimateContextTokens } from '@/features/copilot/lib/estimateContextTok
 import { messageText } from '@/features/copilot/lib/messageText'
 import { appendMessage, ensureConversation } from '@/features/copilot/lib/saveConversation'
 import { COPILOT_TOOL_APPROVAL, createCopilotTools } from '@/features/copilot/lib/createCopilotTools'
+import { sanitizeAiInput } from '@/features/ai/lib/sanitizeAiInput'
+import { validateAiOutput } from '@/features/ai/lib/validateAiOutput'
 import type { UIMessage } from 'ai'
 
 const bodySchema = z.object({
@@ -23,9 +27,17 @@ const bodySchema = z.object({
 const CONTEXT_LIMIT = 12_000
 
 export async function POST(request: Request) {
+  if (!(await verifyOrigin())) return new Response('Forbidden', { status: 403 })
+
   const auth = await requireAuthApi('ai:use')
   if ('response' in auth) return auth.response
   const { user } = auth
+
+  // Cap AI calls per agent so a runaway client or a stolen session can't
+  // burn through the token budget.
+  const limit = await rateLimit(`copilot:${user.id}`, { maxRequests: 20, windowMs: 60_000 })
+  if (!limit.allowed)
+    return Response.json({ error: 'Too many requests. Please slow down.' }, { status: 429, headers: { 'Retry-After': '60' } })
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) return new Response('Bad request', { status: 400 })
@@ -52,6 +64,18 @@ export async function POST(request: Request) {
     title: userText || 'New conversation'
   })
   if (!ownsConversation) return new Response('Forbidden', { status: 403 })
+
+  // Detect and log obvious prompt-injection attempts. We do not block, a
+  // ticket can legitimately quote an instruction, but a flag gives the
+  // security review (Chapter 23) something to alert on.
+  if (sanitizeAiInput(userText).flagged) {
+    console.warn('Potential prompt injection in copilot input', {
+      conversationId,
+      organizationId: user.organizationId,
+      inputLength: userText.length
+    })
+  }
+
   await appendMessage(conversationId, 'user', userText, estimateContextTokens(userText))
 
   const modelId = resolveModelId(org.aiModel)
@@ -76,6 +100,14 @@ export async function POST(request: Request) {
     maxOutputTokens: 4000,
     onEnd: async ({ text, usage }) => {
       if (text) {
+        const checked = validateAiOutput(text)
+        if (!checked.safe) {
+          console.warn('Copilot output flagged for sensitive content', {
+            conversationId,
+            organizationId: user.organizationId,
+            warnings: checked.warnings
+          })
+        }
         await appendMessage(conversationId, 'assistant', text, usage.outputTokens ?? 0)
       }
       await trackUsage({

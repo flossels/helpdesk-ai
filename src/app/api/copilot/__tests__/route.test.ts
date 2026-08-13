@@ -5,6 +5,9 @@ import { mockStreamText, streamResult } from '@/tests/mocks/ai'
 import type { Scope } from '@/shared/types/scopes'
 
 // The levers: each one opens a different exit.
+vi.mock('@/shared/lib/verifyOrigin', () => ({
+  verifyOrigin: vi.fn(async () => true)
+}))
 vi.mock('@/features/ai/lib/requireAuthApi', () => ({
   requireAuthApi: vi.fn()
 }))

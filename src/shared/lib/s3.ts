@@ -33,6 +33,12 @@ export async function objectExists(key: string) {
 }
 
 export function generateDownloadUrl(key: string) {
-  const command = new GetObjectCommand({ Bucket, Key: key })
+  const command = new GetObjectCommand({
+    Bucket,
+    Key: key,
+    // Force a download instead of inline rendering, so an uploaded .html
+    // or .svg can never execute as a page in the victim's browser.
+    ResponseContentDisposition: 'attachment'
+  })
   return getSignedUrl(s3, command, { expiresIn: 900 })
 }
