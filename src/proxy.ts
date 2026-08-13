@@ -1,12 +1,35 @@
 import { NextResponse } from 'next/server'
+import { rateLimit } from '@/shared/lib/rateLimit'
 import { auth } from '@/auth'
 import type { NextRequest } from 'next/server'
+
+const apiLimits: { prefix: string; maxRequests: number }[] = [
+  { prefix: '/api/auth/callback', maxRequests: 10 },
+  { prefix: '/api/preview', maxRequests: 10 }
+]
+const DEFAULT_API_LIMIT = 100
 
 const dashboardPrefixes = ['/tickets', '/dashboard', '/activity', '/knowledge', '/settings']
 
 export async function proxy(request: NextRequest) {
-  const session = await auth()
   const { pathname } = request.nextUrl
+
+  if (pathname.startsWith('/api/')) {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+    const policy = apiLimits.find((entry) => pathname.startsWith(entry.prefix))
+    const limit = await rateLimit(`api:${policy?.prefix ?? 'all'}:${ip}`, {
+      maxRequests: policy?.maxRequests ?? DEFAULT_API_LIMIT,
+      windowMs: 60_000
+    })
+
+    if (!limit.allowed) {
+      return NextResponse.json({ error: 'Too many requests.' }, { status: 429, headers: { 'Retry-After': '60' } })
+    }
+
+    return NextResponse.next()
+  }
+
+  const session = await auth()
   const isLoggedIn = Boolean(session?.user)
   const isAgent = session?.user?.role === 'AGENT'
   const hasOrg = Boolean(session?.user?.organizationId)
@@ -61,6 +84,7 @@ export const config = {
     '/portal/:path*',
     '/login',
     '/signup',
-    '/onboarding'
+    '/onboarding',
+    '/api/:path*'
   ]
 }

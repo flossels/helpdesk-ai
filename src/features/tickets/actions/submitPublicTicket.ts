@@ -2,16 +2,18 @@
 
 import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
+import { headers } from 'next/headers'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { rateLimit } from '@/shared/lib/rateLimit'
 import { logActivity } from '@/shared/lib/logActivity'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
 import { publicTicketSchema } from '@/features/tickets/schemas'
+import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
 import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
-import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
 import { TicketCreated } from '@/emails/TicketCreated'
 import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
 import type { ActionResult } from '@/shared/types/actionResult'
@@ -21,6 +23,13 @@ export async function submitPublicTicket(
   input: PublicTicketInput
 ): Promise<ActionResult<{ trackingId: string; ticketId: string }>> {
   try {
+    const headerList = await headers()
+    const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? headerList.get('x-real-ip') ?? 'unknown'
+    const limit = await rateLimit(`submit:${ip}`, { maxRequests: 5, windowMs: 60_000 })
+    if (!limit.allowed) {
+      return { success: false, error: 'Too many submissions. Please wait a moment.' }
+    }
+
     const parsed = publicTicketSchema.safeParse(input)
     if (!parsed.success) {
       return {

@@ -8,6 +8,7 @@ import type { Scope } from '@/shared/types/scopes'
 vi.mock('@/features/ai/lib/requireAuthApi', () => ({
   requireAuthApi: vi.fn()
 }))
+vi.mock('@/shared/lib/verifyOrigin', () => ({ verifyOrigin: vi.fn(async () => true) }))
 vi.mock('@/features/ai/lib/checkBudget', () => ({
   getRemainingBudget: vi.fn(),
   budgetExceeded: vi.fn(() => () => false)
@@ -60,6 +61,7 @@ const authedUser = {
 function copilotRequest(body: unknown) {
   return new Request('http://localhost/api/copilot', {
     method: 'POST',
+    headers: { origin: 'http://localhost:3000' },
     body: JSON.stringify(body)
   })
 }

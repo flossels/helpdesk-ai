@@ -1,6 +1,7 @@
 import { createUIMessageStreamResponse, streamText, toUIMessageStream } from 'ai'
 import { z } from 'zod'
 import { db } from '@/shared/lib/db'
+import { rateLimit } from '@/shared/lib/rateLimit'
 import { requireAuthApi } from '@/features/ai/lib/requireAuthApi'
 import { isWithinBudget } from '@/features/ai/lib/checkBudget'
 import { getModel, resolveModelId } from '@/features/ai/lib/getModel'
@@ -16,6 +17,14 @@ export async function POST(request: Request) {
   const auth = await requireAuthApi('ai:use')
   if ('response' in auth) return auth.response
   const { user } = auth
+
+  const limit = await rateLimit(`suggest-reply:${user.id}`, {
+    maxRequests: 10,
+    windowMs: 60_000
+  })
+  if (!limit.allowed) {
+    return Response.json({ error: 'Too many requests. Please slow down.' }, { status: 429, headers: { 'Retry-After': '60' } })
+  }
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) return new Response('Bad request', { status: 400 })

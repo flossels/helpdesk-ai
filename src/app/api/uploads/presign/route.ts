@@ -1,5 +1,8 @@
+import { headers } from 'next/headers'
 import { errorResponse } from '@/shared/lib/apiResponse'
 import { db } from '@/shared/lib/db'
+import { sanitizeFilename } from '@/shared/lib/sanitizeFilename'
+import { rateLimit } from '@/shared/lib/rateLimit'
 import { generateUploadPost } from '@/shared/lib/s3'
 import { presignSchema } from '@/features/tickets/schemas'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
@@ -23,9 +26,14 @@ export async function POST(request: NextRequest) {
     })
     if (!category) return errorResponse('Invalid category.', 400)
     organizationId = category.organizationId
+
+    const headerList = await headers()
+    const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? headerList.get('x-real-ip') ?? 'unknown'
+    const limit = await rateLimit(`presign:${ip}`, { maxRequests: 5, windowMs: 60_000 })
+    if (!limit.allowed) return errorResponse('Too many uploads. Please wait a moment.', 429)
   }
 
-  const key = `${organizationId}/${entityType}/` + `${entityId}/${crypto.randomUUID()}-${fileName}`
+  const key = `${organizationId}/${entityType}/` + `${entityId}/${crypto.randomUUID()}-${sanitizeFilename(fileName)}`
 
   const attachment = await db.attachment.create({
     data: {

@@ -33,6 +33,10 @@ export async function objectExists(key: string) {
 }
 
 export function generateDownloadUrl(key: string) {
-  const command = new GetObjectCommand({ Bucket, Key: key })
+  const command = new GetObjectCommand({
+    Bucket,
+    Key: key,
+    ResponseContentDisposition: 'attachment'
+  })
   return getSignedUrl(s3, command, { expiresIn: 900 })
 }
