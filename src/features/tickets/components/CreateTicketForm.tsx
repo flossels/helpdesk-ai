@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Field, Label, Description, Input, Textarea } from '@headlessui/react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SubmitButton } from '@/shared/components/SubmitButton'
@@ -15,6 +15,7 @@ import { createTicketSchema } from '@/features/tickets/schemas'
 import { createTicket } from '@/features/tickets/actions/createTicket'
 import { PrioritySelect } from '@/features/tickets/components/PrioritySelect'
 import { CategorySelect } from '@/features/tickets/components/CategorySelect'
+import { AiTitleSuggestion } from '@/features/ai/components/AiTitleSuggestion'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
 
 const inputClasses = cn(
@@ -39,12 +40,17 @@ export function CreateTicketForm({ categories }: Props) {
     defaultValues: { categoryId: categories[0]?.id || '', priority: 'MEDIUM' },
     resolver: zodResolver(createTicketSchema)
   })
+
   const {
     register,
     handleSubmit,
     setError,
+    setValue,
+    control,
     formState: { errors, isSubmitting }
   } = methods
+
+  const description = useWatch({ control, name: 'description' })
 
   const onSubmit = handleSubmit(async (data) => {
     let attachmentIds: string[] = []
@@ -78,6 +84,10 @@ export function CreateTicketForm({ categories }: Props) {
           <Label className={labelClasses}>Subject</Label>
           <Input {...register('subject')} className={inputClasses} />
           {errors?.subject && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.subject.message}</p>}
+          <AiTitleSuggestion
+            description={description ?? ''}
+            onUse={(title) => setValue('subject', title, { shouldValidate: true })}
+          />
         </Field>
 
         <Field>

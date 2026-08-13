@@ -27,16 +27,19 @@ model User {
   articles        Article[]
   attachments     Attachment[]
   activityLogs    ActivityLog[]
+  aiUsageLogs     AiUsageLog[]
 }
 
 model Organization {
-  id          String   @id @default(cuid())
-  name        String
-  logo        String?
-  domain      String?
-  aiModel     String   @default("openai/gpt-5.6-terra")
-  tokenBudget Int      @default(100000)
-  createdAt   DateTime @default(now())
+  id                        String   @id @default(cuid())
+  name                      String
+  logo                      String?
+  domain                    String?
+  aiModel                   String   @default("openai/gpt-5.6-terra")
+  tokenBudget               Int      @default(100000)
+  createdAt                 DateTime @default(now())
+  autoCategorizationEnabled Boolean  @default(false)
+  autoSentimentEnabled      Boolean  @default(false)
 
   members         OrgMember[]
   categories      Category[]
@@ -49,6 +52,7 @@ model Organization {
   activityLogs    ActivityLog[]
   attachments     Attachment[]
   invitations     Invitation[]
+  aiUsageLogs     AiUsageLog[]
 }
 
 model OrgMember {
@@ -313,4 +317,21 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model AiUsageLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  model          String
+  feature        String
+  inputTokens    Int
+  outputTokens   Int
+  totalTokens    Int
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id])
+
+  @@index([organizationId, createdAt])
 }

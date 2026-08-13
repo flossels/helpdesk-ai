@@ -7,6 +7,7 @@ export default function SettingsLayout({ children }: LayoutProps<'/settings'>) {
         <NavLink href="/settings">General</NavLink>
         <NavLink href="/settings/members">Members</NavLink>
         <NavLink href="/settings/webhooks">Webhooks</NavLink>
+        <NavLink href="/settings/ai">AI</NavLink>
       </nav>
       <div>{children}</div>
     </div>
