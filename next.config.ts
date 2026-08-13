@@ -41,7 +41,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
   typedRoutes: true,
-  agentRules: false,
   cacheComponents: true,
   partialPrefetching: true,
   logging: {

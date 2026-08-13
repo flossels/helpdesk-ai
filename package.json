@@ -21,6 +21,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:reset": "ENV_FILE=.env.test prisma migrate reset --force && ENV_FILE=.env.test tsx prisma/seed.ts",
     "analyze": "next experimental-analyze",
+    "review:ai": "git diff main | claude -p --output-format json --permission-mode dontAsk --allowedTools Read \"Review this diff against CLAUDE.md. List violations only.\"",
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {

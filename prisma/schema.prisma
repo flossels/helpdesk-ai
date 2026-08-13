@@ -30,6 +30,7 @@ model User {
   activityLogs         ActivityLog[]
   aiUsageLogs          AiUsageLog[]
   copilotConversations CopilotConversation[]
+  savedViews           SavedView[]
 
 }
 
@@ -58,6 +59,7 @@ model Organization {
   aiUsageLogs          AiUsageLog[]
   copilotConversations CopilotConversation[]
   apiKeys              ApiKey[]
+  savedViews           SavedView[]
 }
 
 model OrgMember {
@@ -415,6 +417,20 @@ model ApiKey {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt      DateTime     @default(now())
   lastUsedAt     DateTime?
+
+  @@index([organizationId])
+}
+
+model SavedView {
+  id             String       @id @default(cuid())
+  name           String
+  status         String?
+  search         String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdById    String
+  createdBy      User         @relation(fields: [createdById], references: [id])
+  createdAt      DateTime     @default(now())
 
   @@index([organizationId])
 }
