@@ -1,12 +1,16 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { after } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { hasScope } from '@/shared/lib/authorization'
 import { logActivity } from '@/shared/lib/logActivity'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
 import { createTicketSchema } from '@/features/tickets/schemas'
@@ -87,11 +91,16 @@ export async function createTicket(input: CreateTicketInput): Promise<ReturnType
 
     after(() => categorizeTicket(ticket.id, user.organizationId!))
 
+    after(() => trackServerEvent(ANALYTICS_EVENTS.ticketCreated, user.organizationId!, { priority }))
+
     after(() =>
       dispatchWebhooks(user.organizationId!, {
         type: 'ticket.created',
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
-      }).catch((error) => console.error('Webhook dispatch failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Webhook dispatch failed:', error)
+      })
     )
 
     const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
@@ -104,7 +113,10 @@ export async function createTicket(input: CreateTicketInput): Promise<ReturnType
           subject: parsed.data.subject,
           ticketUrl
         })
-      }).catch((error) => console.error('Confirmation email failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Confirmation email failed:', error)
+      })
     )
 
     revalidatePath('/tickets')
@@ -114,6 +126,8 @@ export async function createTicket(input: CreateTicketInput): Promise<ReturnType
       data: { ticketId: ticket.id, trackingId: ticket.trackingId }
     }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Failed to create ticket:', error)
 
     return {

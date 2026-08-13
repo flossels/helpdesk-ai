@@ -115,13 +115,13 @@ describe('createTicket', () => {
     expect(mockDb.ticket.create).not.toHaveBeenCalled()
   })
 
-  it('defers categorization, webhooks and the confirmation email', async () => {
+  it('defers categorization, analytics, webhooks and the confirmation email', async () => {
     await createTicket(validInput)
 
     // `after` only records the work; the response is what the caller waits
     // for. Running the recorded tasks here asserts what was scheduled.
     // It takes a callback or a promise, so we handle both shapes.
-    expect(mockAfter).toHaveBeenCalledTimes(3)
+    expect(mockAfter).toHaveBeenCalledTimes(4)
     await Promise.all(mockAfter.mock.calls.map(([task]) => (typeof task === 'function' ? task() : task)))
 
     expect(categorizeTicket).toHaveBeenCalledWith('ticket-1', 'org-1')

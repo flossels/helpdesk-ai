@@ -1,7 +1,9 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { after } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import * as Sentry from '@sentry/nextjs'
 import { renderToHTMLString } from '@tiptap/static-renderer'
 import StarterKit from '@tiptap/starter-kit'
 import z from 'zod'
@@ -73,7 +75,10 @@ export async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnTy
       dispatchWebhooks(user.organizationId!, {
         type: 'ticket.replied',
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
-      }).catch((error) => console.error('Webhook dispatch failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Webhook dispatch failed:', error)
+      })
     )
 
     if (ticket.email) {
@@ -93,7 +98,10 @@ export async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnTy
             replyHtml,
             ticketUrl
           })
-        }).catch((error) => console.error('Reply email failed:', error))
+        }).catch((error) => {
+          Sentry.captureException(error)
+          console.error('Reply email failed:', error)
+        })
       )
     }
 
@@ -104,6 +112,8 @@ export async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnTy
       data: { replyId: reply.id }
     }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Failed to add reply:', error)
     return {
       success: false,

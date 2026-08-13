@@ -1,21 +1,25 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
 import { headers } from 'next/headers'
 import z from 'zod'
+import * as Sentry from '@sentry/nextjs'
 import { db } from '@/shared/lib/db'
 import { rateLimit } from '@/shared/lib/rateLimit'
 import { logActivity } from '@/shared/lib/logActivity'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publicTicketSchema } from '@/features/tickets/schemas'
-import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
-import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
-import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
 import { TicketCreated } from '@/emails/TicketCreated'
 import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
+import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
+import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
+import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { PublicTicketInput } from '@/features/tickets/schemas'
 
@@ -96,10 +100,20 @@ export async function submitPublicTicket(
       dispatchWebhooks(category.organizationId, {
         type: 'ticket.created',
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
-      }).catch((error) => console.error('Webhook dispatch failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Webhook dispatch failed:', error)
+      })
     )
 
     after(() => categorizeTicket(ticket.id, category.organizationId))
+
+    after(() =>
+      trackServerEvent(ANALYTICS_EVENTS.ticketCreated, category.organizationId, {
+        priority,
+        source: 'public'
+      })
+    )
 
     const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
 
@@ -112,7 +126,10 @@ export async function submitPublicTicket(
           subject: parsed.data.subject,
           ticketUrl
         })
-      }).catch((error) => console.error('Confirmation email failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Confirmation email failed:', error)
+      })
     )
 
     revalidatePath('/tickets')
@@ -122,6 +139,8 @@ export async function submitPublicTicket(
       data: { ticketId: ticket.id, trackingId: ticket.trackingId }
     }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Public ticket submission failed:', error)
     return { success: false, error: 'Could not submit the ticket.' }
   }

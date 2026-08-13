@@ -1,4 +1,5 @@
 import 'server-only'
+import * as Sentry from '@sentry/nextjs'
 import { streamText } from 'ai'
 import { getModel, resolveModelId } from '@/features/ai/lib/getModel'
 import { trackUsage } from '@/features/ai/lib/trackUsage'
@@ -28,7 +29,10 @@ export function streamTicketSummary(input: StreamSummaryInput) {
         inputTokens: usage.inputTokens ?? 0,
         outputTokens: usage.outputTokens ?? 0,
         totalTokens: usage.totalTokens ?? 0
-      }).catch((error) => console.error('Usage tracking failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Usage tracking failed:', error)
+      })
     }
   })
 }

@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -35,7 +36,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   logging: {
-    browserToTerminal: 'warn'
+    browserToTerminal: 'warn',
+    fetches: { fullUrl: true },
+    incomingRequests: { ignore: [/^\/api\/dashboard\/metrics$/] }
   },
   experimental: {
     typedEnv: true,
@@ -64,4 +67,11 @@ const nextConfig: NextConfig = {
   }
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  org: 'helpdesk-ai',
+  project: 'helpdesk-web',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  tunnelRoute: '/monitoring',
+  sourcemaps: { deleteSourcemapsAfterUpload: true }
+})

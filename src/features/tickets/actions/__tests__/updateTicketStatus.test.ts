@@ -55,8 +55,8 @@ describe('updateTicketStatus', () => {
     expect(mockAfter).toHaveBeenCalledTimes(1)
   })
 
-  it('also schedules the re-embedding when the ticket resolves', async () => {
+  it('also schedules the re-embedding and the analytics event when the ticket resolves', async () => {
     await updateTicketStatus({ ticketId: 'ticket-1', status: 'RESOLVED' })
-    expect(mockAfter).toHaveBeenCalledTimes(2)
+    expect(mockAfter).toHaveBeenCalledTimes(3)
   })
 })

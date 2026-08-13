@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { rateLimitRedis } from '@/shared/lib/rateLimitRedis'
 
 export type RateLimitConfig = {
@@ -38,6 +39,14 @@ function rateLimitMemory(key: string, config: RateLimitConfig): RateLimitResult 
 const useRedis = Boolean(process.env.UPSTASH_REDIS_REST_URL)
 
 export async function rateLimit(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
-  if (useRedis) return rateLimitRedis(key, config)
-  return rateLimitMemory(key, config)
+  const result = useRedis ? await rateLimitRedis(key, config) : rateLimitMemory(key, config)
+
+  if (!result.allowed) {
+    Sentry.captureMessage('Rate limit exceeded', {
+      level: 'warning',
+      tags: { endpoint: key.split(':').slice(0, -1).join(':') }
+    })
+  }
+
+  return result
 }

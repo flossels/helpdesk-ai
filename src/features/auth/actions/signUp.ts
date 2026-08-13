@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import { hash } from 'bcryptjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
@@ -44,6 +46,8 @@ export async function signUp(input: SignUpInput): Promise<ActionResult<void>> {
 
     return { success: true, data: undefined }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Sign-up failed:', error)
     return { success: false, error: 'Could not create the account.' }
   }
