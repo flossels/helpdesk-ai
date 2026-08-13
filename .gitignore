@@ -47,6 +47,8 @@ next-env.d.ts
 # test artefacts
 /test-results
 /playwright-report
+nginx/test-certs/
+docker-compose.test.yml
 
 # Sentry Config File
 .env.sentry-build-plugin

@@ -35,6 +35,7 @@ export default defineConfig({
       AI_GATEWAY_API_KEY: '',
       // Without AUTH_URL, Auth.js trusts no host in a production build
       // and rejects every session.
+      E2E: 'true',
       AUTH_URL: process.env.AUTH_URL ?? '',
       DATABASE_URL: process.env.DATABASE_URL ?? '',
       DIRECT_URL: process.env.DIRECT_URL ?? '',
