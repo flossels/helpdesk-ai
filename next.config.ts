@@ -1,5 +1,8 @@
 import { withSentryConfig } from '@sentry/nextjs'
+import createNextIntlPlugin from 'next-intl/plugin'
 import type { NextConfig } from 'next'
+
+const withNextIntl = createNextIntlPlugin()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -69,7 +72,7 @@ const nextConfig: NextConfig = {
   }
 }
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withNextIntl(nextConfig), {
   org: 'helpdesk-ai',
   project: 'helpdesk-web',
   silent: !process.env.CI,

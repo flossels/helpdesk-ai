@@ -12,10 +12,11 @@ import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
 import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publishEvent } from '@/shared/lib/eventBus'
-import { sendEmail } from '@/shared/lib/sendEmail'
+import { sendLocalizedEmail } from '@/shared/lib/sendLocalizedEmail'
 import { updateTicketStatusSchema } from '@/features/tickets/schemas'
 import { embedTicket } from '@/features/ai/actions/embedTicket'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
+import { resolveRecipientLocale } from '@/i18n/resolveLocale'
 import { TicketResolved } from '@/emails/TicketResolved'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { UpdateTicketStatusInput } from '@/features/tickets/schemas'
@@ -43,7 +44,14 @@ export async function updateTicketStatus(input: UpdateTicketStatusInput): Promis
 
     const ticket = await db.ticket.findFirst({
       where: { id: parsed.data.ticketId, organizationId: user.organizationId },
-      select: { id: true, trackingId: true, subject: true, email: true, status: true }
+      select: {
+        id: true,
+        trackingId: true,
+        subject: true,
+        email: true,
+        status: true,
+        customer: { select: { preferredLocale: true } }
+      }
     })
     if (!ticket) return { success: false, error: 'Ticket not found.' }
 
@@ -87,16 +95,21 @@ export async function updateTicketStatus(input: UpdateTicketStatusInput): Promis
 
     if (parsed.data.status === 'RESOLVED' && ticket.status !== 'RESOLVED' && ticket.email) {
       const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
+      const locale = await resolveRecipientLocale(ticket.customer?.preferredLocale)
       after(() =>
-        sendEmail({
+        sendLocalizedEmail({
           to: ticket.email as string,
-          subject: `Your ticket ${ticket.trackingId} is resolved`,
-          template: TicketResolved({
-            trackingId: ticket.trackingId,
-            subject: ticket.subject,
-            ticketUrl,
-            ratingUrlFor: (score: number) => `${ticketUrl}?rating=${score}`
-          })
+          locale,
+          subjectKey: 'ticketResolvedSubject',
+          trackingId: ticket.trackingId,
+          template: (t) =>
+            TicketResolved({
+              heading: t('ticketResolvedHeading', { trackingId: ticket.trackingId }),
+              subject: ticket.subject,
+              ratingPrompt: t('ratingPrompt'),
+              ticketUrl,
+              ratingUrlFor: (score: number) => `${ticketUrl}?rating=${score}`
+            })
         }).catch((error) => {
           Sentry.captureException(error)
           console.error('Resolution email failed:', error)

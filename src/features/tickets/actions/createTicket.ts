@@ -12,13 +12,14 @@ import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
 import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publishEvent } from '@/shared/lib/eventBus'
-import { sendEmail } from '@/shared/lib/sendEmail'
+import { sendLocalizedEmail } from '@/shared/lib/sendLocalizedEmail'
 import { createTicketSchema } from '@/features/tickets/schemas'
 import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
 import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
 import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
+import { resolveRecipientLocale } from '@/i18n/resolveLocale'
 import { TicketCreated } from '@/emails/TicketCreated'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
@@ -104,15 +105,23 @@ export async function createTicket(input: CreateTicketInput): Promise<ReturnType
     )
 
     const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
+    const locale = await resolveRecipientLocale(customer.preferredLocale)
     after(() =>
-      sendEmail({
+      sendLocalizedEmail({
         to: parsed.data.email,
-        subject: `We received your ticket ${ticket.trackingId}`,
-        template: TicketCreated({
-          trackingId: ticket.trackingId,
-          subject: parsed.data.subject,
-          ticketUrl
-        })
+        locale,
+        subjectKey: 'ticketCreatedSubject',
+        trackingId: ticket.trackingId,
+        template: (t) =>
+          TicketCreated({
+            heading: t('ticketCreatedHeading'),
+            body: t('ticketCreatedBody', {
+              trackingId: ticket.trackingId,
+              subject: parsed.data.subject
+            }),
+            cta: t('trackCta'),
+            ticketUrl
+          })
       }).catch((error) => {
         Sentry.captureException(error)
         console.error('Confirmation email failed:', error)

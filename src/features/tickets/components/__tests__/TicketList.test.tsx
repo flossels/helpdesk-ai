@@ -1,3 +1,5 @@
+import { NextIntlClientProvider } from 'next-intl'
+import messages from '@/messages/en.json'
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockAgent } from '@/tests/mocks/auth'
@@ -42,7 +44,11 @@ describe('TicketList', () => {
     // Server Components are async functions: await the component to get
     // its JSX, then render that.
     const ui = await TicketList({ searchParams: Promise.resolve({}) })
-    render(ui)
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {ui}
+      </NextIntlClientProvider>
+    )
 
     expect(screen.getByText('Login issue')).toBeInTheDocument()
     expect(screen.getByText('OPEN')).toBeInTheDocument()
@@ -53,7 +59,11 @@ describe('TicketList', () => {
     mockGetTickets.mockResolvedValue([])
 
     const ui = await TicketList({ searchParams: Promise.resolve({}) })
-    render(ui)
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {ui}
+      </NextIntlClientProvider>
+    )
 
     expect(screen.getByText('No tickets found.')).toBeInTheDocument()
   })

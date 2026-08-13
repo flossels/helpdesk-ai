@@ -26,22 +26,16 @@ export type CreateTicketInput = z.infer<typeof createTicketSchema>
 
 export const publicTicketSchema = z
   .object({
-    name: z.string().min(1, 'Please tell us your name.').max(100, 'Keep the name under 100 characters.'),
-    email: z.email('Please enter a valid email address.'),
-    subject: z
-      .string()
-      .min(5, 'Please summarize the issue in at least 5 characters.')
-      .max(200, 'Keep the subject under 200 characters.'),
-    description: z
-      .string()
-      .min(10, 'Please describe the issue in at least 10 characters.')
-      .max(5000, 'Keep the description under 5000 characters.'),
-    categoryId: z.string().min(1, 'Please choose a category.'),
+    name: z.string().min(1, { error: 'name.required' }).max(100, { error: 'name.tooLong' }),
+    email: z.email({ error: 'email.invalid' }),
+    subject: z.string().min(5, { error: 'subject.tooShort' }).max(200, { error: 'subject.tooLong' }),
+    description: z.string().min(10, { error: 'description.tooShort' }).max(5000, { error: 'description.tooLong' }),
+    categoryId: z.string().min(1, { error: 'category.required' }),
     priority: z.enum(TICKET_PRIORITIES).optional(),
-    attachmentIds: z.array(z.string()).optional()
+    attachmentIds: z.array(z.string()).max(5, { error: 'attachments.tooMany' }).optional()
   })
   .refine((data) => data.priority !== 'URGENT' || data.description.length >= 50, {
-    message: 'Urgent tickets need a description of at least 50 characters.',
+    error: 'description.urgentTooShort',
     path: ['description']
   })
 

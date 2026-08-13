@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
 import { rateLimit } from '@/shared/lib/rateLimit'
 import { auth } from '@/auth'
+import { routing } from '@/i18n/routing'
 import type { NextRequest } from 'next/server'
+
+const handleI18n = createMiddleware(routing)
 
 const apiLimits: { prefix: string; maxRequests: number }[] = [
   { prefix: '/api/auth/callback', maxRequests: 10 },
@@ -12,9 +16,8 @@ const DEFAULT_API_LIMIT = 100
 const dashboardPrefixes = ['/tickets', '/dashboard', '/activity', '/knowledge', '/settings']
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  if (pathname.startsWith('/api/')) {
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    const pathname = request.nextUrl.pathname
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
     const policy = apiLimits.find((entry) => pathname.startsWith(entry.prefix))
     const limit = await rateLimit(`api:${policy?.prefix ?? 'all'}:${ip}`, {
@@ -28,6 +31,11 @@ export async function proxy(request: NextRequest) {
 
     return NextResponse.next()
   }
+
+  const response = handleI18n(request)
+  if (response.headers.has('location')) return response
+
+  const pathname = request.nextUrl.pathname.replace(/^\/(de|fr)(?=\/|$)/, '') || '/'
 
   const session = await auth()
   const isLoggedIn = Boolean(session?.user)
@@ -71,7 +79,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(hasOrg ? '/tickets' : '/onboarding', request.url))
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
@@ -85,6 +93,7 @@ export const config = {
     '/login',
     '/signup',
     '/onboarding',
-    '/api/:path*'
+    '/api/:path*',
+    '/((?!api|_next|_vercel|.*\\..*).*)'
   ]
 }

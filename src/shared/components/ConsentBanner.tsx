@@ -1,10 +1,12 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/components/ui/Button'
 import { useConsent } from '@/shared/lib/analytics/consent'
 
 export function ConsentBanner() {
+  const t = useTranslations('consent')
   const { status, grant, deny } = useConsent()
   if (status !== 'unset') return null
 
@@ -17,15 +19,13 @@ export function ConsentBanner() {
       )}
     >
       <div className={cn('mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between')}>
-        <p className={cn('text-sm text-slate-600 dark:text-slate-300')}>
-          We use privacy-friendly analytics to improve HelpDesk AI. You can decline without losing any functionality.
-        </p>
+        <p className={cn('text-sm text-slate-600 dark:text-slate-300')}>{t('message')}</p>
         <div className={cn('flex shrink-0 gap-2')}>
           <Button variant="ghost" size="sm" onClick={deny}>
-            Decline
+            {t('decline')}
           </Button>
           <Button size="sm" onClick={grant}>
-            Accept
+            {t('accept')}
           </Button>
         </div>
       </div>

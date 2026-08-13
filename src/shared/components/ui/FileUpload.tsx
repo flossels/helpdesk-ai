@@ -11,9 +11,11 @@ const ACCEPTED: Accept = {
 
 type Props = {
   onFiles: (files: File[]) => void
+  idleLabel?: string
+  dropLabel?: string
 }
 
-export function FileUpload({ onFiles }: Props) {
+export function FileUpload({ onFiles, idleLabel = 'Drag or click', dropLabel = 'Drop files here…' }: Props) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: ACCEPTED,
     maxFiles: 5,
@@ -24,7 +26,7 @@ export function FileUpload({ onFiles }: Props) {
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      {isDragActive ? <p>Drop files here…</p> : <p>Drag or click</p>}
+      {isDragActive ? <p>{dropLabel}</p> : <p>{idleLabel}</p>}
     </div>
   )
 }

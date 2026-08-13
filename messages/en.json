@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "submit": "Submit a ticket",
+    "myTickets": "My tickets",
+    "changeLanguage": "Change language",
+    "about": "About",
+    "logIn": "Log in",
+    "logOut": "Log out"
+  },
+  "footer": {
+    "copyright": "© {year} {appName}"
+  },
+  "ticketForm": {
+    "title": "How can we help you?",
+    "subject": "Subject",
+    "subjectPlaceholder": "Briefly describe the problem",
+    "email": "Email",
+    "description": "Description",
+    "descriptionHint": "Include what you expected to happen and what actually happened.",
+    "category": "Category",
+    "attachments": "Attachments",
+    "submit": "Submit ticket",
+    "submitting": "Submitting...",
+    "loadingForm": "Loading the form...",
+    "success": "Ticket {trackingId} created",
+    "successDescription": "We'll get back to you shortly.",
+    "name": "Your name",
+    "priority": "Priority",
+    "attachmentsHint": "A screenshot of the error usually explains more than a paragraph does.",
+    "uploadIdle": "Drag or click",
+    "uploadDrop": "Drop files here…",
+    "subtitle": "Describe your issue and we will get back to you."
+  },
+  "ticketStatus": {
+    "status": "Status",
+    "OPEN": "Open",
+    "IN_PROGRESS": "In progress",
+    "RESOLVED": "Resolved",
+    "CLOSED": "Closed",
+    "notFound": "We could not find that ticket.",
+    "lastUpdate": "Last update {date}",
+    "replyCount": "{count, plural, =0 {No replies yet} one {1 reply} other {# replies}}",
+    "WAITING": "Waiting on customer"
+  },
+  "helpCenter": {
+    "title": "Help Center",
+    "description": "Answers to the questions our customers ask most.",
+    "notFoundTitle": "This article is not available in your language",
+    "notFoundBody": "We have not translated this article yet. It may be available in another language.",
+    "backHome": "Back to the home page"
+  },
+  "validation": {
+    "subject": {
+      "tooShort": "Subject must be at least 5 characters.",
+      "tooLong": "Subject must be at most 200 characters."
+    },
+    "description": {
+      "tooShort": "Description must be at least 10 characters.",
+      "tooLong": "Description must be at most 5000 characters.",
+      "urgentTooShort": "Urgent tickets need a description of at least 50 characters."
+    },
+    "email": {
+      "invalid": "Enter a valid email address."
+    },
+    "category": {
+      "required": "Choose a category."
+    },
+    "attachments": {
+      "tooMany": "Attach at most 5 files."
+    },
+    "name": {
+      "required": "Please tell us your name.",
+      "tooLong": "Keep the name under 100 characters."
+    }
+  },
+  "emails": {
+    "ticketCreatedSubject": "We received your ticket {trackingId}",
+    "ticketCreatedHeading": "We received your ticket",
+    "ticketCreatedBody": "Your ticket {trackingId}, {subject}, is in our queue. We will reply within one business day.",
+    "trackCta": "Track your ticket",
+    "agentReplySubject": "New reply on your ticket {trackingId}",
+    "agentReplyHeading": "{agentName} replied to {trackingId}",
+    "viewConversationCta": "View the conversation",
+    "ticketResolvedSubject": "Your ticket {trackingId} has been resolved",
+    "ticketResolvedHeading": "Your ticket {trackingId} is resolved",
+    "ratingPrompt": "How did we do?"
+  },
+  "pages": {
+    "homeTitle": "Welcome to HelpDesk AI",
+    "aboutTitle": "About HelpDesk AI",
+    "signInTitle": "Sign in to HelpDesk AI",
+    "signUpTitle": "Create your HelpDesk AI account",
+    "noAccount": "Don’t have an account?",
+    "createOne": "Create one",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "or": "or"
+  },
+  "consent": {
+    "message": "We use privacy-friendly analytics to improve HelpDesk AI. You can decline without losing any functionality.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "portal": {
+    "title": "My tickets",
+    "newTicket": "New ticket",
+    "empty": "You haven't opened any tickets yet.",
+    "backToTickets": "Back to my tickets"
+  }
+}
