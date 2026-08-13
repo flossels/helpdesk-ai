@@ -12,7 +12,7 @@ export async function TicketThread({ params }: Props) {
       <h2 className={cn('text-sm font-semibold text-slate-900 dark:text-slate-100')}>Conversation</h2>
       <ul className={cn('space-y-3')}>
         {messages.map((msg) => {
-          const isAgent = msg.author === 'Agent'
+          const isAgent = msg.isAgent
 
           return (
             <li

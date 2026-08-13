@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
-import { updateTicketsInStore } from '@/shared/lib/placeholderData'
+import { db } from '@/shared/lib/db'
 import { bulkTicketUpdateSchema } from '@/features/tickets/schemas'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { BulkTicketUpdateInput } from '@/features/tickets/schemas'
@@ -13,9 +13,7 @@ type ReturnType = ActionResult<{
 
 export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<ReturnType> {
   try {
-    // 1. Validate input
     const parsed = bulkTicketUpdateSchema.safeParse(input)
-
     if (!parsed.success) {
       return {
         success: false,
@@ -24,21 +22,19 @@ export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<Re
       }
     }
 
-    // 2. Auth: placeholder
-    // Auth + scope check arrives in Chapter 12
-
-    // 3. Bulk update the tickets
-    const count = updateTicketsInStore(parsed.data.ticketIds, { status: parsed.data.status })
+    const result = await db.ticket.updateMany({
+      where: { id: { in: parsed.data.ticketIds } },
+      data: { status: parsed.data.status }
+    })
 
     revalidatePath('/tickets')
 
     return {
       success: true,
-      data: { updatedCount: count }
+      data: { updatedCount: result.count }
     }
   } catch (error) {
     console.error('Failed to bulk update:', error)
-
     return {
       success: false,
       error: 'Could not update tickets.'

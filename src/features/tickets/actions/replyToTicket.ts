@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
-import { addReplyToStore } from '@/shared/lib/placeholderData'
+import { db } from '@/shared/lib/db'
 import { replyToTicketSchema } from '@/features/tickets/schemas'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { ReplyToTicketInput } from '@/features/tickets/schemas'
@@ -23,10 +23,19 @@ async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
       }
     }
 
-    const reply = addReplyToStore({
-      ticketId: parsed.data.ticketId,
-      author: 'Agent',
-      body: parsed.data.content
+    const author = await db.user.findFirstOrThrow({ where: { role: 'AGENT' } })
+
+    const reply = await db.ticketReply.create({
+      data: {
+        ticketId: parsed.data.ticketId,
+        authorId: author.id,
+        content: {
+          type: 'doc',
+          content: [{ type: 'paragraph', content: [{ type: 'text', text: parsed.data.content }] }]
+        },
+        contentText: parsed.data.content
+      },
+      select: { id: true }
     })
 
     revalidatePath(`/tickets/${parsed.data.ticketId}`)

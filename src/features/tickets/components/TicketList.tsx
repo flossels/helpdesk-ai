@@ -11,11 +11,15 @@ export async function TicketList({ status, search }: TicketFilters) {
   const tickets = await getTickets({ status, search })
   if (!tickets.length) return <p>No tickets found.</p>
 
-  const ticketIds = tickets.map((ticket) => ticket.id)
+  const bulkTickets = tickets.map((ticket) => ({
+    id: ticket.id,
+    trackingId: ticket.trackingId,
+    subject: ticket.subject
+  }))
 
   return (
     <>
-      <BulkActionBar ticketIds={ticketIds} />
+      <BulkActionBar tickets={bulkTickets} />
       <ul className={cn('space-y-3')}>
         {tickets.map((ticket) => (
           <li key={ticket.id}>

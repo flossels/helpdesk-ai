@@ -18,6 +18,7 @@ model User {
   memberships     OrgMember[]
   assignedTickets Ticket[]       @relation("AssignedTickets")
   createdTickets  Ticket[]       @relation("CreatedTickets")
+  closedTickets   Ticket[]       @relation("ClosedTickets")
   replies         TicketReply[]
   internalNotes   InternalNote[]
   articles        Article[]
@@ -103,6 +104,7 @@ model Ticket {
   slaDeadline    DateTime?
   resolvedAt     DateTime?
   closedAt       DateTime?
+  closedById     String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -110,6 +112,7 @@ model Ticket {
   assignee     User?          @relation("AssignedTickets", fields: [assigneeId], references: [id])
   customer     User           @relation("CreatedTickets", fields: [customerId], references: [id])
   organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  closedBy     User?          @relation("ClosedTickets", fields: [closedById], references: [id])
   replies      TicketReply[]
   notes        InternalNote[]
   tags         TicketTag[]

@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
-import { createTicketInStore } from '@/shared/lib/placeholderData'
+import { db } from '@/shared/lib/db'
 import { createTicketSchema } from '@/features/tickets/schemas'
+import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
 
@@ -12,43 +13,38 @@ type ReturnType = ActionResult<{
   trackingId: string
 }>
 
-async function createTicket(input: CreateTicketInput): Promise<ReturnType> {
-  try {
-    // 1. Validate input
-    const parsed = createTicketSchema.safeParse(input)
-
-    if (!parsed.success) {
-      return {
-        success: false,
-        error: 'Invalid input.',
-        fieldErrors: z.flattenError(parsed.error).fieldErrors
-      }
-    }
-
-    // 2. Auth: placeholder
-    // Auth + scope check arrives in Chapter 12
-
-    // 3. Create the ticket
-    const ticket = createTicketInStore(parsed.data)
-
-    // 4. Invalidate cache
-    revalidatePath('/tickets')
-
-    // 5. Return success
-    return {
-      success: true,
-      data: {
-        ticketId: ticket.id,
-        trackingId: ticket.trackingId
-      }
-    }
-  } catch (error) {
-    console.error('Failed to create ticket:', error)
-
+async function createTicket(input: CreateTicketInput): Promise<ActionResult<{ ticketId: string; trackingId: string }>> {
+  const parsed = createTicketSchema.safeParse(input)
+  if (!parsed.success) {
     return {
       success: false,
-      error: 'Could not create ticket.'
+      error: 'Invalid input.',
+      fieldErrors: z.flattenError(parsed.error).fieldErrors
     }
+  }
+
+  const organization = await db.organization.findFirstOrThrow()
+  const customer = await db.user.findFirstOrThrow({
+    where: { role: 'CUSTOMER' }
+  })
+
+  const ticket = await db.ticket.create({
+    data: {
+      trackingId: await generateTrackingId(),
+      subject: parsed.data.subject,
+      description: parsed.data.description,
+      categoryId: parsed.data.categoryId,
+      customerId: customer.id,
+      organizationId: organization.id
+    },
+    select: { id: true, trackingId: true }
+  })
+
+  revalidatePath('/tickets')
+
+  return {
+    success: true,
+    data: { ticketId: ticket.id, trackingId: ticket.trackingId }
   }
 }
 

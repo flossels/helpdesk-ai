@@ -1,12 +1,6 @@
 import z from 'zod'
 import { TICKET_STATUSES } from '@/shared/types/ticket'
 
-export const TICKET_CATEGORIES = [
-  { id: 'cat-1', name: 'Account & Login' },
-  { id: 'cat-2', name: 'Billing' },
-  { id: 'cat-3', name: 'Technical Issue' }
-] as const
-export type TicketCategory = (typeof TICKET_CATEGORIES)[number]
 export const createTicketSchema = z.object({
   subject: z.string().min(5).max(200),
   description: z.string().min(10),

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
 import { getTicketById } from '@/features/tickets/queries/getTicketById'
+import type { TicketPriority } from '@/shared/types/ticket'
 
 type Props = Pick<PageProps<'/tickets/[ticketId]'>, 'params'>
 
@@ -15,7 +16,7 @@ export async function TicketHeader({ params }: Props) {
       <dl className="my-6 grid grid-cols-1 gap-x-6 gap-y-3">
         <dt className="col-end-1">Priority:</dt>
         <dd>
-          <TicketPriorityBadge priority={ticket.priority} />
+          <TicketPriorityBadge priority={ticket.priority as TicketPriority} />
         </dd>
       </dl>
     </header>

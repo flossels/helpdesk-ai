@@ -6,9 +6,9 @@ import { Field, Label, Description, Input, Textarea } from '@headlessui/react'
 import { SubmitButton } from '@/shared/components/SubmitButton'
 import { SearchableSelect } from '@/shared/components/ui/SearchableSelect'
 import { cn } from '@/shared/lib/cn'
-import { TICKET_CATEGORIES } from '@/features/tickets/schemas'
 import { createTicketAction } from '@/features/tickets/actions/createTicket'
-import type { TicketCategory } from '@/features/tickets/schemas'
+
+type CategoryOption = { id: string; name: string }
 
 const inputClasses = cn(
   'w-full rounded-lg border px-3 py-2 text-sm text-slate-900',
@@ -18,9 +18,9 @@ const inputClasses = cn(
 
 const labelClasses = cn('mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300')
 
-export function CreateTicketForm() {
+export function CreateTicketForm({ categories }: { categories: CategoryOption[] }) {
   const router = useRouter()
-  const [category, setCategory] = useState<TicketCategory>(TICKET_CATEGORIES[0])
+  const [category, setCategory] = useState<CategoryOption | undefined>(categories[0])
   const [state, formAction] = useActionState(
     async (prev: Awaited<ReturnType<typeof createTicketAction>> | null, formData: FormData) => {
       const result = await createTicketAction(prev, formData)
@@ -54,14 +54,14 @@ export function CreateTicketForm() {
       <Field>
         <Label className={labelClasses}>Category</Label>
         <SearchableSelect
-          items={[...TICKET_CATEGORIES]}
+          items={categories}
           value={category}
           onChange={(value) => value && setCategory(value)}
           displayValue={(c) => c.name}
           placeholder="Select a category"
         />
       </Field>
-      <input type="hidden" name="categoryId" value={category.id} />
+      <input type="hidden" name="categoryId" value={category?.id ?? ''} />
 
       <SubmitButton label="Create Ticket" pendingLabel="Creating..." />
     </form>

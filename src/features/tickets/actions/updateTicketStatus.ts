@@ -2,7 +2,7 @@
 
 import { revalidatePath, updateTag } from 'next/cache'
 import z from 'zod'
-import { updateTicketInStore } from '@/shared/lib/placeholderData'
+import { db } from '@/shared/lib/db'
 import { updateTicketStatusSchema } from '@/features/tickets/schemas'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { TicketStatus } from '@/shared/types/ticket'
@@ -14,9 +14,7 @@ type ReturnType = ActionResult<{
 
 async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<ReturnType> {
   try {
-    // 1. Validate input
     const parsed = updateTicketStatusSchema.safeParse(input)
-
     if (!parsed.success) {
       return {
         success: false,
@@ -25,12 +23,11 @@ async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<Retur
       }
     }
 
-    // 2. Auth: placeholder
-    // Auth + scope check arrives in Chapter 12
-
-    // 3. Update the ticket
-    const ticket = updateTicketInStore(parsed.data.ticketId, { status: parsed.data.status })
-    if (!ticket) return { success: false, error: 'Ticket not found.' }
+    const ticket = await db.ticket.update({
+      where: { id: parsed.data.ticketId },
+      data: { status: parsed.data.status },
+      select: { id: true, trackingId: true }
+    })
 
     revalidatePath('/tickets')
     revalidatePath(`/tickets/${parsed.data.ticketId}`)
@@ -42,7 +39,6 @@ async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<Retur
     }
   } catch (error) {
     console.error('Failed to update status:', error)
-
     return {
       success: false,
       error: 'Could not update status.'

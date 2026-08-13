@@ -6,20 +6,26 @@ import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/lib/cn'
 import { bulkUpdateStatus } from '@/features/tickets/actions/bulkUpdateStatus'
 
-type Props = {
-  ticketIds: string[]
+type BulkTicket = {
+  id: string
+  trackingId: string
+  subject: string
 }
 
-export function BulkActionBar({ ticketIds }: Props) {
+type Props = {
+  tickets: BulkTicket[]
+}
+
+export function BulkActionBar({ tickets }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [isPending, startTransition] = useTransition()
 
-  const allSelected = selected.size === ticketIds.length && ticketIds.length > 0
+  const allSelected = selected.size === tickets.length && tickets.length > 0
 
   const toggleAll = () => {
     if (allSelected) return setSelected(new Set())
 
-    setSelected(new Set(ticketIds))
+    setSelected(new Set(tickets.map((ticket) => ticket.id)))
   }
 
   const toggleOne = (id: string) => {
@@ -74,17 +80,18 @@ export function BulkActionBar({ ticketIds }: Props) {
       </Field>
 
       <ul className={cn('flex flex-wrap gap-x-4 gap-y-1')}>
-        {ticketIds.map((id) => (
-          <li key={id}>
+        {tickets.map((ticket) => (
+          <li key={ticket.id}>
             <Field>
               <Label className={cn('flex items-center gap-1 text-xs text-slate-500')}>
                 <Input
                   type="checkbox"
-                  checked={selected.has(id)}
-                  onChange={() => toggleOne(id)}
+                  checked={selected.has(ticket.id)}
+                  onChange={() => toggleOne(ticket.id)}
                   className={cn('size-3 rounded border-slate-300 text-blue-600')}
                 />
-                {id}
+                <span className={cn('font-mono text-slate-400')}>{ticket.trackingId}</span>
+                {ticket.subject}
               </Label>
             </Field>
           </li>
