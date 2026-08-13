@@ -1,7 +1,9 @@
+import { forbidden } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/shared/lib/cn'
 import { RelativeTime } from '@/shared/components/RelativeTime'
 import { getActivity } from '@/features/activity/queries/getActivity'
+import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 
 const LABELS: Record<string, string> = {
   'ticket.created': 'created',
@@ -10,12 +12,15 @@ const LABELS: Record<string, string> = {
 }
 
 type Props = {
-  organizationId: string
-  cursor?: string
+  searchParams: Promise<{ cursor?: string | string[] }>
 }
 
-export async function ActivityFeed({ organizationId, cursor }: Props) {
-  const { entries, nextCursor } = await getActivity(organizationId, cursor)
+export async function ActivityFeed({ searchParams }: Props) {
+  const user = await getCurrentUser()
+  if (!user?.organizationId) forbidden()
+
+  const { cursor } = await searchParams
+  const { entries, nextCursor } = await getActivity(user.organizationId, cursor?.toString())
 
   if (entries.length === 0) {
     return <p className={cn('text-sm text-slate-500')}>Nothing has happened yet.</p>

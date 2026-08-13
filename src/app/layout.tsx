@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import { cn } from '@/shared/lib/cn'
 import { SwrConfig } from '@/shared/components/SwrConfig'
 import { inter, poppins } from '@/shared/lib/fonts'
+import { WebVitalsReporter } from '@/app/WebVitalsReporter'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           </ThemeProvider>
         </SessionProvider>
         <Toaster richColors />
+        <WebVitalsReporter />
       </body>
     </html>
   )

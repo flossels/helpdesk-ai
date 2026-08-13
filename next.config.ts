@@ -23,10 +23,15 @@ const nextConfig: NextConfig = {
     }
   },
   images: {
+    qualities: [60, 75],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '*.googleusercontent.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'helpdesk-ai-attachments.s3.amazonaws.com'
       }
     ]
   }

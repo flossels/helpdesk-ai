@@ -7,10 +7,11 @@ import { SentimentBadge } from '@/features/ai/components/SentimentBadge'
 import type { Sentiment } from '@/features/ai/schemas/categorization'
 
 type Props = {
-  ticketId: string
+  params: Promise<{ ticketId: string }>
 }
 
-export async function TicketHeader({ ticketId }: Props) {
+export async function TicketHeader({ params }: Props) {
+  const { ticketId } = await params
   const user = await getCurrentUser()
   if (!user?.organizationId) forbidden()
 

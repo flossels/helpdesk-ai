@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Card } from '@/shared/components/ui/Card'
 import { cn } from '@/shared/lib/cn'
 
@@ -9,7 +10,9 @@ export default function AuthLayout({ children }: LayoutProps<'/'>) {
       )}
     >
       <main className={cn('w-full max-w-md')}>
-        <Card>{children}</Card>
+        <Card>
+          <Suspense fallback={null}>{children}</Suspense>
+        </Card>
       </main>
     </div>
   )
