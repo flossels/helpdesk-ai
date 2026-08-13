@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 import { defineConfig, env } from 'prisma/config'
 
-config({ path: '.env.local' })
+config({ path: process.env.ENV_FILE ?? '.env.local' })
 
 export default defineConfig({
   experimental: { externalTables: true },

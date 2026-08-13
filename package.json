@@ -11,9 +11,15 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
-    "validate": "tsc --noEmit && pnpm lint && pnpm format:check && pnpm knip",
+    "validate": "tsc --noEmit && pnpm lint && pnpm format:check && pnpm knip && pnpm test:run",
     "verify": "pnpm validate && pnpm build",
-    "validate:fix": "pnpm lint:fix && pnpm format"
+    "validate:fix": "pnpm lint:fix && pnpm format",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:reset": "ENV_FILE=.env.test prisma migrate reset --force && ENV_FILE=.env.test tsx prisma/seed.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.86",
@@ -56,13 +62,19 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@next/playwright": "^16.3.4",
+    "@playwright/test": "^1.63.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.20",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^24.13.3",
     "@types/qs": "^6.15.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.0",
     "babel-plugin-react-compiler": "1.0.0",
     "dotenv": "^17.4.2",
     "eslint": "^9",
@@ -72,13 +84,15 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
+    "jsdom": "^30.0.1",
     "knip": "^6.32.2",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^7.9.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@11.22.0"
 }
