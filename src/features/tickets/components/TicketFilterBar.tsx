@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDebounceCallback } from 'usehooks-ts'
 import { useUpdateSearchParams } from '@/shared/hooks/useUpdateSearchParams'
-import { SearchableSelect } from '@/shared/components/ui/SearchableSelect'
+import { Select } from '@/shared/components/ui/Select'
 import { cn } from '@/shared/lib/cn'
 import { TICKET_STATUSES } from '@/shared/types/ticket'
 import type { TicketStatus } from '@/shared/types/ticket'
@@ -31,12 +31,11 @@ export function TicketFilterBar() {
   return (
     <div className={cn('flex items-center gap-4')}>
       <div className="w-48">
-        <SearchableSelect
+        <Select
           items={STATUSES}
           value={status}
           onChange={(value) => updateParams({ status: value === 'ALL' ? null : value })}
           displayValue={(s) => s}
-          placeholder="Filter by status"
         />
       </div>
       <input

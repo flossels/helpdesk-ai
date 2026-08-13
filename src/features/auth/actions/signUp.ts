@@ -1,28 +1,16 @@
 'use server'
 
-import { redirect } from 'next/navigation'
 import { hash } from 'bcryptjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { signUpSchema } from '@/features/auth/schemas'
 import { signIn } from '@/auth'
 import type { ActionResult } from '@/shared/types/actionResult'
+import type { SignUpInput } from '@/features/auth/schemas'
 
-const signUpSchema = z.object({
-  name: z.string().min(1, 'Please enter your name.'),
-  email: z.email('Enter a valid email address.'),
-  password: z.string().min(8, 'Use at least 8 characters.')
-})
-
-type SignUpResult = ActionResult<never>
-
-export async function signUpAction(_prevState: SignUpResult | null, formData: FormData): Promise<SignUpResult> {
+export async function signUp(input: SignUpInput): Promise<ActionResult<void>> {
   try {
-    const parsed = signUpSchema.safeParse({
-      name: formData.get('name'),
-      email: formData.get('email'),
-      password: formData.get('password')
-    })
-
+    const parsed = signUpSchema.safeParse(input)
     if (!parsed.success) {
       return {
         success: false,
@@ -51,10 +39,10 @@ export async function signUpAction(_prevState: SignUpResult | null, formData: Fo
     await signIn('credentials', {
       email: parsed.data.email,
       password: parsed.data.password,
-      redirectTo: '/portal'
+      redirect: false
     })
 
-    redirect('/portal')
+    return { success: true, data: undefined }
   } catch (error) {
     console.error('Sign-up failed:', error)
     return { success: false, error: 'Could not create the account.' }

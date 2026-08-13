@@ -111,6 +111,7 @@ model Ticket {
   trackingId     String    @unique
   subject        String
   description    String
+  email          String?
   status         String    @default("OPEN")
   priority       String    @default("MEDIUM")
   categoryId     String

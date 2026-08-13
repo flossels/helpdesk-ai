@@ -1,10 +1,16 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { cn } from '@/shared/lib/cn'
-import { createInvitationAction } from '@/features/auth/actions/createInvitation'
+import { applyFieldErrors } from '@/shared/lib/applyFieldErrors'
+import { invitationSchema } from '@/features/auth/schemas'
+import { createInvitation } from '@/features/auth/actions/createInvitation'
+import type { InvitationInput } from '@/features/auth/schemas'
 
 const selectClasses = cn(
   'rounded-lg border px-3 py-2 text-sm text-slate-900',
@@ -13,35 +19,57 @@ const selectClasses = cn(
 )
 
 export function InviteMemberForm() {
-  const [state, formAction] = useActionState(createInvitationAction, null)
+  const [token, setToken] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting }
+  } = useForm<InvitationInput>({
+    resolver: zodResolver(invitationSchema),
+    defaultValues: { role: 'AGENT' }
+  })
 
-  const errors = state?.success === false ? state.fieldErrors : undefined
-  const formError = state?.success === false && !errors ? state.error : undefined
+  const onSubmit = handleSubmit(async (data) => {
+    const result = await createInvitation(data)
+
+    if (!result.success) {
+      if (!applyFieldErrors(result.fieldErrors, setError)) {
+        toast.error(result.error)
+      }
+      return
+    }
+
+    setToken(result.data.token)
+    reset({ role: 'AGENT' })
+  })
 
   return (
     <div className={cn('space-y-3')}>
-      <form action={formAction} className={cn('flex flex-col gap-3 sm:flex-row sm:items-start')}>
+      <form onSubmit={onSubmit} className={cn('flex flex-col gap-3 sm:flex-row sm:items-start')}>
         <div className={cn('flex-1')}>
-          <Input type="email" name="email" required placeholder="teammate@company.com" />
-          {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email[0]}</p>}
+          <Input type="email" {...register('email')} placeholder="teammate@company.com" />
+          {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</p>}
         </div>
-        <select name="role" defaultValue="AGENT" className={selectClasses} aria-label="Role">
+        <select {...register('role')} className={selectClasses} aria-label="Role">
           <option value="AGENT">Agent</option>
           <option value="ADMIN">Admin</option>
           <option value="VIEWER">Viewer</option>
         </select>
-        <Button type="submit">Invite</Button>
+        <Button type="submit" isLoading={isSubmitting}>
+          Invite
+        </Button>
       </form>
 
-      {formError && <p className={cn('text-sm text-rose-600')}>{formError}</p>}
-      {state?.success && (
+      {token && (
         <p
           className={cn(
             'rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800',
             'dark:bg-emerald-950 dark:text-emerald-200'
           )}
         >
-          Invite created. Share this code: <strong>{state.data.token}</strong>
+          Invite created. Share this code: <strong>{token}</strong>
         </p>
       )}
     </div>

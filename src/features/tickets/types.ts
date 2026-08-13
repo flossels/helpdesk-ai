@@ -18,7 +18,7 @@ export type TicketListItem = Pick<Ticket, 'id' | 'trackingId' | 'subject' | 'sla
 export type TicketReplyItem = {
   id: string
   author: string
-  body: string
+  bodyHtml: string
   isAgent: boolean
   createdAt: Date
 }

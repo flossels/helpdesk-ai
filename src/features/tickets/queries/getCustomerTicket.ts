@@ -2,6 +2,8 @@ import 'server-only'
 
 import { cache } from 'react'
 import { db } from '@/shared/lib/db'
+import { renderReplyHtml } from '@/features/tickets/queries/getReplies'
+import type { JSONContent } from '@tiptap/react'
 import type { TicketReplyItem } from '@/features/tickets/types'
 import type { TicketStatus } from '@/shared/types/ticket'
 
@@ -24,7 +26,7 @@ export const getCustomerTicket = cache(async (ticketId: string, customerId: stri
       replies: {
         select: {
           id: true,
-          contentText: true,
+          content: true,
           createdAt: true,
           author: { select: { name: true, role: true } }
         },
@@ -42,7 +44,7 @@ export const getCustomerTicket = cache(async (ticketId: string, customerId: stri
     messages: ticket.replies.map((reply) => ({
       id: reply.id,
       author: reply.author.name,
-      body: reply.contentText,
+      bodyHtml: renderReplyHtml(reply.content as JSONContent),
       isAgent: reply.author.role !== 'CUSTOMER',
       createdAt: reply.createdAt
     }))

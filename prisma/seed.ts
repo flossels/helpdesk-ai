@@ -10,6 +10,10 @@ const adapter = new PrismaPg({
 })
 const db = new PrismaClient({ adapter })
 
+function doc(text: string) {
+  return { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] }
+}
+
 async function main() {
   // Clear in reverse dependency order
   await db.activityLog.deleteMany()
@@ -101,7 +105,7 @@ async function main() {
       replies: {
         create: [
           {
-            content: 'Looking into this now.',
+            content: doc('Looking into this now.'),
             contentText: 'Looking into this now.',
             authorId: owner.id
           }
@@ -181,7 +185,7 @@ async function main() {
         replies: {
           create: [
             {
-              content: ticket.solution,
+              content: doc(ticket.solution),
               contentText: ticket.solution,
               authorId: owner.id,
               createdAt: answeredAt
@@ -189,7 +193,7 @@ async function main() {
             ...(ticket.customerLastWord
               ? [
                   {
-                    content: ticket.customerLastWord,
+                    content: doc(ticket.customerLastWord),
                     contentText: ticket.customerLastWord,
                     authorId: customer.id,
                     createdAt: new Date(answeredAt.getTime() + 15 * 60 * 1000)
@@ -221,7 +225,7 @@ async function main() {
       replies: {
         create: [
           {
-            content: 'Reproduced on our side. Raising the limit on the upload endpoint now.',
+            content: doc('Reproduced on our side. Raising the limit on the upload endpoint now.'),
             contentText: 'Reproduced on our side. Raising the limit on the upload endpoint now.',
             authorId: agent.id
           }
@@ -245,6 +249,28 @@ async function main() {
         action: 'ticket.status_changed',
         entityType: 'ticket',
         entityId: overdue.id
+      }
+    ]
+  })
+
+  await db.cannedResponse.createMany({
+    data: [
+      {
+        title: 'Password reset link',
+        content: doc('We have sent a fresh reset link to your address. It is valid for 60 minutes.'),
+        organizationId: org.id
+      },
+      {
+        title: 'Invoice copy on the way',
+        content: doc('A copy of the invoice is attached. It is also available under Billing in the portal.'),
+        organizationId: org.id
+      },
+      {
+        title: 'Need more detail',
+        content: doc(
+          'Could you send a screenshot of the error and the time it happened? That usually points us straight at the cause.'
+        ),
+        organizationId: org.id
       }
     ]
   })

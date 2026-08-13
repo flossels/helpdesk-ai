@@ -1,0 +1,11 @@
+import 'server-only'
+
+import { db } from '@/shared/lib/db'
+
+export async function getPublicOrganizationId(): Promise<string | null> {
+  const org = await db.organization.findFirst({
+    orderBy: { name: 'asc' },
+    select: { id: true }
+  })
+  return org?.id ?? null
+}

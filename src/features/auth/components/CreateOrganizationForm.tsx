@@ -1,46 +1,49 @@
 'use client'
 
-import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { cn } from '@/shared/lib/cn'
-import { createOrganizationAction } from '@/features/auth/actions/createOrganization'
+import { applyFieldErrors } from '@/shared/lib/applyFieldErrors'
+import { createOrganizationSchema } from '@/features/auth/schemas'
+import { createOrganization } from '@/features/auth/actions/createOrganization'
+import type { CreateOrganizationInput } from '@/features/auth/schemas'
 
 export function CreateOrganizationForm() {
   const router = useRouter()
   const { update } = useSession()
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting }
+  } = useForm<CreateOrganizationInput>({ resolver: zodResolver(createOrganizationSchema) })
 
-  const [state, formAction] = useActionState(
-    async (prev: Awaited<ReturnType<typeof createOrganizationAction>> | null, formData: FormData) => {
-      const result = await createOrganizationAction(prev, formData)
+  const onSubmit = handleSubmit(async (data) => {
+    const result = await createOrganization(data)
 
-      if (result.success) {
-        await update({})
-        router.push('/tickets')
+    if (!result.success) {
+      if (!applyFieldErrors(result.fieldErrors, setError)) {
+        toast.error(result.error)
       }
+      return
+    }
 
-      return result
-    },
-    null
-  )
-
-  const errors = state?.success === false ? state.fieldErrors : undefined
-  const formError = state?.success === false && !errors ? state.error : undefined
+    await update({})
+    router.push('/tickets')
+  })
 
   return (
-    <form action={formAction} className={cn('space-y-3')}>
-      {formError && (
-        <p className={cn('rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950 dark:text-rose-300')}>
-          {formError}
-        </p>
-      )}
+    <form onSubmit={onSubmit} className={cn('space-y-3')}>
       <div>
-        <Input name="name" required placeholder="Acme Support" />
-        {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name[0]}</p>}
+        <Input {...register('name')} placeholder="Acme Support" />
+        {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</p>}
       </div>
-      <Button type="submit" className={cn('w-full')}>
+      <Button type="submit" isLoading={isSubmitting} className={cn('w-full')}>
         Create workspace
       </Button>
     </form>

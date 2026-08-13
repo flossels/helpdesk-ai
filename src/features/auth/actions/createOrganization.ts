@@ -3,16 +3,14 @@
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { createOrganizationSchema } from '@/features/auth/schemas'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import type { ActionResult } from '@/shared/types/actionResult'
-
-const createOrganizationSchema = z.object({
-  name: z.string().min(2, 'Enter an organization name.').max(100)
-})
+import type { CreateOrganizationInput } from '@/features/auth/schemas'
 
 type ReturnType = ActionResult<{ organizationId: string }>
 
-export async function createOrganizationAction(_prevState: ReturnType | null, formData: FormData): Promise<ReturnType> {
+export async function createOrganization(input: CreateOrganizationInput): Promise<ReturnType> {
   try {
     const user = await getCurrentUser()
     if (!user) return { success: false, error: 'Not authenticated.' }
@@ -20,7 +18,7 @@ export async function createOrganizationAction(_prevState: ReturnType | null, fo
       return { success: false, error: 'You already belong to an organization.' }
     }
 
-    const parsed = createOrganizationSchema.safeParse({ name: formData.get('name') })
+    const parsed = createOrganizationSchema.safeParse(input)
     if (!parsed.success) {
       return {
         success: false,

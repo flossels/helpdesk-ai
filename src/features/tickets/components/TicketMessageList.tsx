@@ -26,7 +26,17 @@ export function TicketMessageList({ messages }: Props) {
               })}
             >
               <p className={cn('mb-1 text-xs font-medium opacity-80')}>{msg.author}</p>
-              <p>{msg.body}</p>
+              <div
+                className={cn(
+                  '[&_a]:underline',
+                  '[&_strong]:font-semibold',
+                  '[&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5',
+                  '[&_code]:rounded [&_code]:bg-black/10 [&_code]:px-1 [&_code]:text-xs',
+                  '[&_pre]:mt-1 [&_pre]:rounded [&_pre]:bg-black/20 [&_pre]:p-2 [&_pre]:text-xs',
+                  '[&_>*+*]:mt-1'
+                )}
+                dangerouslySetInnerHTML={{ __html: msg.bodyHtml }}
+              />
             </div>
           </li>
         )

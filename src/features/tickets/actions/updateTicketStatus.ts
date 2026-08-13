@@ -7,14 +7,13 @@ import { hasScope } from '@/shared/lib/authorization'
 import { updateTicketStatusSchema } from '@/features/tickets/schemas'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import type { ActionResult } from '@/shared/types/actionResult'
-import type { TicketStatus } from '@/shared/types/ticket'
 import type { UpdateTicketStatusInput } from '@/features/tickets/schemas'
 
 type ReturnType = ActionResult<{
   ticketId: string
 }>
 
-async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<ReturnType> {
+export async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<ReturnType> {
   try {
     const user = await getCurrentUser()
     if (!user) return { success: false, error: 'Not authenticated.' }
@@ -58,11 +57,4 @@ async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<Retur
       error: 'Could not update status.'
     }
   }
-}
-
-export async function updateTicketStatusAction(_prevState: ReturnType | null, formData: FormData) {
-  return updateTicketStatus({
-    ticketId: formData.get('ticketId') as string,
-    status: formData.get('status') as TicketStatus
-  })
 }

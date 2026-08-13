@@ -1,32 +1,54 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 import { SubmitButton } from '@/shared/components/SubmitButton'
 import { Input } from '@/shared/components/ui/Input'
 import { cn } from '@/shared/lib/cn'
-import { signUpAction } from '@/features/auth/actions/signUp'
+import { applyFieldErrors } from '@/shared/lib/applyFieldErrors'
+import { signUpSchema } from '@/features/auth/schemas'
+import { signUp } from '@/features/auth/actions/signUp'
+import type { SignUpInput } from '@/features/auth/schemas'
 
 export function SignUpForm() {
-  const [state, formAction] = useActionState(signUpAction, null)
-  const errors = state?.success === false ? state.fieldErrors : undefined
-  const error = state?.success === false ? state.error : undefined
+  const router = useRouter()
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting }
+  } = useForm<SignUpInput>({ resolver: zodResolver(signUpSchema) })
+
+  const onSubmit = handleSubmit(async (data) => {
+    const result = await signUp(data)
+
+    if (!result.success) {
+      if (!applyFieldErrors(result.fieldErrors, setError)) {
+        toast.error(result.error)
+      }
+      return
+    }
+
+    router.push('/portal')
+  })
 
   return (
-    <form action={formAction} className={cn('space-y-3')}>
+    <form onSubmit={onSubmit} className={cn('space-y-3')}>
       <div>
-        <Input type="text" name="name" required placeholder="Your name" />
-        {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name[0]}</p>}
+        <Input type="text" {...register('name')} placeholder="Your name" />
+        {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</p>}
       </div>
       <div>
-        <Input type="email" name="email" required placeholder="you@example.com" />
-        {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email[0]}</p>}
+        <Input type="email" {...register('email')} placeholder="you@example.com" />
+        {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</p>}
       </div>
       <div>
-        <Input type="password" name="password" required placeholder="Password (min. 8 characters)" />
-        {errors?.password && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.password[0]}</p>}
+        <Input type="password" {...register('password')} placeholder="Password (min. 8 characters)" />
+        {errors?.password && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.password.message}</p>}
       </div>
-      {error && !errors && <p className={cn('text-sm text-rose-600')}>{error}</p>}
-      <SubmitButton label="Create account" pendingLabel="Creating account..." />
+      <SubmitButton label="Create account" pendingLabel="Creating account..." pending={isSubmitting} />
     </form>
   )
 }

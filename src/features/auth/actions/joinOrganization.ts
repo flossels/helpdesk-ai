@@ -2,16 +2,14 @@
 
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { joinOrganizationSchema } from '@/features/auth/schemas'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import type { ActionResult } from '@/shared/types/actionResult'
-
-const joinSchema = z.object({
-  token: z.string().min(1, 'Enter your invite code.')
-})
+import type { JoinOrganizationInput } from '@/features/auth/schemas'
 
 type ReturnType = ActionResult<{ organizationId: string }>
 
-export async function joinOrganizationAction(_prevState: ReturnType | null, formData: FormData): Promise<ReturnType> {
+export async function joinOrganization(input: JoinOrganizationInput): Promise<ReturnType> {
   try {
     const user = await getCurrentUser()
     if (!user) return { success: false, error: 'Not authenticated.' }
@@ -19,7 +17,7 @@ export async function joinOrganizationAction(_prevState: ReturnType | null, form
       return { success: false, error: 'You already belong to an organization.' }
     }
 
-    const parsed = joinSchema.safeParse({ token: formData.get('token') })
+    const parsed = joinOrganizationSchema.safeParse(input)
     if (!parsed.success) {
       return {
         success: false,

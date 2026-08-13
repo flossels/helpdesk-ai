@@ -13,7 +13,7 @@ type ReturnType = ActionResult<{
   replyId: string
 }>
 
-async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
+export async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
   try {
     const user = await getCurrentUser()
     if (!user) return { success: false, error: 'Not authenticated.' }
@@ -41,11 +41,8 @@ async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
       data: {
         ticketId: ticket.id,
         authorId: user.id,
-        content: {
-          type: 'doc',
-          content: [{ type: 'paragraph', content: [{ type: 'text', text: parsed.data.content }] }]
-        },
-        contentText: parsed.data.content
+        content: parsed.data.content,
+        contentText: parsed.data.contentText
       },
       select: { id: true }
     })
@@ -63,13 +60,4 @@ async function replyToTicket(input: ReplyToTicketInput): Promise<ReturnType> {
       error: 'Could not post reply.'
     }
   }
-}
-
-export async function replyToTicketAction(_prevState: ReturnType | null, formData: FormData): Promise<ReturnType> {
-  const input: ReplyToTicketInput = {
-    ticketId: formData.get('ticketId') as string,
-    content: formData.get('content') as string
-  }
-
-  return replyToTicket(input)
 }
