@@ -1,8 +1,7 @@
 import 'server-only'
-import { embed } from 'ai'
 import { db } from '@/shared/lib/db'
-import { getEmbeddingModel } from '@/features/ai/lib/getEmbeddingModel'
 import { EMBEDDING_CONFIG } from '@/features/ai/lib/aiConfig'
+import { getCachedQueryEmbedding } from '@/features/ai/lib/getCachedEmbedding'
 
 export type ArticleChunk = {
   chunkText: string
@@ -21,8 +20,7 @@ export type TicketChunk = {
 }
 
 export async function embedQuery(query: string): Promise<string> {
-  const { embedding } = await embed({ model: getEmbeddingModel(), value: query })
-  return JSON.stringify(embedding)
+  return JSON.stringify(await getCachedQueryEmbedding(query))
 }
 
 export async function searchArticleEmbeddings(

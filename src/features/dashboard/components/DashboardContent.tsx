@@ -1,10 +1,20 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { cn } from '@/shared/lib/cn'
 import { useDashboardMetrics } from '@/features/dashboard/hooks/useDashboardMetrics'
-import { TicketVolumeChart } from '@/features/dashboard/components/TicketVolumeChart'
-import { CategoryDistributionChart } from '@/features/dashboard/components/CategoryDistributionChart'
+import { ChartSkeleton } from '@/features/dashboard/components/ChartSkeleton'
 import type { DashboardMetrics } from '@/features/dashboard/types'
+
+const TicketVolumeChart = dynamic(
+  () => import('@/features/dashboard/components/TicketVolumeChart').then((mod) => mod.TicketVolumeChart),
+  { loading: () => <ChartSkeleton />, ssr: false }
+)
+
+const CategoryDistributionChart = dynamic(
+  () => import('@/features/dashboard/components/CategoryDistributionChart').then((mod) => mod.CategoryDistributionChart),
+  { loading: () => <ChartSkeleton />, ssr: false }
+)
 
 type Props = {
   initial: DashboardMetrics

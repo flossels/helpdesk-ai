@@ -5,10 +5,11 @@ import { TicketMessageList } from '@/features/tickets/components/TicketMessageLi
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 
 type Props = {
-  ticketId: string
+  params: Promise<{ ticketId: string }>
 }
 
-export async function TicketThread({ ticketId }: Props) {
+export async function TicketThread({ params }: Props) {
+  const { ticketId } = await params
   const user = await getCurrentUser()
   if (!user?.organizationId) forbidden()
 

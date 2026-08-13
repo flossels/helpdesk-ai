@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Field, Label } from '@headlessui/react'
 import { toast } from 'sonner'
 import { SubmitButton } from '@/shared/components/SubmitButton'
-import { RichTextEditor } from '@/shared/components/ui/RichTextEditor'
+import { RichTextEditorLazy } from '@/shared/components/ui/RichTextEditorLazy'
 import { cn } from '@/shared/lib/cn'
 import { applyFieldErrors } from '@/shared/lib/applyFieldErrors'
 import { replyToTicketSchema } from '@/features/tickets/schemas'
@@ -81,7 +81,7 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
         <div className={cn('mb-2')}>
           <CannedResponsePicker responses={cannedResponses} onSelect={insertCanned} />
         </div>
-        <RichTextEditor
+        <RichTextEditorLazy
           key={editorKey}
           value={field.value ?? EMPTY_DOC}
           onChange={(content, text) => {

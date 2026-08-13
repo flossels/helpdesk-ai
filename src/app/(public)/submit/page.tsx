@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { PublicTicketForm } from '@/features/tickets/components/PublicTicketForm'
 import { getCategories } from '@/features/tickets/queries/getCategories'
@@ -18,8 +17,6 @@ export default function SubmitPage() {
 }
 
 async function SubmitForm() {
-  await connection()
-
   const organizationId = await getPublicOrganizationId()
   if (!organizationId) notFound()
 

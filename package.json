@@ -19,7 +19,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:reset": "ENV_FILE=.env.test prisma migrate reset --force && ENV_FILE=.env.test tsx prisma/seed.ts"
+    "test:e2e:reset": "ENV_FILE=.env.test prisma migrate reset --force && ENV_FILE=.env.test tsx prisma/seed.ts",
+    "analyze": "next experimental-analyze"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.86",

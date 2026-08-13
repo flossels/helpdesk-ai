@@ -1,9 +1,11 @@
 import 'server-only'
 
 import { cache } from 'react'
+import { connection } from 'next/server'
 import { auth } from '@/auth'
 
 export const getCurrentUser = cache(async () => {
+  await connection()
   const session = await auth()
   if (!session?.user) return null
 

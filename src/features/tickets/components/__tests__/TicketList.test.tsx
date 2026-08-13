@@ -41,7 +41,7 @@ describe('TicketList', () => {
 
     // Server Components are async functions: await the component to get
     // its JSX, then render that.
-    const ui = await TicketList({})
+    const ui = await TicketList({ searchParams: Promise.resolve({}) })
     render(ui)
 
     expect(screen.getByText('Login issue')).toBeInTheDocument()
@@ -52,7 +52,7 @@ describe('TicketList', () => {
   it('shows an empty state when there are no tickets', async () => {
     mockGetTickets.mockResolvedValue([])
 
-    const ui = await TicketList({})
+    const ui = await TicketList({ searchParams: Promise.resolve({}) })
     render(ui)
 
     expect(screen.getByText('No tickets found.')).toBeInTheDocument()
