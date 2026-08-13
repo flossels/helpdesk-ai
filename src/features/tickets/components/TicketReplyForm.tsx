@@ -12,6 +12,7 @@ import { applyFieldErrors } from '@/shared/lib/applyFieldErrors'
 import { replyToTicketSchema } from '@/features/tickets/schemas'
 import { replyToTicket } from '@/features/tickets/actions/replyToTicket'
 import { CannedResponsePicker } from '@/features/settings/components/CannedResponsePicker'
+import { useDraftStore } from '@/features/tickets/stores/draftStore'
 import type { JSONContent } from '@tiptap/react'
 import type { ReplyToTicketInput } from '@/features/tickets/schemas'
 import type { CannedResponseItem } from '@/features/settings/types'
@@ -30,6 +31,9 @@ function extractText(node: JSONContent): string {
 
 export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
   const [editorKey, setEditorKey] = useState(0)
+  const draft = useDraftStore((state) => state.drafts[ticketId])
+  const setDraft = useDraftStore((state) => state.setDraft)
+  const clearDraft = useDraftStore((state) => state.clearDraft)
   const {
     control,
     handleSubmit,
@@ -38,7 +42,11 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
     setError,
     formState: { errors, isSubmitting }
   } = useForm<ReplyToTicketInput>({
-    defaultValues: { ticketId, content: EMPTY_DOC, contentText: '' },
+    defaultValues: {
+      ticketId,
+      content: draft?.content ?? EMPTY_DOC,
+      contentText: draft?.contentText ?? ''
+    },
     resolver: zodResolver(replyToTicketSchema)
   })
 
@@ -60,6 +68,7 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
       return
     }
 
+    clearDraft(ticketId)
     reset({ ticketId, content: EMPTY_DOC, contentText: '' })
     setEditorKey((key) => key + 1)
     toast.success('Reply sent.')
@@ -78,6 +87,7 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
           onChange={(content, text) => {
             field.onChange(content)
             setValue('contentText', text, { shouldValidate: true })
+            setDraft(ticketId, { content, contentText: text })
           }}
           placeholder="Write your reply…"
         />

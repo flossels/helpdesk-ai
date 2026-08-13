@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes'
 import { SessionProvider } from 'next-auth/react'
 import { Toaster } from 'sonner'
 import { cn } from '@/shared/lib/cn'
+import { SwrConfig } from '@/shared/components/SwrConfig'
 import { inter, poppins } from '@/shared/lib/fonts'
 import type { Metadata } from 'next'
 
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       <body>
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+            <SwrConfig>{children}</SwrConfig>
           </ThemeProvider>
         </SessionProvider>
         <Toaster richColors />

@@ -16,6 +16,7 @@ function doc(text: string) {
 
 async function main() {
   // Clear in reverse dependency order
+  await db.slaRule.deleteMany()
   await db.activityLog.deleteMany()
   await db.ticketReply.deleteMany()
   await db.ticket.deleteMany()
@@ -76,6 +77,15 @@ async function main() {
       password: await hash('Start2026!', 10),
       role: 'CUSTOMER'
     }
+  })
+
+  await db.slaRule.createMany({
+    data: [
+      { priority: 'URGENT', responseMinutes: 30, resolutionMinutes: 240, organizationId: org.id },
+      { priority: 'HIGH', responseMinutes: 120, resolutionMinutes: 480, organizationId: org.id },
+      { priority: 'MEDIUM', responseMinutes: 480, resolutionMinutes: 1440, organizationId: org.id },
+      { priority: 'LOW', responseMinutes: 1440, resolutionMinutes: 4320, organizationId: org.id }
+    ]
   })
 
   await db.category.createMany({

@@ -1,4 +1,5 @@
 import { forbidden, notFound } from 'next/navigation'
+import { SlaCountdown } from '@/features/tickets/components/SlaCountdown'
 import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
 import { getTicketById } from '@/features/tickets/queries/getTicketById'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
@@ -22,6 +23,14 @@ export async function TicketHeader({ ticketId }: Props) {
         <dd>
           <TicketPriorityBadge priority={ticket.priority} />
         </dd>
+        {ticket.slaDeadline && (
+          <>
+            <dt className="col-end-1">Response due:</dt>
+            <dd>
+              <SlaCountdown ticketId={ticket.id} deadline={ticket.slaDeadline} />
+            </dd>
+          </>
+        )}
       </dl>
     </header>
   )

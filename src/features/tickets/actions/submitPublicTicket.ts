@@ -1,11 +1,18 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
+import { logActivity } from '@/shared/lib/logActivity'
+import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
+import { publishEvent } from '@/shared/lib/eventBus'
+import { sendEmail } from '@/shared/lib/sendEmail'
 import { publicTicketSchema } from '@/features/tickets/schemas'
 import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
+import { computeSlaDeadline } from '@/features/tickets/lib/computeSlaDeadline'
+import { TicketCreated } from '@/emails/TicketCreated'
 import type { ActionResult } from '@/shared/types/actionResult'
 import type { PublicTicketInput } from '@/features/tickets/schemas'
 
@@ -31,6 +38,7 @@ export async function submitPublicTicket(
     }
 
     const customer = await findOrCreateCustomer(parsed.data.email, parsed.data.name)
+    const priority = parsed.data.priority ?? 'MEDIUM'
 
     const ticket = await db.ticket.create({
       data: {
@@ -38,7 +46,8 @@ export async function submitPublicTicket(
         subject: parsed.data.subject,
         description: parsed.data.description,
         email: parsed.data.email,
-        priority: parsed.data.priority ?? 'MEDIUM',
+        priority,
+        slaDeadline: await computeSlaDeadline(category.organizationId, priority),
         categoryId: parsed.data.categoryId,
         customerId: customer.id,
         organizationId: category.organizationId
@@ -58,6 +67,41 @@ export async function submitPublicTicket(
         data: { entityId: ticket.id }
       })
     }
+
+    await logActivity({
+      organizationId: category.organizationId,
+      userId: customer.id,
+      action: 'ticket.created',
+      entityType: 'ticket',
+      entityId: ticket.id
+    })
+
+    publishEvent({
+      organizationId: category.organizationId,
+      type: 'ticket.created',
+      data: { ticketId: ticket.id }
+    })
+
+    after(() =>
+      dispatchWebhooks(category.organizationId, {
+        type: 'ticket.created',
+        data: { ticketId: ticket.id, trackingId: ticket.trackingId }
+      }).catch((error) => console.error('Webhook dispatch failed:', error))
+    )
+
+    const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
+
+    after(() =>
+      sendEmail({
+        to: parsed.data.email,
+        subject: `We received your ticket ${ticket.trackingId}`,
+        template: TicketCreated({
+          trackingId: ticket.trackingId,
+          subject: parsed.data.subject,
+          ticketUrl
+        })
+      }).catch((error) => console.error('Confirmation email failed:', error))
+    )
 
     revalidatePath('/tickets')
 

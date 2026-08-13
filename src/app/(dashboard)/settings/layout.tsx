@@ -6,6 +6,7 @@ export default function SettingsLayout({ children }: LayoutProps<'/settings'>) {
       <nav className="mb-4 flex gap-4 border-b p-2 pb-4">
         <NavLink href="/settings">General</NavLink>
         <NavLink href="/settings/members">Members</NavLink>
+        <NavLink href="/settings/webhooks">Webhooks</NavLink>
       </nav>
       <div>{children}</div>
     </div>
