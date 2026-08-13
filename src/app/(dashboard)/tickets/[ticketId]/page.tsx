@@ -14,6 +14,9 @@ import { TicketSummary } from '@/features/tickets/components/TicketSummary'
 import { TicketThread } from '@/features/tickets/components/TicketThread'
 import { getCannedResponses } from '@/features/settings/queries/getCannedResponses'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
+import { CopilotPanel } from '@/features/copilot/components/CopilotPanel'
+import { toUIMessages } from '@/features/copilot/lib/loadConversation'
+import { getLatestTicketConversation } from '@/features/copilot/queries/getConversations'
 import type { Metadata } from 'next'
 import type { TicketStatus } from '@/shared/types/ticket'
 
@@ -44,9 +47,10 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
   const ticket = await getTicketById(ticketId, user.organizationId)
   if (!ticket) notFound()
 
-  const canSummarize = hasScope(user.scopes, 'ai:use')
+  const canUseAi = hasScope(user.scopes, 'ai:use')
   const cannedResponses = await getCannedResponses(user.organizationId)
   const attachments = await getAttachments('ticket', ticketId, user.organizationId)
+  const latestChat = canUseAi ? await getLatestTicketConversation(ticketId, user.id) : null
 
   return (
     <div className="flex flex-col gap-8 py-2">
@@ -68,7 +72,15 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
         </Suspense>
       </ThreadErrorBoundary>
 
-      {canSummarize && <TicketSummary ticketId={ticketId} />}
+      {canUseAi && <TicketSummary ticketId={ticketId} />}
+
+      {canUseAi && (
+        <CopilotPanel
+          ticketId={ticketId}
+          conversationId={latestChat?.id ?? crypto.randomUUID()}
+          initialMessages={latestChat ? toUIMessages(latestChat.messages) : []}
+        />
+      )}
 
       <TicketReplyForm ticketId={ticketId} cannedResponses={cannedResponses} />
     </div>

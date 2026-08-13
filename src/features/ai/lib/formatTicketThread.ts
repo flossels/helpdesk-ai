@@ -1,7 +1,7 @@
 import 'server-only'
 import type { getTicketThread } from '@/features/tickets/queries/getTicketThread'
 
-type TicketThread = NonNullable<Awaited<ReturnType<typeof getTicketThread>>>
+export type TicketThread = NonNullable<Awaited<ReturnType<typeof getTicketThread>>>
 
 const MAX_MESSAGES = 30
 
