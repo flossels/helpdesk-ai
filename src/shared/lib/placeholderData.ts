@@ -39,10 +39,3 @@ export const getArticleBySlug = cache(async (slug: string) => {
 
   return ARTICLES.find((a) => a.slug === slug) ?? null
 })
-
-export async function getTicketSummaryFromStore() {
-  // Simulate expensive AI call
-  await delayExecution(3000)
-
-  return 'Customer unable to reset password. Likely a token expiration issue.'
-}

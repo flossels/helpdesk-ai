@@ -16,6 +16,7 @@
     "validate:fix": "pnpm lint:fix && pnpm format"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.86",
     "@auth/prisma-adapter": "^2.11.3",
     "@aws-sdk/client-s3": "^3.1116.0",
     "@aws-sdk/client-sesv2": "^3.1117.0",
@@ -42,6 +43,7 @@
     "react-dropzone": "^20.1.1",
     "react-email": "^6.9.2",
     "react-hook-form": "^7.86.0",
+    "react-markdown": "^10.1.0",
     "recharts": "^3.10.1",
     "server-only": "^0.0.1",
     "sonner": "^2.0.8",

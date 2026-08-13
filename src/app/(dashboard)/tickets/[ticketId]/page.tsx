@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { forbidden, notFound } from 'next/navigation'
+import { hasScope } from '@/shared/lib/authorization'
 import { AttachmentList } from '@/shared/components/ui/AttachmentList'
 import { getAttachments } from '@/features/tickets/queries/getAttachments'
 import { getTicketById } from '@/features/tickets/queries/getTicketById'
-import { SummarySkeleton } from '@/features/tickets/components/SummarySkeleton'
 import { HeaderSkeleton } from '@/features/tickets/components/HeaderSkeleton'
 import { ThreadSkeleton } from '@/features/tickets/components/ThreadSkeleton'
 import { ThreadErrorBoundary } from '@/features/tickets/components/ThreadErrorBoundary'
@@ -44,6 +44,7 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
   const ticket = await getTicketById(ticketId, user.organizationId)
   if (!ticket) notFound()
 
+  const canSummarize = hasScope(user.scopes, 'ai:use')
   const cannedResponses = await getCannedResponses(user.organizationId)
   const attachments = await getAttachments('ticket', ticketId, user.organizationId)
 
@@ -67,9 +68,7 @@ async function TicketPageContent({ params }: { params: PageProps<'/tickets/[tick
         </Suspense>
       </ThreadErrorBoundary>
 
-      <Suspense fallback={<SummarySkeleton />}>
-        <TicketSummary />
-      </Suspense>
+      {canSummarize && <TicketSummary ticketId={ticketId} />}
 
       <TicketReplyForm ticketId={ticketId} cannedResponses={cannedResponses} />
     </div>
