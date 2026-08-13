@@ -37,7 +37,6 @@ const nextConfig: NextConfig = {
   headers: async () => [{ source: '/(.*)', headers: securityHeaders }],
   reactCompiler: true,
   typedRoutes: true,
-  agentRules: false,
   cacheComponents: true,
   partialPrefetching: true,
   logging: {

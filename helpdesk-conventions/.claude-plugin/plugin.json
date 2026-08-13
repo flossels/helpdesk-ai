@@ -1,0 +1,6 @@
+{
+  "name": "helpdesk-conventions",
+  "description": "Next.js 16 conventions, review skill and reviewer agent",
+  "version": "1.0.0",
+  "author": { "name": "HelpDesk AI" }
+}

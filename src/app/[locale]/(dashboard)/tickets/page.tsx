@@ -4,6 +4,7 @@ import { TicketEvents } from '@/features/tickets/components/TicketEvents'
 import { TicketFilterBar } from '@/features/tickets/components/TicketFilterBar'
 import { TicketList } from '@/features/tickets/components/TicketList'
 import { TicketListSkeleton } from '@/features/tickets/components/TicketListSkeleton'
+import { SavedViewsList } from '@/features/saved-views/components/SavedViewsList'
 
 export const instant = true
 
@@ -14,6 +15,9 @@ export default function TicketsPage({ searchParams }: PageProps<'/[locale]/ticke
       <h1 className={cn('text-2xl font-bold text-slate-900 dark:text-slate-100')}>Tickets</h1>
       <Suspense fallback={null}>
         <TicketFilterBar />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SavedViewsList />
       </Suspense>
       <Suspense fallback={<TicketListSkeleton />}>
         <TicketList searchParams={searchParams} />
