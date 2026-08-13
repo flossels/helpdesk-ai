@@ -10,6 +10,7 @@ import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
 import { updateTicketStatusSchema } from '@/features/tickets/schemas'
+import { embedTicket } from '@/features/ai/actions/embedTicket'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { TicketResolved } from '@/emails/TicketResolved'
 import type { ActionResult } from '@/shared/types/actionResult'
@@ -68,6 +69,10 @@ export async function updateTicketStatus(input: UpdateTicketStatusInput): Promis
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
       }).catch((error) => console.error('Webhook dispatch failed:', error))
     )
+
+    if (parsed.data.status === 'RESOLVED' || parsed.data.status === 'CLOSED') {
+      after(() => embedTicket(ticket.id, user.organizationId!))
+    }
 
     if (parsed.data.status === 'RESOLVED' && ticket.status !== 'RESOLVED' && ticket.email) {
       const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`

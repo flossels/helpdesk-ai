@@ -3,7 +3,8 @@
 import { notFound } from 'next/navigation'
 import { cacheLife, cacheTag } from 'next/cache'
 import { cn } from '@/shared/lib/cn'
-import { getPublishedArticles, getArticleBySlug } from '@/shared/lib/placeholderData'
+import { getArticleBySlug } from '@/features/knowledge/queries/getArticleBySlug'
+import { getPublishedArticles } from '@/features/knowledge/queries/getPublishedArticles'
 import type { Metadata } from 'next'
 
 export async function generateStaticParams() {
@@ -34,7 +35,7 @@ export default async function ArticlePage({ params }: PageProps<'/help/[slug]'>)
   return (
     <article className={cn('prose dark:prose-invert max-w-none')}>
       <h1>{article.title}</h1>
-      <p>{article.content}</p>
+      <p>{article.contentText}</p>
     </article>
   )
 }

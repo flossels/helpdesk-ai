@@ -20,6 +20,8 @@ async function main() {
   await db.activityLog.deleteMany()
   await db.ticketReply.deleteMany()
   await db.ticket.deleteMany()
+  await db.articleEmbedding.deleteMany()
+  await db.article.deleteMany()
   await db.orgMember.deleteMany()
   await db.user.deleteMany()
   await db.organization.deleteMany()
@@ -283,6 +285,41 @@ async function main() {
         organizationId: org.id
       }
     ]
+  })
+
+  const articles = [
+    {
+      title: 'Getting Started with HelpDesk AI',
+      slug: 'getting-started',
+      excerpt: 'Learn how to submit your first ticket and track its progress.',
+      contentText:
+        'Welcome to HelpDesk AI. To submit a ticket, open the support portal and describe what went wrong. You will receive a tracking link by email so you can follow the conversation without an account.'
+    },
+    {
+      title: 'Setting Up Your Account',
+      slug: 'account-setup',
+      excerpt: 'Configure your profile, notifications, and team preferences.',
+      contentText:
+        'After signing up, navigate to Settings to add your display name and a photo. Notification preferences decide which ticket events reach your inbox, and team members with the right scope can invite colleagues.'
+    },
+    {
+      title: 'Frequently Asked Questions',
+      slug: 'faq',
+      excerpt: 'Answers to the questions our support team hears most often.',
+      contentText:
+        'How do I reset my password? Use the reset link on the login page; it stays valid for 60 minutes. How long until someone replies? Response targets depend on ticket priority and are shown on every ticket.'
+    }
+  ]
+
+  await db.article.createMany({
+    data: articles.map((article) => ({
+      ...article,
+      content: doc(article.contentText),
+      status: 'PUBLISHED',
+      isPublic: true,
+      authorId: owner.id,
+      organizationId: org.id
+    }))
   })
 }
 
