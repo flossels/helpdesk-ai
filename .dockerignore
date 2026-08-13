@@ -1,0 +1,11 @@
+node_modules
+.next
+!.next/cache
+.git
+.env*
+*.md
+.vscode
+.idea
+coverage
+playwright-report
+test-results

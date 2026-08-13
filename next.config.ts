@@ -27,6 +27,8 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  output: process.env.VERCEL || process.env.E2E ? undefined : 'standalone',
+  deploymentId: process.env.DEPLOYMENT_ID,
   reactStrictMode: true,
   poweredByHeader: false,
   headers: async () => [{ source: '/(.*)', headers: securityHeaders }],
