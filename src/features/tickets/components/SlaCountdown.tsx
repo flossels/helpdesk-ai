@@ -36,7 +36,7 @@ export function SlaCountdown({ ticketId, deadline }: Props) {
     return () => clearInterval(timer)
   }, [deadline, ticketId])
 
-  if (!isClient) return <span className="text-slate-400">…</span>
+  if (!isClient) return <span className="text-slate-500 dark:text-slate-400">…</span>
 
   const overdue = ms < 0
   const minutes = Math.floor(Math.abs(ms) / 60_000)

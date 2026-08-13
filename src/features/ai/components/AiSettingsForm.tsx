@@ -2,7 +2,17 @@
 
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Field, Label, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions, Switch } from '@headlessui/react'
+import {
+  Field,
+  Label,
+  Description,
+  Input,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+  Switch
+} from '@headlessui/react'
 import { toast } from 'sonner'
 import { SubmitButton } from '@/shared/components/SubmitButton'
 import { cn } from '@/shared/lib/cn'
@@ -82,7 +92,9 @@ export function AiSettingsForm({ settings }: Props) {
           className={cn('w-full rounded-lg border px-3 py-2 text-sm')}
         />
         <p className={cn('mt-1 text-xs text-slate-500')}>{settings.usedThisMonth.toLocaleString()} tokens used this month.</p>
-        {errors.tokenBudget && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.tokenBudget.message}</p>}
+        {errors.tokenBudget && (
+          <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.tokenBudget.message}</Description>
+        )}
       </Field>
 
       {(['autoCategorizationEnabled', 'autoSentimentEnabled'] as const).map((name) => (

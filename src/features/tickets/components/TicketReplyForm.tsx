@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm, useController } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Field, Label } from '@headlessui/react'
+import { Field, Label, Description } from '@headlessui/react'
 import { toast } from 'sonner'
 import { SubmitButton } from '@/shared/components/SubmitButton'
 import { RichTextEditorLazy } from '@/shared/components/ui/RichTextEditorLazy'
@@ -91,7 +91,9 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
           }}
           placeholder="Write your reply…"
         />
-        {errors?.contentText && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.contentText.message}</p>}
+        {errors?.contentText && (
+          <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.contentText.message}</Description>
+        )}
       </Field>
 
       <SubmitButton label="Send Reply" pendingLabel="Sending..." pending={isSubmitting} />

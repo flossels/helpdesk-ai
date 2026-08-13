@@ -20,7 +20,7 @@ export function CollapsibleSidebar({ children }: Props) {
   return (
     <>
       <div className="absolute top-3 left-4 z-30 md:hidden">
-        <Button variant="ghost" size="sm" onClick={() => setMobileOpen(true)}>
+        <Button variant="ghost" size="sm" aria-label="Open navigation" onClick={() => setMobileOpen(true)}>
           <Bars3Icon className="size-5" />
         </Button>
       </div>
@@ -39,7 +39,7 @@ export function CollapsibleSidebar({ children }: Props) {
             <Logo />
           </Link>
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={() => setMobileOpen(false)}>
+            <Button variant="ghost" size="sm" aria-label="Close navigation" onClick={() => setMobileOpen(false)}>
               <XMarkIcon className="size-5" />
             </Button>
           </div>
@@ -48,7 +48,12 @@ export function CollapsibleSidebar({ children }: Props) {
         <nav className="flex-1 overflow-hidden p-4">{children}</nav>
 
         <div className="hidden p-4 lg:block">
-          <Button variant="ghost" size="sm" onClick={toggleCollapsed}>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={toggleCollapsed}
+          >
             {isCollapsed ? <ChevronRightIcon className="size-5" /> : <ChevronLeftIcon className="size-5" />}
           </Button>
         </div>

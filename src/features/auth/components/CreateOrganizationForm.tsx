@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
+import { Field, Description } from '@headlessui/react'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { cn } from '@/shared/lib/cn'
@@ -39,10 +40,10 @@ export function CreateOrganizationForm() {
 
   return (
     <form onSubmit={onSubmit} className={cn('space-y-3')}>
-      <div>
+      <Field>
         <Input {...register('name')} placeholder="Acme Support" />
-        {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</p>}
-      </div>
+        {errors?.name && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</Description>}
+      </Field>
       <Button type="submit" isLoading={isSubmitting} className={cn('w-full')}>
         Create workspace
       </Button>

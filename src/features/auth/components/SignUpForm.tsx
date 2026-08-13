@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { Field, Description } from '@headlessui/react'
 import { SubmitButton } from '@/shared/components/SubmitButton'
 import { Input } from '@/shared/components/ui/Input'
 import { cn } from '@/shared/lib/cn'
@@ -36,18 +37,18 @@ export function SignUpForm() {
 
   return (
     <form onSubmit={onSubmit} className={cn('space-y-3')}>
-      <div>
+      <Field>
         <Input type="text" {...register('name')} placeholder="Your name" />
-        {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</p>}
-      </div>
-      <div>
+        {errors?.name && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</Description>}
+      </Field>
+      <Field>
         <Input type="email" {...register('email')} placeholder="you@example.com" />
-        {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</p>}
-      </div>
-      <div>
+        {errors?.email && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</Description>}
+      </Field>
+      <Field>
         <Input type="password" {...register('password')} placeholder="Password (min. 8 characters)" />
-        {errors?.password && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.password.message}</p>}
-      </div>
+        {errors?.password && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.password.message}</Description>}
+      </Field>
       <SubmitButton label="Create account" pendingLabel="Creating account..." pending={isSubmitting} />
     </form>
   )

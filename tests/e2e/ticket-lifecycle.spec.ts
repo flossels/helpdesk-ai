@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import type { Page } from '@playwright/test'
+import { loginAs } from '@/tests/e2e/support/loginAs'
 
 // A unique subject per run: the inbox accumulates tickets, and a locator
 // that matches several of them fails Playwright's strict mode.
@@ -67,16 +67,6 @@ test.describe('Ticket lifecycle', () => {
     await expect(page.getByRole('button', { name: 'Status RESOLVED', exact: true })).toBeVisible()
   })
 })
-
-// Authenticate without the Google OAuth flow via the test-login route. It
-// mints a session for whichever user the email belongs to, agent or
-// customer, which is how one test can cover both sides of a conversation.
-async function loginAs(page: Page, email: string) {
-  const response = await page.request.post('/api/test/login', {
-    data: { email }
-  })
-  expect(response.ok()).toBe(true)
-}
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {

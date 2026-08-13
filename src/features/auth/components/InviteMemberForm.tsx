@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { Field, Description } from '@headlessui/react'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { cn } from '@/shared/lib/cn'
@@ -48,10 +49,10 @@ export function InviteMemberForm() {
   return (
     <div className={cn('space-y-3')}>
       <form onSubmit={onSubmit} className={cn('flex flex-col gap-3 sm:flex-row sm:items-start')}>
-        <div className={cn('flex-1')}>
+        <Field className={cn('flex-1')}>
           <Input type="email" {...register('email')} placeholder="teammate@company.com" />
-          {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</p>}
-        </div>
+          {errors?.email && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</Description>}
+        </Field>
         <select {...register('role')} className={selectClasses} aria-label="Role">
           <option value="AGENT">Agent</option>
           <option value="ADMIN">Admin</option>

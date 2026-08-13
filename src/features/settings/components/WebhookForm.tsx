@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Field, Label, Input } from '@headlessui/react'
+import { Field, Label, Description, Input } from '@headlessui/react'
 import { toast } from 'sonner'
 import { SubmitButton } from '@/shared/components/SubmitButton'
 import { cn } from '@/shared/lib/cn'
@@ -47,7 +47,7 @@ export function WebhookForm() {
           placeholder="https://example.com/hooks/helpdesk"
           className={cn('w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800')}
         />
-        {errors?.url && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.url.message}</p>}
+        {errors?.url && <Description className={cn('mt-1 text-sm text-rose-600')}>{errors.url.message}</Description>}
       </Field>
 
       <fieldset className={cn('space-y-1')}>

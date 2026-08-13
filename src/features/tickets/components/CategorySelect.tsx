@@ -1,6 +1,7 @@
 'use client'
 
 import { useController, useFormContext } from 'react-hook-form'
+import { Description } from '@headlessui/react'
 import { SearchableSelect } from '@/shared/components/ui/SearchableSelect'
 import { cn } from '@/shared/lib/cn'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
@@ -25,7 +26,7 @@ export function CategorySelect({ categories }: Props) {
         displayValue={(c) => c.name}
         placeholder="Select a category"
       />
-      {fieldState.error && <p className={cn('mt-1 text-sm text-rose-600')}>{fieldState.error.message}</p>}
+      {fieldState.error && <Description className={cn('mt-1 text-sm text-rose-600')}>{fieldState.error.message}</Description>}
     </>
   )
 }

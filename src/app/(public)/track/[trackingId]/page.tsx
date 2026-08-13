@@ -1,5 +1,10 @@
 import { Suspense } from 'react'
 import { TrackingStatus } from '@/features/tracking/components/TrackingStatus'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false }
+}
 
 export default function TrackingPage({ params }: PageProps<'/track/[trackingId]'>) {
   return (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useController, useFormContext } from 'react-hook-form'
+import { Description } from '@headlessui/react'
 import { Select } from '@/shared/components/ui/Select'
 import { cn } from '@/shared/lib/cn'
 import { TICKET_PRIORITIES } from '@/shared/types/ticket'
@@ -19,7 +20,7 @@ export function PrioritySelect() {
         onChange={field.onChange}
         displayValue={(priority) => priority}
       />
-      {fieldState.error && <p className={cn('mt-1 text-sm text-rose-600')}>{fieldState.error.message}</p>}
+      {fieldState.error && <Description className={cn('mt-1 text-sm text-rose-600')}>{fieldState.error.message}</Description>}
     </>
   )
 }
