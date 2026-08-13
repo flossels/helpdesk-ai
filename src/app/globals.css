@@ -58,3 +58,7 @@
     @apply text-lg;
   }
 }
+
+body:has([data-consent-banner]) main {
+  padding-bottom: 7rem;
+}

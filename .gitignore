@@ -47,3 +47,6 @@ next-env.d.ts
 # test artefacts
 /test-results
 /playwright-report
+
+# Sentry Config File
+.env.sentry-build-plugin

@@ -1,6 +1,8 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { createOrganizationSchema } from '@/features/auth/schemas'
@@ -47,6 +49,8 @@ export async function createOrganization(input: CreateOrganizationInput): Promis
     revalidatePath('/tickets')
     return { success: true, data: { organizationId: organization.id } }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Failed to create organization:', error)
     return { success: false, error: 'Could not create the organization.' }
   }

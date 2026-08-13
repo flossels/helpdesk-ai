@@ -1,6 +1,8 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { hasScope } from '@/shared/lib/authorization'
@@ -42,6 +44,8 @@ export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<Re
       data: { updatedCount: result.count }
     }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Failed to bulk update:', error)
     return {
       success: false,

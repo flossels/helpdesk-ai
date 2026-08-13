@@ -1,8 +1,10 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
 import { headers } from 'next/headers'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { logActivity } from '@/shared/lib/logActivity'
@@ -10,6 +12,8 @@ import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
 import { rateLimit } from '@/shared/lib/rateLimit'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publicTicketSchema } from '@/features/tickets/schemas'
 import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
 import { generateTrackingId } from '@/features/tickets/lib/generateTrackingId'
@@ -101,7 +105,10 @@ export async function submitPublicTicket(
       dispatchWebhooks(category.organizationId, {
         type: 'ticket.created',
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
-      }).catch((error) => console.error('Webhook dispatch failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Webhook dispatch failed:', error)
+      })
     )
 
     after(() => categorizeTicket(ticket.id, category.organizationId))
@@ -117,7 +124,17 @@ export async function submitPublicTicket(
           subject: parsed.data.subject,
           ticketUrl
         })
-      }).catch((error) => console.error('Confirmation email failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Confirmation email failed:', error)
+      })
+    )
+
+    after(() =>
+      trackServerEvent(ANALYTICS_EVENTS.ticketCreated, category.organizationId, {
+        priority,
+        source: 'public'
+      })
     )
 
     revalidatePath('/tickets')
@@ -127,6 +144,8 @@ export async function submitPublicTicket(
       data: { ticketId: ticket.id, trackingId: ticket.trackingId }
     }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Public ticket submission failed:', error)
     return { success: false, error: 'Could not submit the ticket.' }
   }

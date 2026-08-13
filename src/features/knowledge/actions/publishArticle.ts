@@ -1,10 +1,14 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { after } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { hasScope } from '@/shared/lib/authorization'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { embedArticle } from '@/features/ai/actions/embedArticle'
 import { revalidateArticles } from '@/features/knowledge/actions/revalidateArticles'
@@ -30,12 +34,15 @@ export async function publishArticle(input: z.infer<typeof inputSchema>): Promis
     })
 
     after(() => embedArticle(article.id, organizationId))
+    after(() => trackServerEvent(ANALYTICS_EVENTS.articlePublished, organizationId))
 
     await revalidateArticles()
 
     revalidatePath('/knowledge')
     return { success: true, data: { slug: article.slug } }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Publishing article failed:', error)
     return { success: false, error: 'Could not publish the article.' }
   }

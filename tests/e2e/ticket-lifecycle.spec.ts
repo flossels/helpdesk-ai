@@ -77,3 +77,9 @@ async function loginAs(page: Page, email: string) {
   })
   expect(response.ok()).toBe(true)
 }
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('analytics-consent', JSON.stringify('denied'))
+  })
+})

@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { joinOrganizationSchema } from '@/features/auth/schemas'
@@ -53,6 +55,8 @@ export async function joinOrganization(input: JoinOrganizationInput): Promise<Re
 
     return { success: true, data: { organizationId: invitation.organizationId } }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Failed to join organization:', error)
     return { success: false, error: 'Could not join the organization.' }
   }

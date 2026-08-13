@@ -1,6 +1,8 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { after } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { generateText } from 'ai'
 import { db } from '@/shared/lib/db'
 import { hasScope } from '@/shared/lib/authorization'
@@ -44,11 +46,16 @@ export async function generateTicketTitle(description: string): Promise<ActionRe
         inputTokens: inputTokens ?? 0,
         outputTokens: outputTokens ?? 0,
         totalTokens: totalTokens ?? 0
-      }).catch((error) => console.error('Usage tracking failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Usage tracking failed:', error)
+      })
     )
 
     return { success: true, data: { title: result.text.trim() } }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Title generation failed:', error)
     return { success: false, error: 'Could not suggest a title right now.' }
   }

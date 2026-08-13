@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import { db } from '@/shared/lib/db'
 import { hasScope } from '@/shared/lib/authorization'
 import { logActivity } from '@/shared/lib/logActivity'
@@ -55,8 +57,13 @@ export async function checkSlaWarning(ticketId: string) {
         minutesLeft,
         ticketUrl: `${process.env.APP_URL}/tickets/${ticket.id}`
       })
-    }).catch((error) => console.error('SLA warning email failed:', error))
+    }).catch((error) => {
+      Sentry.captureException(error)
+      console.error('SLA warning email failed:', error)
+    })
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('SLA warning check failed:', error)
   }
 }

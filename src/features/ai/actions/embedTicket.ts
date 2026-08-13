@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import { embedMany } from 'ai'
 import { db } from '@/shared/lib/db'
 import { getEmbeddingModel } from '@/features/ai/lib/getEmbeddingModel'
@@ -55,6 +57,8 @@ export async function embedTicket(ticketId: string, organizationId: string) {
       totalTokens: usage.tokens
     })
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Embedding ticket failed:', error)
   }
 }
