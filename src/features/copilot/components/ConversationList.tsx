@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { cn } from '@/shared/lib/cn'
+import { Link } from '@/i18n/navigation'
 
 type Props = {
   conversations: { id: string; title: string | null }[]

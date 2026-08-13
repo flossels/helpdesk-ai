@@ -1,5 +1,8 @@
 import { withSentryConfig } from '@sentry/nextjs'
+import createNextIntlPlugin from 'next-intl/plugin'
 import type { NextConfig } from 'next'
+
+const withNextIntl = createNextIntlPlugin()
 
 // A static CSP, set as a response header rather than with a per-request
 // nonce. A nonce would force every page into dynamic rendering and undo
@@ -71,7 +74,7 @@ const nextConfig: NextConfig = {
   headers: async () => [{ source: '/(.*)', headers: securityHeaders }]
 }
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withNextIntl(nextConfig), {
   org: 'helpdesk-ai',
   project: 'helpdesk-web',
   silent: !process.env.CI,

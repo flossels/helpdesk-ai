@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Field, Label, Description, Input, Textarea } from '@headlessui/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -12,6 +12,7 @@ import { cn } from '@/shared/lib/cn'
 import { applyFieldErrors } from '@/shared/lib/applyFieldErrors'
 import { uploadAttachments } from '@/shared/lib/uploadAttachments'
 import { publicTicketSchema } from '@/features/tickets/schemas'
+import { useRouter } from '@/i18n/navigation'
 import { submitPublicTicket } from '@/features/tickets/actions/submitPublicTicket'
 import { PrioritySelect } from '@/features/tickets/components/PrioritySelect'
 import { CategorySelect } from '@/features/tickets/components/CategorySelect'
@@ -32,7 +33,23 @@ const inputClasses = cn(
 
 const labelClasses = cn('mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300')
 
+type ValidationErrorKey =
+  | 'name.required'
+  | 'name.tooLong'
+  | 'subject.tooShort'
+  | 'subject.tooLong'
+  | 'description.tooShort'
+  | 'description.tooLong'
+  | 'description.urgentTooShort'
+  | 'email.invalid'
+  | 'category.required'
+  | 'attachments.tooMany'
+
 export function PublicTicketForm({ categories }: Props) {
+  const t = useTranslations('ticketForm')
+  const tError = useTranslations('validation')
+  const errorText = (message?: string) => (message ? tError(message as ValidationErrorKey) : null)
+
   const router = useRouter()
   const [files, setFiles] = useState<File[]>([])
   const methods = useForm<PublicTicketInput>({
@@ -75,48 +92,48 @@ export function PublicTicketForm({ categories }: Props) {
     <FormProvider {...methods}>
       <form onSubmit={onSubmit} className={cn('space-y-4')}>
         <Field>
-          <Label className={labelClasses}>Your name</Label>
+          <Label className={labelClasses}>{t('name')}</Label>
           <Input {...register('name')} className={inputClasses} />
-          {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.name.message}</p>}
+          {errors?.name && <p className={cn('mt-1 text-sm text-rose-600')}>{errorText(errors.name?.message)}</p>}
         </Field>
 
         <Field>
-          <Label className={labelClasses}>Email</Label>
+          <Label className={labelClasses}>{t('email')}</Label>
           <Input type="email" {...register('email')} className={inputClasses} />
-          {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.email.message}</p>}
+          {errors?.email && <p className={cn('mt-1 text-sm text-rose-600')}>{errorText(errors.email?.message)}</p>}
         </Field>
 
         <Field>
-          <Label className={labelClasses}>Subject</Label>
+          <Label className={labelClasses}>{t('subject')}</Label>
           <Input {...register('subject')} className={inputClasses} />
-          {errors?.subject && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.subject.message}</p>}
+          {errors?.subject && <p className={cn('mt-1 text-sm text-rose-600')}>{errorText(errors.subject?.message)}</p>}
         </Field>
 
         <Field>
-          <Label className={labelClasses}>Description</Label>
-          <Description className={cn('mb-1 text-xs text-slate-500')}>
-            Include what you expected to happen and what actually happened.
-          </Description>
+          <Label className={labelClasses}>{t('description')}</Label>
+          <Description className={cn('mb-1 text-xs text-slate-500')}>{t('descriptionHint')}</Description>
           <Textarea {...register('description')} rows={4} className={inputClasses} />
-          {errors?.description && <p className={cn('mt-1 text-sm text-rose-600')}>{errors.description.message}</p>}
+          {errors?.description && <p className={cn('mt-1 text-sm text-rose-600')}>{errorText(errors.description?.message)}</p>}
         </Field>
 
         <Field>
-          <Label className={labelClasses}>Priority</Label>
+          <Label className={labelClasses}>{t('priority')}</Label>
           <PrioritySelect />
         </Field>
 
         <Field>
-          <Label className={labelClasses}>Category</Label>
+          <Label className={labelClasses}>{t('category')}</Label>
           <CategorySelect categories={categories} />
         </Field>
 
         <Field>
-          <Label className={labelClasses}>Screenshots or documents</Label>
-          <Description className={cn('mb-1 text-xs text-slate-500')}>
-            A screenshot of the error usually explains more than a paragraph does.
-          </Description>
-          <FileUpload onFiles={(dropped) => setFiles((prev) => [...prev, ...dropped])} />
+          <Label className={labelClasses}>{t('attachments')}</Label>
+          <Description className={cn('mb-1 text-xs text-slate-500')}>{t('attachmentsHint')}</Description>
+          <FileUpload
+            onFiles={(dropped) => setFiles((prev) => [...prev, ...dropped])}
+            idleLabel={t('uploadIdle')}
+            dropLabel={t('uploadDrop')}
+          />
           {files.length > 0 && (
             <ul className={cn('mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300')}>
               {files.map((file, index) => (
@@ -126,7 +143,7 @@ export function PublicTicketForm({ categories }: Props) {
           )}
         </Field>
 
-        <SubmitButton label="Submit Ticket" pendingLabel="Submitting..." pending={isSubmitting} />
+        <SubmitButton label={t('submit')} pendingLabel={t('submitting')} pending={isSubmitting} />
       </form>
     </FormProvider>
   )

@@ -13,13 +13,13 @@ const articleSelect = {
   updatedAt: true
 } satisfies Prisma.ArticleSelect
 
-export async function getArticleBySlug(slug: string) {
+export async function getArticleBySlug(slug: string, locale: string) {
   'use cache'
   cacheLife('articles')
   cacheTag('articles')
 
   return db.article.findFirst({
-    where: { slug, status: 'PUBLISHED', isPublic: true },
+    where: { slug, locale, status: 'PUBLISHED', isPublic: true },
     select: articleSelect
   })
 }

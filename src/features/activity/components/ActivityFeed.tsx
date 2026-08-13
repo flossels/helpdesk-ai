@@ -1,7 +1,7 @@
 import { forbidden } from 'next/navigation'
-import Link from 'next/link'
 import { cn } from '@/shared/lib/cn'
 import { RelativeTime } from '@/shared/components/RelativeTime'
+import { Link } from '@/i18n/navigation'
 import { getActivity } from '@/features/activity/queries/getActivity'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 

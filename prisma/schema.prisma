@@ -7,19 +7,20 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  image         String?
-  password      String?
-  role          String   @default("CUSTOMER")
-  createdAt     DateTime @default(now())
-  emailVerified DateTime?
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  image           String?
+  password        String?
+  role            String    @default("CUSTOMER")
+  preferredLocale String?
+  createdAt       DateTime  @default(now())
+  emailVerified   DateTime?
 
   memberships          OrgMember[]
-  assignedTickets      Ticket[]       @relation("AssignedTickets")
-  createdTickets       Ticket[]       @relation("CreatedTickets")
-  closedTickets        Ticket[]       @relation("ClosedTickets")
+  assignedTickets      Ticket[]              @relation("AssignedTickets")
+  createdTickets       Ticket[]              @relation("CreatedTickets")
+  closedTickets        Ticket[]              @relation("ClosedTickets")
   accounts             Account[]
   sessions             Session[]
   replies              TicketReply[]
@@ -134,11 +135,11 @@ model Ticket {
   updatedAt      DateTime  @updatedAt
   closedById     String?
 
-  category             Category       @relation(fields: [categoryId], references: [id])
-  assignee             User?          @relation("AssignedTickets", fields: [assigneeId], references: [id])
-  customer             User           @relation("CreatedTickets", fields: [customerId], references: [id])
-  organization         Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  closedBy             User?          @relation("ClosedTickets", fields: [closedById], references: [id])
+  category             Category              @relation(fields: [categoryId], references: [id])
+  assignee             User?                 @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  customer             User                  @relation("CreatedTickets", fields: [customerId], references: [id])
+  organization         Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  closedBy             User?                 @relation("ClosedTickets", fields: [closedById], references: [id])
   replies              TicketReply[]
   notes                InternalNote[]
   tags                 TicketTag[]
@@ -211,25 +212,31 @@ model Attachment {
 }
 
 model Article {
-  id             String   @id @default(cuid())
-  title          String
-  slug           String   @unique
-  content        Json
-  contentText    String
-  excerpt        String?
-  status         String   @default("DRAFT")
-  isPublic       Boolean  @default(false)
-  categoryId     String?
-  authorId       String
-  organizationId String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(cuid())
+  title           String
+  slug            String
+  content         Json
+  contentText     String
+  excerpt         String?
+  locale          String   @default("en")
+  sourceArticleId String?
+  status          String   @default("DRAFT")
+  isPublic        Boolean  @default(false)
+  categoryId      String?
+  authorId        String
+  organizationId  String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   category     Category?    @relation(fields: [categoryId], references: [id])
   author       User         @relation(fields: [authorId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  embeddings   ArticleEmbedding[]
 
+  sourceArticle Article?           @relation("ArticleTranslations", fields: [sourceArticleId], references: [id])
+  translations  Article[]          @relation("ArticleTranslations")
+  embeddings    ArticleEmbedding[]
+
+  @@unique([slug, locale])
   @@index([organizationId, status])
 }
 
@@ -375,7 +382,7 @@ model CopilotMessage {
 }
 
 model ArticleEmbedding {
-  id         String @id @default(cuid())
+  id         String                      @id @default(cuid())
   articleId  String
   chunkIndex Int
   chunkText  String
@@ -387,7 +394,7 @@ model ArticleEmbedding {
 }
 
 model TicketEmbedding {
-  id         String @id @default(cuid())
+  id         String                      @id @default(cuid())
   ticketId   String
   chunkIndex Int
   chunkText  String

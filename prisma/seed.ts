@@ -317,9 +317,31 @@ async function main() {
       content: doc(article.contentText),
       status: 'PUBLISHED',
       isPublic: true,
+      locale: 'en',
       authorId: owner.id,
       organizationId: org.id
     }))
+  })
+
+  const english = await db.article.findFirstOrThrow({
+    where: { slug: 'getting-started', locale: 'en' }
+  })
+
+  await db.article.create({
+    data: {
+      title: 'Erste Schritte mit HelpDesk AI',
+      slug: 'getting-started',
+      locale: 'de',
+      excerpt: 'So reichen Sie Ihr erstes Ticket ein und verfolgen den Verlauf.',
+      contentText:
+        'Willkommen bei HelpDesk AI. Um ein Ticket einzureichen, öffnen Sie das Support-Portal und beschreiben Sie, was schiefgelaufen ist. Sie erhalten per E-Mail einen Link, über den Sie den Verlauf ohne Konto verfolgen können.',
+      content: doc('Willkommen bei HelpDesk AI.'),
+      status: 'PUBLISHED',
+      isPublic: true,
+      sourceArticleId: english.id,
+      authorId: owner.id,
+      organizationId: org.id
+    }
   })
 }
 

@@ -10,11 +10,12 @@ import { db } from '@/shared/lib/db'
 import { logActivity } from '@/shared/lib/logActivity'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
 import { publishEvent } from '@/shared/lib/eventBus'
-import { sendEmail } from '@/shared/lib/sendEmail'
+import { sendLocalizedEmail } from '@/shared/lib/sendLocalizedEmail'
 import { rateLimit } from '@/shared/lib/rateLimit'
 import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
 import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publicTicketSchema } from '@/features/tickets/schemas'
+import { resolveRecipientLocale } from '@/i18n/resolveLocale'
 import { TicketCreated } from '@/emails/TicketCreated'
 import { categorizeTicket } from '@/features/ai/actions/categorizeTicket'
 import { findOrCreateCustomer } from '@/features/tickets/lib/findOrCreateCustomer'
@@ -121,16 +122,23 @@ export async function submitPublicTicket(
     )
 
     const ticketUrl = `${process.env.APP_URL}/track/${ticket.trackingId}`
-
+    const locale = await resolveRecipientLocale(customer.preferredLocale)
     after(() =>
-      sendEmail({
+      sendLocalizedEmail({
         to: parsed.data.email,
-        subject: `We received your ticket ${ticket.trackingId}`,
-        template: TicketCreated({
-          trackingId: ticket.trackingId,
-          subject: parsed.data.subject,
-          ticketUrl
-        })
+        locale,
+        subjectKey: 'ticketCreatedSubject',
+        trackingId: ticket.trackingId,
+        template: (t) =>
+          TicketCreated({
+            heading: t('ticketCreatedHeading'),
+            body: t('ticketCreatedBody', {
+              trackingId: ticket.trackingId,
+              subject: parsed.data.subject
+            }),
+            cta: t('trackCta'),
+            ticketUrl
+          })
       }).catch((error) => {
         Sentry.captureException(error)
         console.error('Confirmation email failed:', error)

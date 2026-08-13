@@ -7,6 +7,7 @@ import type { Prisma } from '@/shared/types/database'
 const publishedArticleSelect = {
   title: true,
   slug: true,
+  locale: true,
   excerpt: true,
   updatedAt: true
 } satisfies Prisma.ArticleSelect

@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "submit": "Ticket einreichen",
+    "myTickets": "Meine Tickets",
+    "changeLanguage": "Sprache wechseln",
+    "about": "Über uns",
+    "logIn": "Anmelden",
+    "logOut": "Abmelden"
+  },
+  "footer": {
+    "copyright": "© {year} {appName}"
+  },
+  "ticketForm": {
+    "title": "Wie können wir Ihnen helfen?",
+    "subject": "Betreff",
+    "subjectPlaceholder": "Beschreiben Sie das Problem kurz",
+    "email": "E-Mail",
+    "description": "Beschreibung",
+    "descriptionHint": "Beschreiben Sie, was Sie erwartet haben und was tatsächlich passiert ist.",
+    "category": "Kategorie",
+    "attachments": "Anhänge",
+    "submit": "Ticket absenden",
+    "submitting": "Wird gesendet...",
+    "loadingForm": "Formular wird geladen...",
+    "success": "Ticket {trackingId} erstellt",
+    "successDescription": "Wir melden uns in Kürze bei Ihnen.",
+    "name": "Ihr Name",
+    "priority": "Priorität",
+    "attachmentsHint": "Ein Screenshot des Fehlers erklärt oft mehr als ein ganzer Absatz.",
+    "uploadIdle": "Ziehen oder klicken",
+    "uploadDrop": "Dateien hier ablegen…",
+    "subtitle": "Beschreiben Sie Ihr Anliegen, wir melden uns bei Ihnen."
+  },
+  "ticketStatus": {
+    "status": "Status",
+    "OPEN": "Offen",
+    "IN_PROGRESS": "In Bearbeitung",
+    "RESOLVED": "Gelöst",
+    "CLOSED": "Geschlossen",
+    "notFound": "Wir konnten dieses Ticket nicht finden.",
+    "lastUpdate": "Letzte Aktualisierung {date}",
+    "replyCount": "{count, plural, =0 {Noch keine Antworten} one {1 Antwort} other {# Antworten}}",
+    "WAITING": "Wartet auf Rückmeldung"
+  },
+  "helpCenter": {
+    "title": "Hilfe-Center",
+    "description": "Antworten auf die häufigsten Fragen unserer Kundinnen und Kunden.",
+    "notFoundTitle": "Dieser Artikel ist in Ihrer Sprache nicht verfügbar",
+    "notFoundBody": "Wir haben diesen Artikel noch nicht übersetzt. Möglicherweise ist er in einer anderen Sprache verfügbar.",
+    "backHome": "Zurück zur Startseite"
+  },
+  "validation": {
+    "subject": {
+      "tooShort": "Der Betreff muss mindestens 5 Zeichen lang sein.",
+      "tooLong": "Der Betreff darf höchstens 200 Zeichen lang sein."
+    },
+    "description": {
+      "tooShort": "Die Beschreibung muss mindestens 10 Zeichen lang sein.",
+      "tooLong": "Die Beschreibung darf höchstens 5000 Zeichen lang sein.",
+      "urgentTooShort": "Dringende Tickets brauchen eine Beschreibung von mindestens 50 Zeichen."
+    },
+    "email": {
+      "invalid": "Geben Sie eine gültige E-Mail-Adresse ein."
+    },
+    "category": {
+      "required": "Wählen Sie eine Kategorie."
+    },
+    "attachments": {
+      "tooMany": "Hängen Sie höchstens 5 Dateien an."
+    },
+    "name": {
+      "required": "Bitte nennen Sie uns Ihren Namen.",
+      "tooLong": "Der Name darf höchstens 100 Zeichen lang sein."
+    }
+  },
+  "emails": {
+    "ticketCreatedSubject": "Wir haben Ihr Ticket {trackingId} erhalten",
+    "ticketCreatedHeading": "Wir haben Ihr Ticket erhalten",
+    "ticketCreatedBody": "Ihr Ticket {trackingId}, {subject}, ist in unserer Warteschlange. Wir antworten innerhalb eines Werktags.",
+    "trackCta": "Ticket verfolgen",
+    "agentReplySubject": "Neue Antwort zu Ihrem Ticket {trackingId}",
+    "agentReplyHeading": "{agentName} hat auf {trackingId} geantwortet",
+    "viewConversationCta": "Konversation ansehen",
+    "ticketResolvedSubject": "Ihr Ticket {trackingId} wurde gelöst",
+    "ticketResolvedHeading": "Ihr Ticket {trackingId} wurde gelöst",
+    "ratingPrompt": "Wie zufrieden waren Sie?"
+  },
+  "pages": {
+    "homeTitle": "Willkommen bei HelpDesk AI",
+    "aboutTitle": "Über HelpDesk AI",
+    "signInTitle": "Bei HelpDesk AI anmelden",
+    "signUpTitle": "HelpDesk-AI-Konto erstellen",
+    "noAccount": "Noch kein Konto?",
+    "createOne": "Jetzt erstellen",
+    "haveAccount": "Sie haben bereits ein Konto?",
+    "signIn": "Anmelden",
+    "or": "oder"
+  },
+  "consent": {
+    "message": "Wir verwenden datenschutzfreundliche Analyse, um HelpDesk AI zu verbessern. Sie können ablehnen, ohne auf Funktionen zu verzichten.",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen"
+  },
+  "portal": {
+    "title": "Meine Tickets",
+    "newTicket": "Neues Ticket",
+    "empty": "Sie haben noch keine Tickets eröffnet.",
+    "backToTickets": "Zurück zu meinen Tickets"
+  }
+}

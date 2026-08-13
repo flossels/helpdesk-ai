@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "submit": "Soumettre un ticket",
+    "myTickets": "Mes tickets",
+    "changeLanguage": "Changer de langue",
+    "about": "À propos",
+    "logIn": "Se connecter",
+    "logOut": "Se déconnecter"
+  },
+  "footer": {
+    "copyright": "© {year} {appName}"
+  },
+  "ticketForm": {
+    "title": "Comment pouvons-nous vous aider ?",
+    "subject": "Objet",
+    "subjectPlaceholder": "Décrivez brièvement le problème",
+    "email": "E-mail",
+    "description": "Description",
+    "descriptionHint": "Indiquez ce que vous attendiez et ce qui s'est réellement passé.",
+    "category": "Catégorie",
+    "attachments": "Pièces jointes",
+    "submit": "Envoyer le ticket",
+    "submitting": "Envoi en cours...",
+    "loadingForm": "Chargement du formulaire...",
+    "success": "Ticket {trackingId} créé",
+    "successDescription": "Nous revenons vers vous très vite.",
+    "name": "Votre nom",
+    "priority": "Priorité",
+    "attachmentsHint": "Une capture d'écran de l'erreur en dit souvent plus qu'un paragraphe.",
+    "uploadIdle": "Glissez ou cliquez",
+    "uploadDrop": "Déposez les fichiers ici…",
+    "subtitle": "Décrivez votre problème et nous vous répondrons."
+  },
+  "ticketStatus": {
+    "status": "Statut",
+    "OPEN": "Ouvert",
+    "IN_PROGRESS": "En cours",
+    "RESOLVED": "Résolu",
+    "CLOSED": "Fermé",
+    "notFound": "Nous n'avons pas trouvé ce ticket.",
+    "lastUpdate": "Dernière mise à jour {date}",
+    "replyCount": "{count, plural, =0 {Aucune réponse} one {1 réponse} other {# réponses}}",
+    "WAITING": "En attente du client"
+  },
+  "helpCenter": {
+    "title": "Centre d'aide",
+    "description": "Les réponses aux questions les plus fréquentes de nos clients.",
+    "notFoundTitle": "Cet article n'est pas disponible dans votre langue",
+    "notFoundBody": "Nous n'avons pas encore traduit cet article. Il est peut-être disponible dans une autre langue.",
+    "backHome": "Retour à l'accueil"
+  },
+  "validation": {
+    "subject": {
+      "tooShort": "L'objet doit contenir au moins 5 caractères.",
+      "tooLong": "L'objet ne peut pas dépasser 200 caractères."
+    },
+    "description": {
+      "tooShort": "La description doit contenir au moins 10 caractères.",
+      "tooLong": "La description ne peut pas dépasser 5000 caractères.",
+      "urgentTooShort": "Les tickets urgents exigent une description d'au moins 50 caractères."
+    },
+    "email": {
+      "invalid": "Saisissez une adresse e-mail valide."
+    },
+    "category": {
+      "required": "Choisissez une catégorie."
+    },
+    "attachments": {
+      "tooMany": "Joignez au maximum 5 fichiers."
+    },
+    "name": {
+      "required": "Indiquez-nous votre nom.",
+      "tooLong": "Le nom ne peut pas dépasser 100 caractères."
+    }
+  },
+  "emails": {
+    "ticketCreatedSubject": "Nous avons bien reçu votre ticket {trackingId}",
+    "ticketCreatedHeading": "Nous avons bien reçu votre ticket",
+    "ticketCreatedBody": "Votre ticket {trackingId}, {subject}, est dans notre file d'attente. Nous vous répondrons sous un jour ouvré.",
+    "trackCta": "Suivre votre ticket",
+    "agentReplySubject": "Nouvelle réponse à votre ticket {trackingId}",
+    "agentReplyHeading": "{agentName} a répondu à {trackingId}",
+    "viewConversationCta": "Voir la conversation",
+    "ticketResolvedSubject": "Votre ticket {trackingId} a été résolu",
+    "ticketResolvedHeading": "Votre ticket {trackingId} est résolu",
+    "ratingPrompt": "Comment avons-nous fait ?"
+  },
+  "pages": {
+    "homeTitle": "Bienvenue sur HelpDesk AI",
+    "aboutTitle": "À propos de HelpDesk AI",
+    "signInTitle": "Se connecter à HelpDesk AI",
+    "signUpTitle": "Créer un compte HelpDesk AI",
+    "noAccount": "Vous n’avez pas de compte ?",
+    "createOne": "En créer un",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "or": "ou"
+  },
+  "consent": {
+    "message": "Nous utilisons des analyses respectueuses de la vie privée pour améliorer HelpDesk AI. Vous pouvez refuser sans perdre de fonctionnalités.",
+    "accept": "Accepter",
+    "decline": "Refuser"
+  },
+  "portal": {
+    "title": "Mes tickets",
+    "newTicket": "Nouveau ticket",
+    "empty": "Vous n'avez pas encore ouvert de ticket.",
+    "backToTickets": "Retour à mes tickets"
+  }
+}

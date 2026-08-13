@@ -21,6 +21,7 @@
     ],
     "paths": {
       "@/tests/*": ["./tests/*"],
+      "@/messages/*": ["./messages/*"],
       "@/*": ["./src/*"]
     }
   },

@@ -20,6 +20,7 @@ export default defineConfig({
     globals: true,
     env: { LOG_LEVEL: 'silent' },
     setupFiles: ['./tests/setup.ts'],
+    server: { deps: { inline: ['next-intl'] } },
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     coverage: {
       provider: 'v8',

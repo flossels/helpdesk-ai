@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm, useController } from 'react-hook-form'
+import { useForm, useController, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Field, Label } from '@headlessui/react'
 import { toast } from 'sonner'
@@ -13,11 +13,14 @@ import { replyToTicketSchema } from '@/features/tickets/schemas'
 import { replyToTicket } from '@/features/tickets/actions/replyToTicket'
 import { CannedResponsePicker } from '@/features/settings/components/CannedResponsePicker'
 import { useDraftStore } from '@/features/tickets/stores/draftStore'
+import { TranslateReplyButton } from '@/features/tickets/components/TranslateReplyButton'
 import type { JSONContent } from '@tiptap/react'
 import type { ReplyToTicketInput } from '@/features/tickets/schemas'
+import type { Locale } from '@/i18n/routing'
 import type { CannedResponseItem } from '@/features/settings/types'
 
 type Props = {
+  customerLocale?: Locale
   ticketId: string
   cannedResponses: CannedResponseItem[]
 }
@@ -29,7 +32,7 @@ function extractText(node: JSONContent): string {
   return (node.content ?? []).map(extractText).join(' ').trim()
 }
 
-export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
+export function TicketReplyForm({ ticketId, cannedResponses, customerLocale }: Props) {
   const [editorKey, setEditorKey] = useState(0)
   const draft = useDraftStore((state) => state.drafts[ticketId])
   const setDraft = useDraftStore((state) => state.setDraft)
@@ -51,6 +54,7 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
   })
 
   const { field } = useController({ name: 'content', control })
+  const contentText = useWatch({ control, name: 'contentText' })
 
   const insertCanned = (response: CannedResponseItem) => {
     setValue('content', response.content, { shouldValidate: true })
@@ -80,6 +84,16 @@ export function TicketReplyForm({ ticketId, cannedResponses }: Props) {
         <Label className={cn('mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300')}>Your reply</Label>
         <div className={cn('mb-2')}>
           <CannedResponsePicker responses={cannedResponses} onSelect={insertCanned} />
+          {customerLocale && customerLocale !== 'en' && (
+            <TranslateReplyButton
+              content={contentText ?? ''}
+              customerLocale={customerLocale}
+              onTranslated={(text) => {
+                setValue('contentText', text, { shouldValidate: true })
+                setEditorKey((key) => key + 1)
+              }}
+            />
+          )}
         </div>
         <RichTextEditorLazy
           key={editorKey}

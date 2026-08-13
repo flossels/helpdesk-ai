@@ -1,6 +1,7 @@
 import { notFound, unauthorized } from 'next/navigation'
-import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { cn } from '@/shared/lib/cn'
+import { Link } from '@/i18n/navigation'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { CustomerReplyForm } from '@/features/tickets/components/CustomerReplyForm'
 import { getCustomerTicket } from '@/features/tickets/queries/getCustomerTicket'
@@ -19,13 +20,16 @@ export async function CustomerTicketDetail({ params }: Props) {
   const ticket = await getCustomerTicket(ticketId, user.id)
   if (!ticket) notFound()
 
+  const t = await getTranslations('portal')
+  const tStatus = await getTranslations('ticketStatus')
+
   return (
     <div className={cn('space-y-6')}>
       <Link href="/portal" className={cn('text-sm text-blue-600 hover:underline')}>
-        Back to my tickets
+        {t('backToTickets')}
       </Link>
       <div className={cn('flex items-center gap-3')}>
-        <TicketStatusBadge status={ticket.status} />
+        <TicketStatusBadge status={ticket.status} label={tStatus(ticket.status)} />
         <h1 className={cn('text-xl font-semibold')}>{ticket.subject}</h1>
         <span className={cn('text-sm text-slate-500')}>{ticket.trackingId}</span>
       </div>

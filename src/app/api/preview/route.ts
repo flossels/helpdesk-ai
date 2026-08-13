@@ -1,5 +1,6 @@
 import { draftMode } from 'next/headers'
-import { redirect } from 'next/navigation'
+import { routing } from '@/i18n/routing'
+import { redirect } from '@/i18n/navigation'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -11,5 +12,5 @@ export async function GET(request: Request) {
 
   const draft = await draftMode()
   draft.enable()
-  redirect(`/help/${slug}`)
+  redirect({ href: `/help/${slug}`, locale: routing.defaultLocale })
 }
