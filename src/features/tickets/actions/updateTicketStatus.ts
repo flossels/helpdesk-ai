@@ -1,12 +1,16 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { revalidatePath, updateTag } from 'next/cache'
 import { after } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { hasScope } from '@/shared/lib/authorization'
 import { logActivity } from '@/shared/lib/logActivity'
 import { dispatchWebhooks } from '@/shared/lib/dispatchWebhooks'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { publishEvent } from '@/shared/lib/eventBus'
 import { sendEmail } from '@/shared/lib/sendEmail'
 import { updateTicketStatusSchema } from '@/features/tickets/schemas'
@@ -67,11 +71,18 @@ export async function updateTicketStatus(input: UpdateTicketStatusInput): Promis
       dispatchWebhooks(user.organizationId!, {
         type: 'ticket.status_changed',
         data: { ticketId: ticket.id, trackingId: ticket.trackingId }
-      }).catch((error) => console.error('Webhook dispatch failed:', error))
+      }).catch((error) => {
+        Sentry.captureException(error)
+        console.error('Webhook dispatch failed:', error)
+      })
     )
 
     if (parsed.data.status === 'RESOLVED' || parsed.data.status === 'CLOSED') {
       after(() => embedTicket(ticket.id, user.organizationId!))
+    }
+
+    if (parsed.data.status === 'RESOLVED' && ticket.status !== 'RESOLVED') {
+      after(() => trackServerEvent(ANALYTICS_EVENTS.ticketResolved, user.organizationId!))
     }
 
     if (parsed.data.status === 'RESOLVED' && ticket.status !== 'RESOLVED' && ticket.email) {
@@ -86,7 +97,10 @@ export async function updateTicketStatus(input: UpdateTicketStatusInput): Promis
             ticketUrl,
             ratingUrlFor: (score: number) => `${ticketUrl}?rating=${score}`
           })
-        }).catch((error) => console.error('Resolution email failed:', error))
+        }).catch((error) => {
+          Sentry.captureException(error)
+          console.error('Resolution email failed:', error)
+        })
       )
     }
 
@@ -99,6 +113,8 @@ export async function updateTicketStatus(input: UpdateTicketStatusInput): Promis
       data: { ticketId: ticket.id }
     }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Failed to update status:', error)
     return {
       success: false,

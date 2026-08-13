@@ -1,6 +1,11 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import { generateText, Output } from 'ai'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
+import { createRequestLogger } from '@/shared/lib/requestLogger'
 import { db } from '@/shared/lib/db'
 import { getModel, resolveModelId } from '@/features/ai/lib/getModel'
 import { trackUsage } from '@/features/ai/lib/trackUsage'
@@ -31,13 +36,15 @@ export async function categorizeTicket(ticketId: string, organizationId: string)
   const modelId = resolveModelId(org.aiModel)
 
   try {
-    const result = await generateText({
-      model: getModel(modelId),
-      output: Output.object({ schema: categorizationSchema }),
-      instructions: CATEGORIZE_TICKET_PROMPT.replace('{categories}', categoryList),
-      prompt: `${ticket.subject}\n\n${ticket.description}`,
-      maxOutputTokens: 2000
-    })
+    const result = await Sentry.startSpan({ name: 'ai.categorize', op: 'ai.run', attributes: { model: modelId } }, () =>
+      generateText({
+        model: getModel(modelId),
+        output: Output.object({ schema: categorizationSchema }),
+        instructions: CATEGORIZE_TICKET_PROMPT.replace('{categories}', categoryList),
+        prompt: `${ticket.subject}\n\n${ticket.description}`,
+        maxOutputTokens: 2000
+      })
+    )
 
     const { category, priority, sentiment, confidence } = result.output
     const matched = categories.find((c) => c.name === category)
@@ -70,7 +77,20 @@ export async function categorizeTicket(ticketId: string, organizationId: string)
       outputTokens: outputTokens ?? 0,
       totalTokens: totalTokens ?? 0
     })
+
+    if (applied) {
+      await trackServerEvent(ANALYTICS_EVENTS.aiCategorizationApplied, organizationId, {
+        category,
+        priority,
+        confidence
+      })
+    }
+
+    const log = createRequestLogger({ action: 'categorizeTicket' })
+    log.info({ ticketId, organizationId, category, confidence, applied }, 'ticket categorized')
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Categorization failed:', error)
   }
 }

@@ -6,6 +6,12 @@ import type { Page } from '@playwright/test'
 const SUBJECT = `Cannot log in after password reset ${Date.now()}`
 
 test.describe('Ticket lifecycle', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('analytics-consent', 'denied')
+    })
+  })
+
   test('customer submits, agent replies and resolves', async ({ page }) => {
     // 1. A customer submits a ticket through the public portal. The
     // locators are scoped to <main>, because streamed content is staged

@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
 // A static CSP, set as a response header rather than with a per-request
@@ -39,7 +40,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   logging: {
-    browserToTerminal: 'warn'
+    browserToTerminal: 'warn',
+    fetches: { fullUrl: true },
+    incomingRequests: { ignore: [/^\/api\/dashboard\/metrics$/] }
   },
   experimental: {
     typedEnv: true,
@@ -66,4 +69,11 @@ const nextConfig: NextConfig = {
   headers: async () => [{ source: '/(.*)', headers: securityHeaders }]
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  org: 'helpdesk-ai',
+  project: 'helpdesk-web',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  tunnelRoute: '/monitoring',
+  sourcemaps: { deleteSourcemapsAfterUpload: true }
+})

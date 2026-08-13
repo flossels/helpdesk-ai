@@ -1,7 +1,10 @@
+import * as Sentry from '@sentry/nextjs'
 import { createUIMessageStreamResponse, stepCountIs, streamText, toUIMessageStream, convertToModelMessages } from 'ai'
 import { z } from 'zod'
 import { db } from '@/shared/lib/db'
 import { rateLimit } from '@/shared/lib/rateLimit'
+import { ANALYTICS_EVENTS } from '@/shared/lib/analytics/events'
+import { trackServerEvent } from '@/shared/lib/analytics/mixpanelServer'
 import { verifyOrigin } from '@/shared/lib/verifyOrigin'
 import { requireAuthApi } from '@/features/ai/lib/requireAuthApi'
 import { budgetExceeded, getRemainingBudget } from '@/features/ai/lib/checkBudget'
@@ -69,10 +72,10 @@ export async function POST(request: Request) {
   // ticket can legitimately quote an instruction, but a flag gives the
   // security review (Chapter 23) something to alert on.
   if (sanitizeAiInput(userText).flagged) {
-    console.warn('Potential prompt injection in copilot input', {
-      conversationId,
-      organizationId: user.organizationId,
-      inputLength: userText.length
+    Sentry.captureMessage('Potential prompt injection in copilot input', {
+      level: 'warning',
+      tags: { security: 'prompt_injection' },
+      extra: { conversationId, organizationId: user.organizationId, inputLength: userText.length }
     })
   }
 
@@ -102,10 +105,10 @@ export async function POST(request: Request) {
       if (text) {
         const checked = validateAiOutput(text)
         if (!checked.safe) {
-          console.warn('Copilot output flagged for sensitive content', {
-            conversationId,
-            organizationId: user.organizationId,
-            warnings: checked.warnings
+          Sentry.captureMessage('Copilot output flagged for sensitive content', {
+            level: 'warning',
+            tags: { security: 'sensitive_output' },
+            extra: { conversationId, organizationId: user.organizationId, warnings: checked.warnings }
           })
         }
         await appendMessage(conversationId, 'assistant', text, usage.outputTokens ?? 0)
@@ -118,6 +121,9 @@ export async function POST(request: Request) {
         inputTokens: usage.inputTokens ?? 0,
         outputTokens: usage.outputTokens ?? 0,
         totalTokens: usage.totalTokens ?? 0
+      })
+      await trackServerEvent(ANALYTICS_EVENTS.copilotAnswered, user.organizationId, {
+        ticketId: ticketId ?? null
       })
     }
   })

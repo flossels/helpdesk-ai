@@ -18,6 +18,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    env: { LOG_LEVEL: 'silent' },
     setupFiles: ['./tests/setup.ts'],
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     coverage: {

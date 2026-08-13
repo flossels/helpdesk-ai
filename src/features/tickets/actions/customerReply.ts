@@ -1,7 +1,9 @@
 'use server'
 
+import { unstable_rethrow } from 'next/navigation'
 import { after } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import * as Sentry from '@sentry/nextjs'
 import z from 'zod'
 import { db } from '@/shared/lib/db'
 import { publishEvent } from '@/shared/lib/eventBus'
@@ -72,13 +74,18 @@ export async function customerReply(input: CustomerReplyInput): Promise<ActionRe
             replyText: parsed.data.body,
             ticketUrl
           })
-        }).catch((error) => console.error('Customer reply email failed:', error))
+        }).catch((error) => {
+          Sentry.captureException(error)
+          console.error('Customer reply email failed:', error)
+        })
       )
     }
 
     revalidatePath(`/portal/${parsed.data.ticketId}`)
     return { success: true, data: { replyId: reply.id } }
   } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error)
     console.error('Customer reply failed:', error)
     return { success: false, error: 'Could not post the reply.' }
   }
