@@ -57,6 +57,7 @@ model Organization {
   invitations          Invitation[]
   aiUsageLogs          AiUsageLog[]
   copilotConversations CopilotConversation[]
+  apiKeys              ApiKey[]
 }
 
 model OrgMember {
@@ -403,4 +404,17 @@ model TicketEmbedding {
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId])
+}
+
+model ApiKey {
+  id             String       @id @default(cuid())
+  keyHash        String       @unique
+  name           String
+  isActive       Boolean      @default(true)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  lastUsedAt     DateTime?
+
+  @@index([organizationId])
 }

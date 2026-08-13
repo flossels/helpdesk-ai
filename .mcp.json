@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "helpdesk": {
+      "type": "http",
+      "url": "http://localhost:3000/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${HELPDESK_API_KEY}"
+      }
+    }
+  }
+}
