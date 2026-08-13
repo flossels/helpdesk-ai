@@ -3,6 +3,8 @@ import { Suspense } from 'react'
 import { ThemeProvider } from 'next-themes'
 import { SessionProvider } from 'next-auth/react'
 import { Toaster } from 'sonner'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/next'
 import { cn } from '@/shared/lib/cn'
 import { SwrConfig } from '@/shared/components/SwrConfig'
 import { MixpanelProvider } from '@/shared/components/analytics/MixpanelProvider'
@@ -31,6 +33,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <Toaster richColors />
         <WebVitalsReporter />
         <ConsentBanner />
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   )
