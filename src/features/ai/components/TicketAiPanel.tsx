@@ -9,6 +9,7 @@ import { TicketSummary } from '@/features/tickets/components/TicketSummary'
 import { CopilotPanelLazy } from '@/features/copilot/components/CopilotPanelLazy'
 import { toUIMessages } from '@/features/copilot/lib/loadConversation'
 import { getLatestTicketConversation } from '@/features/copilot/queries/getConversations'
+import { aiCopilotEnabled } from '@/features/flags/lib/flags'
 
 type Props = {
   params: Promise<{ ticketId: string }>
@@ -27,18 +28,21 @@ export async function TicketAiPanel({ params }: Props) {
     return showBanner ? <CategorizationBanner ticketId={ticketId} suggestion={suggestion} /> : null
   }
 
-  const latestChat = await getLatestTicketConversation(ticketId, user.id)
+  const copilotEnabled = await aiCopilotEnabled()
+  const latestChat = copilotEnabled ? await getLatestTicketConversation(ticketId, user.id) : null
 
   return (
     <div className={cn('flex flex-col gap-8')}>
       {showBanner && <CategorizationBanner ticketId={ticketId} suggestion={suggestion} />}
       <TicketSummary ticketId={ticketId} />
       <SuggestReplyButton ticketId={ticketId} />
-      <CopilotPanelLazy
-        ticketId={ticketId}
-        conversationId={latestChat?.id ?? crypto.randomUUID()}
-        initialMessages={latestChat ? toUIMessages(latestChat.messages) : []}
-      />
+      {copilotEnabled && (
+        <CopilotPanelLazy
+          ticketId={ticketId}
+          conversationId={latestChat?.id ?? crypto.randomUUID()}
+          initialMessages={latestChat ? toUIMessages(latestChat.messages) : []}
+        />
+      )}
     </div>
   )
 }

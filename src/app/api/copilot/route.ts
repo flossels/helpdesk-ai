@@ -21,6 +21,10 @@ import { sanitizeAiInput } from '@/features/ai/lib/sanitizeAiInput'
 import { validateAiOutput } from '@/features/ai/lib/validateAiOutput'
 import type { UIMessage } from 'ai'
 
+// The copilot can stream through several tool-call rounds, so we lift the
+// per-request budget above the platform default for this route.
+export const maxDuration = 60
+
 const bodySchema = z.object({
   conversationId: z.string().min(1),
   ticketId: z.string().min(1).optional(),

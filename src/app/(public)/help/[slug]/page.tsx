@@ -10,6 +10,8 @@ import type { Metadata } from 'next'
 export async function generateStaticParams() {
   const articles = await getPublishedArticles()
 
+  if (articles.length === 0) return [{ slug: '__placeholder__' }]
+
   return articles.map((article) => ({ slug: article.slug }))
 }
 
