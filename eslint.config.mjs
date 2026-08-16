@@ -20,6 +20,21 @@ const eslintConfig = defineConfig([
     },
     rules: {
       'prettier/prettier': 'error',
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', 'type'],
+          pathGroups: [
+            { pattern: 'react', group: 'external', position: 'before' },
+            { pattern: 'next', group: 'external', position: 'before' },
+            { pattern: 'next/**', group: 'external', position: 'before' },
+            { pattern: '@/shared/**', group: 'internal', position: 'before' },
+            { pattern: '@/**', group: 'internal', position: 'after' }
+          ],
+          pathGroupsExcludedImportTypes: ['react', 'next', 'type'],
+          'newlines-between': 'ignore'
+        }
+      ],
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
