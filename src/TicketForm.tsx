@@ -1,8 +1,8 @@
 import { useActionState, useRef } from 'react'
 import { submitTicket } from './lib/submitTicket'
 import type { FormState } from './lib/submitTicket'
-import { SubmitButton } from './SubmitButton'
 import type { Ticket } from './types'
+import { SubmitButton } from './SubmitButton'
 
 type Props = {
   onCreated: (ticket: Ticket) => void

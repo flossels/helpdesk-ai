@@ -21,6 +21,7 @@ export async function submitTicket(_prevState: FormState, formData: FormData): P
     success: false
   }
 
+  // Simulate server delay
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   return {

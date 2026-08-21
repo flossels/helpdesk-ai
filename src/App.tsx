@@ -1,13 +1,13 @@
-import { Suspense, useState } from 'react'
 import { sampleTickets } from './types'
-import type { FilterValue, Ticket } from './types'
-import { useTicketFilters } from './hooks/useTicketFilters'
-import { Greeting } from './Greeting'
+import type { Ticket, FilterValue } from './types'
+import { Suspense, useState } from 'react'
 import { StatusFilter } from './StatusFilter'
 import { TicketForm } from './TicketForm'
 import { TicketList } from './TicketList'
+import { Greeting } from './Greeting'
 import { TogglePanel } from './TogglePanel'
 import { Counter } from './Counter'
+import { useTicketFilters } from './hooks/useTicketFilters'
 import { ThemeProvider } from './provider/ThemeProvider'
 import { ErrorBoundary } from './ErrorBoundary'
 import { ThemeToggle } from './ThemeToggle'
@@ -36,7 +36,10 @@ function App() {
       <div>
         <h1>HelpDesk AI: Ticket Board</h1>
         <ThemeToggle />
-        <Greeting name='Maria' ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length} />
+        <Greeting
+          name="Maria"
+          ticketCount={tickets.filter((t) => t.status !== 'RESOLVED').length}
+        />
         <input
           type="text"
           placeholder="Search tickets..."
