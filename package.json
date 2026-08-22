@@ -2,7 +2,6 @@
   "name": "helpdesk-ai",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,28 +16,29 @@
     "validate:fix": "pnpm lint:fix && pnpm format"
   },
   "dependencies": {
-    "next": "16.3.0",
+    "next": "16.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^24.13.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "16.3.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
-    "knip": "^6.31.0",
+    "knip": "^6.32.2",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3"
-  }
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@11.22.0"
 }
