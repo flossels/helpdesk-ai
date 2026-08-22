@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { cn } from '@/shared/lib/cn'
+import { Link } from '@/i18n/navigation'
 
 export default function Unauthorized() {
   return (
