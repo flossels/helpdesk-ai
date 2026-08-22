@@ -6,15 +6,6 @@ export type TicketFilters = {
   search?: string
 }
 
-/** @public */
-export type TicketWithRelations = Omit<Ticket, 'status' | 'priority'> & {
-  status: TicketStatus
-  priority: TicketPriority
-  category: Category
-  assignee: Pick<User, 'id' | 'name' | 'image'> | null
-  customer: Pick<User, 'id' | 'name' | 'email'>
-}
-
 export type TicketListItem = Pick<Ticket, 'id' | 'trackingId' | 'subject' | 'slaDeadline' | 'createdAt' | 'updatedAt'> & {
   status: TicketStatus
   priority: TicketPriority

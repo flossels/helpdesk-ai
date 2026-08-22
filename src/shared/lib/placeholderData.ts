@@ -1,6 +1,10 @@
 import { cache } from 'react'
 import { cacheLife, cacheTag } from 'next/cache'
 
+function delayExecution(delay: number) {
+  return new Promise((r) => setTimeout(r, delay))
+}
+
 type User = {
   id: string
   name: string
@@ -11,6 +15,12 @@ const CURRENT_USER: User = {
   id: 'user-1',
   name: 'John Doe',
   role: 'admin'
+}
+
+export async function getCurrentUser() {
+  await delayExecution(50)
+
+  return CURRENT_USER
 }
 
 const ARTICLES = [
@@ -33,16 +43,6 @@ const ARTICLES = [
     content: 'Q: How do I reset my password? A: ...'
   }
 ]
-
-function delayExecution(delay: number) {
-  return new Promise((r) => setTimeout(r, delay))
-}
-
-export async function getCurrentUser() {
-  await delayExecution(50)
-
-  return CURRENT_USER
-}
 
 export async function getPublishedArticles() {
   await delayExecution(200)

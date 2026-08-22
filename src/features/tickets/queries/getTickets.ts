@@ -3,8 +3,8 @@ import 'server-only'
 import { cache } from 'react'
 import { db } from '@/shared/lib/db'
 import { searchTickets } from '@/features/tickets/queries/searchTickets'
-import type { Prisma } from '@/shared/types/database'
 import type { TicketFilters, TicketListItem } from '@/features/tickets/types'
+import type { Prisma } from '@/shared/types/database'
 
 export const ticketListSelect = {
   id: true,
@@ -24,6 +24,8 @@ export const ticketListSelect = {
 export const getTickets = cache(async (filters: TicketFilters = {}): Promise<TicketListItem[]> => {
   const { status, search } = filters
 
+  // A non-empty search box switches to ranked
+  // full-text search; an empty one lists as before.
   if (search) return searchTickets(search)
 
   return (await db.ticket.findMany({

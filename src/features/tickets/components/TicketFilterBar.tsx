@@ -19,6 +19,7 @@ export function TicketFilterBar() {
   const search = searchParams.get('search') ?? ''
 
   const latestUpdate = useRef(updateParams)
+
   useEffect(() => {
     latestUpdate.current = updateParams
   })
