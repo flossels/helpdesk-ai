@@ -13,7 +13,9 @@ type ReturnType = ActionResult<{
 
 async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<ReturnType> {
   try {
+    // 1. Validate input
     const parsed = updateTicketStatusSchema.safeParse(input)
+
     if (!parsed.success) {
       return {
         success: false,
@@ -22,13 +24,12 @@ async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<Retur
       }
     }
 
+    // 2. Auth: placeholder
+    // Auth + scope check arrives in Chapter 12
+
+    // 3. Update the ticket
     const ticket = updateTicketInStore(parsed.data.ticketId, { status: parsed.data.status })
-    if (!ticket) {
-      return {
-        success: false,
-        error: 'Ticket not found.'
-      }
-    }
+    if (!ticket) return { success: false, error: 'Ticket not found.' }
 
     revalidatePath('/tickets')
     revalidatePath(`/tickets/${parsed.data.ticketId}`)
@@ -40,6 +41,7 @@ async function updateTicketStatus(input: UpdateTicketStatusInput): Promise<Retur
     }
   } catch (error) {
     console.error('Failed to update status:', error)
+
     return {
       success: false,
       error: 'Could not update status.'

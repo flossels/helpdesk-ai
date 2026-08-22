@@ -14,6 +14,7 @@ type ReturnType = ActionResult<{
 
 async function createTicket(input: CreateTicketInput): Promise<ReturnType> {
   try {
+    // 1. Validate input
     const parsed = createTicketSchema.safeParse(input)
 
     if (!parsed.success) {
@@ -24,10 +25,16 @@ async function createTicket(input: CreateTicketInput): Promise<ReturnType> {
       }
     }
 
+    // 2. Auth: placeholder
+    // Auth + scope check arrives in Chapter 12
+
+    // 3. Create the ticket
     const ticket = createTicketInStore(parsed.data)
 
+    // 4. Invalidate cache
     revalidatePath('/tickets')
 
+    // 5. Return success
     return {
       success: true,
       data: {

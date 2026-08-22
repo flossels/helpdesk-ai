@@ -13,7 +13,9 @@ type ReturnType = ActionResult<{
 
 export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<ReturnType> {
   try {
+    // 1. Validate input
     const parsed = bulkTicketUpdateSchema.safeParse(input)
+
     if (!parsed.success) {
       return {
         success: false,
@@ -22,6 +24,10 @@ export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<Re
       }
     }
 
+    // 2. Auth: placeholder
+    // Auth + scope check arrives in Chapter 12
+
+    // 3. Bulk update the tickets
     const count = updateTicketsInStore(parsed.data.ticketIds, { status: parsed.data.status })
 
     revalidatePath('/tickets')
@@ -32,6 +38,7 @@ export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<Re
     }
   } catch (error) {
     console.error('Failed to bulk update:', error)
+
     return {
       success: false,
       error: 'Could not update tickets.'
