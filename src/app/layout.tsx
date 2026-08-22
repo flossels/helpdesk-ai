@@ -1,7 +1,7 @@
 import './globals.css'
+import { ThemeProvider } from 'next-themes'
 import { inter, poppins } from '@/shared/lib/fonts'
 import { cn } from '@/shared/lib/cn'
-import { ThemeProvider } from '@/shared/components/ThemeProvider'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
