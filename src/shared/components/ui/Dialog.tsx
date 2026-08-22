@@ -18,7 +18,7 @@ export function Dialog({ open, onClose, title, animated = true, children }: Prop
     <HuiDialog open={open} onClose={onClose}>
       <DialogBackdrop
         transition={animated}
-        className={cn('fixed inset-0 z-40 bg-black/80 backdrop-blur-sm transition-opacity', 'duration-200 data-closed:opacity-0')}
+        className={cn('fixed inset-0 z-40 bg-black/80 backdrop-blur-sm transition-opacity duration-200 data-closed:opacity-0')}
       />
       <div className={cn('fixed inset-0 z-50 w-screen overflow-y-auto')}>
         <div className={cn('flex min-h-full items-center justify-center p-4')}>

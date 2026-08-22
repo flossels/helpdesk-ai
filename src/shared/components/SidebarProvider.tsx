@@ -21,7 +21,10 @@ export function SidebarProvider({ children }: Props) {
 
   const value: SidebarContextValue = {
     isCollapsed,
-    toggleCollapsed: () => setSidebar({ state: isCollapsed ? 'expanded' : 'collapsed' })
+    toggleCollapsed: () =>
+      setSidebar({
+        state: isCollapsed ? 'expanded' : 'collapsed'
+      })
   }
 
   return <SidebarContext value={value}>{children}</SidebarContext>
