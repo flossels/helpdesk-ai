@@ -4,6 +4,7 @@ export async function generateStaticParams() {
 
 export default async function HelpPage({ params }: PageProps<'/help/[...slug]'>) {
   const { slug } = await params
+  // /help/billing/refunds → slug = ['billing', 'refunds']
 
   return (
     <div>

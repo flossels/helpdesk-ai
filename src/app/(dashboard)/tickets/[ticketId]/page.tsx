@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 
 export default async function TicketPage({ params }: PageProps<'/tickets/[ticketId]'>) {
   const { ticketId } = await params
-  const ticket = null
+  const ticket = null // placeholder
 
   if (!ticket) notFound()
 

@@ -1,3 +1,5 @@
+// Read once at module scope. Inside the component this would be an unstable
+// value during prerendering, which the build rejects from Chapter 7 on.
 const currentYear = new Date().getFullYear()
 
 export default function PublicLayout({ children }: LayoutProps<'/'>) {
