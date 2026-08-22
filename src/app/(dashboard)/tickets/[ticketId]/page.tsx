@@ -10,7 +10,7 @@ import { ThreadErrorBoundary } from '@/shared/components/ThreadErrorBoundary'
 
 export default function TicketPage({ params }: PageProps<'/tickets/[ticketId]'>) {
   return (
-    <div className="flex flex-col space-y-4 divide-y">
+    <div className="flex flex-col gap-8 py-2">
       <Suspense fallback={<HeaderSkeleton />}>
         <TicketHeader params={params} />
       </Suspense>

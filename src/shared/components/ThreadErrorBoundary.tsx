@@ -9,7 +9,7 @@ function ThreadFallback(_props: object, { retry }: ErrorInfo) {
   return (
     <div>
       <p>The conversation could not be loaded.</p>
-      <button onClick={() => retry()}>Try again</button>
+      <button onClick={retry}>Try again</button>
     </div>
   )
 }
