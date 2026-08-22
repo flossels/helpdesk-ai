@@ -11,7 +11,7 @@ type ReturnType = ActionResult<{
   updatedCount: number
 }>
 
-export async function bulkUpdateStatusAction(input: BulkTicketUpdateInput): Promise<ReturnType> {
+export async function bulkUpdateStatus(input: BulkTicketUpdateInput): Promise<ReturnType> {
   try {
     // 1. Validate input
     const parsed = bulkTicketUpdateSchema.safeParse(input)

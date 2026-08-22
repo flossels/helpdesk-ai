@@ -2,8 +2,8 @@
 
 import { useLocalStorage } from 'usehooks-ts'
 import { SidebarContext } from '@/context'
-import type { ReactNode } from 'react'
 import type { SidebarContextValue } from '@/shared/types/sidebar'
+import type { ReactNode } from 'react'
 
 type Props = {
   children: ReactNode

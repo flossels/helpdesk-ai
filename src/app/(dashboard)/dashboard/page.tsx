@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
-import { ChartSkeleton } from '@/features/dashboard/components/ChartSkeleton'
-import { DashboardMetrics } from '@/features/dashboard/components/DashboardMetrics'
 import { MetricsSkeleton } from '@/features/dashboard/components/MetricsSkeleton'
+import { DashboardMetrics } from '@/features/dashboard/components/DashboardMetrics'
+import { ChartSkeleton } from '@/features/dashboard/components/ChartSkeleton'
 import { TicketVolumeChart } from '@/features/dashboard/components/TicketVolumeChart'
 
 export default function DashboardPage() {

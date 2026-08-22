@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { RelativeTime } from '@/shared/components/RelativeTime'
 import { cn } from '@/shared/lib/cn'
 import { BulkActionBar } from '@/features/tickets/components/BulkActionBar'
-import { getTickets } from '@/features/tickets/queries/getTickets'
-import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
 import { TicketStatusBadge } from '@/features/tickets/components/TicketStatusBadge'
+import { TicketPriorityBadge } from '@/features/tickets/components/TicketPriorityBadge'
+import { getTickets } from '@/features/tickets/queries/getTickets'
 import type { TicketFilters } from '@/features/tickets/types'
 
 export async function TicketList({ status, search }: TicketFilters) {

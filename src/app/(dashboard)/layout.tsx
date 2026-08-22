@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { cn } from '@/shared/lib/cn'
 import { ThemeToggle } from '@/shared/components/ui/ThemeToggle'
-import { SidebarProvider } from '@/app/(dashboard)/_components/SidebarProvider'
-import { CollapsibleSidebar } from '@/app/(dashboard)/_components/CollapsibleSidebar'
 import { SidebarNav } from '@/app/(dashboard)/_components/SidebarNav'
+import { CollapsibleSidebar } from '@/app/(dashboard)/_components/CollapsibleSidebar'
+import { SidebarProvider } from '@/app/(dashboard)/_components/SidebarProvider'
 import { DashboardMain } from '@/app/(dashboard)/_components/DashboardMain'
 
 export default function DashboardLayout({ children }: LayoutProps<'/'>) {

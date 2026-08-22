@@ -1,8 +1,8 @@
 import { cache } from 'react'
 import { cacheLife, cacheTag } from 'next/cache'
+import type { TicketFilters } from '@/features/tickets/types'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
 import type { TicketStatus, TicketPriority } from '@/shared/types/ticket'
-import type { TicketFilters } from '@/features/tickets/types'
 
 type Ticket = {
   id: string
@@ -81,6 +81,29 @@ const REPLIES: Reply[] = [
   }
 ]
 
+function delayExecution(delay: number) {
+  return new Promise((r) => setTimeout(r, delay))
+}
+
+export const getTicketsFromStore = async (filters: TicketFilters = {}) => {
+  await delayExecution(500)
+
+  return TICKETS.filter((ticket) => {
+    if (filters.status && ticket.status !== filters.status) return false
+
+    if (!filters.search) return true
+
+    return ticket.subject.toLowerCase().includes(filters.search.toLowerCase())
+  })
+}
+
+export const getTicketByIdFromStore = async (id: string) => {
+  console.warn(`Fetching ticket ${id}.`)
+  await delayExecution(300)
+
+  return TICKETS.find((t) => t.id === id) ?? null
+}
+
 type User = {
   id: string
   name: string
@@ -91,6 +114,12 @@ const CURRENT_USER: User = {
   id: 'user-1',
   name: 'John Doe',
   role: 'admin'
+}
+
+export async function getCurrentUser() {
+  await delayExecution(50)
+
+  return CURRENT_USER
 }
 
 const ARTICLES = [
@@ -114,27 +143,31 @@ const ARTICLES = [
   }
 ]
 
-function delayExecution(delay: number) {
-  return new Promise((r) => setTimeout(r, delay))
+export async function getPublishedArticles() {
+  await delayExecution(200)
+
+  return ARTICLES
 }
 
-export async function getTicketsFromStore(filters: TicketFilters = {}) {
-  await delayExecution(500)
+export const getArticleBySlug = cache(async (slug: string) => {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('articles')
 
-  return TICKETS.filter((ticket) => {
-    if (filters.status && ticket.status !== filters.status) return false
+  return ARTICLES.find((a) => a.slug === slug) ?? null
+})
 
-    if (!filters.search) return true
+export async function getRepliesFromStore(ticketId: string) {
+  await delayExecution(800)
 
-    return ticket.subject.toLowerCase().includes(filters.search.toLowerCase())
-  })
+  return REPLIES.filter((r) => r.ticketId === ticketId)
 }
 
-export async function getTicketByIdFromStore(id: string) {
-  console.warn(`Fetching ticket ${id}.`)
-  await delayExecution(300)
+export async function getTicketSummaryFromStore() {
+  // Simulate expensive AI call
+  await delayExecution(3000)
 
-  return TICKETS.find((t) => t.id === id) ?? null
+  return 'Customer unable to reset password. Likely a token expiration issue.'
 }
 
 let nextTrackingNumber = 4
@@ -185,41 +218,8 @@ export function updateTicketsInStore(ids: string[], update: Partial<Pick<Ticket,
   return ids.reduce((count, id) => count + (updateTicketInStore(id, update) ? 1 : 0), 0)
 }
 
-export async function getCurrentUser() {
-  await delayExecution(50)
-
-  return CURRENT_USER
-}
-
-export async function getTicketByTrackingIdFromStore(trackingId: string) {
+export const getTicketByTrackingIdFromStore = async (trackingId: string) => {
   await delayExecution(400)
 
   return TICKETS.find((t) => t.trackingId === trackingId) ?? null
-}
-
-export async function getPublishedArticles() {
-  await delayExecution(200)
-
-  return ARTICLES
-}
-
-export const getArticleBySlug = cache(async (slug: string) => {
-  'use cache'
-  cacheLife('hours')
-  cacheTag('articles')
-
-  return ARTICLES.find((a) => a.slug === slug) ?? null
-})
-
-export async function getRepliesFromStore(ticketId: string) {
-  await delayExecution(800)
-
-  return REPLIES.filter((r) => r.ticketId === ticketId)
-}
-
-export async function getTicketSummaryFromStore() {
-  // Simulate expensive AI call
-  await delayExecution(3000)
-
-  return 'Customer unable to reset password. Likely a token expiration issue.'
 }

@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { Field, Input, Label } from '@headlessui/react'
 import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/lib/cn'
-import { bulkUpdateStatusAction } from '@/features/tickets/actions/bulkUpdateStatus'
+import { bulkUpdateStatus } from '@/features/tickets/actions/bulkUpdateStatus'
 
 type Props = {
   ticketIds: string[]
@@ -38,7 +38,7 @@ export function BulkActionBar({ ticketIds }: Props) {
 
   function handleBulkResolve() {
     startTransition(async () => {
-      const result = await bulkUpdateStatusAction({
+      const result = await bulkUpdateStatus({
         ticketIds: [...selected],
         status: 'RESOLVED'
       })

@@ -1,4 +1,7 @@
+// Platform-level role (on User)
 export type UserRole = 'CUSTOMER' | 'AGENT'
+
+// Organization-level role (on OrgMember)
 export type OrgMemberRole = 'OWNER' | 'ADMIN' | 'AGENT' | 'VIEWER'
 
 export type Scope =

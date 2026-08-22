@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { getTicketById } from '@/features/tickets/queries/getTicketById'
 import { TicketStatusSelect } from '@/features/tickets/components/TicketStatusSelect'
+import { getTicketById } from '@/features/tickets/queries/getTicketById'
 
 type Props = Pick<PageProps<'/tickets/[ticketId]'>, 'params'>
 

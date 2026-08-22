@@ -8,8 +8,8 @@ import {
 } from '@heroicons/react/24/solid'
 import { getCurrentUser } from '@/shared/lib/placeholderData'
 import { NavLink } from '@/app/(dashboard)/_components/NavLink'
-import type { Route } from 'next'
 import type { ComponentType } from 'react'
+import type { Route } from 'next'
 
 type IconType = ComponentType<{ className?: string }>
 
