@@ -1,19 +1,10 @@
-import { Suspense } from 'react'
 import { forbidden } from 'next/navigation'
 import { cn } from '@/shared/lib/cn'
 import { hasScope } from '@/shared/lib/authorization'
 import { getCurrentUser } from '@/features/auth/queries/getCurrentUser'
 import { InviteMemberForm } from '@/features/auth/components/InviteMemberForm'
 
-export default function MembersSettingsPage() {
-  return (
-    <Suspense fallback={null}>
-      <MembersSettingsContent />
-    </Suspense>
-  )
-}
-
-async function MembersSettingsContent() {
+export default async function MembersSettingsPage() {
   const user = await getCurrentUser()
   if (!user || !hasScope(user.scopes, 'members:manage')) forbidden()
 
