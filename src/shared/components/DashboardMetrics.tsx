@@ -1,9 +1,11 @@
 import { cookies } from 'next/headers'
 
 export async function DashboardMetrics() {
+  // Dynamic: reads cookies for org context
   const cookieStore = await cookies()
   const orgId = cookieStore.get('orgId')?.value
 
+  // Simulated metrics fetch
   await new Promise((r) => setTimeout(r, 1000))
 
   return (

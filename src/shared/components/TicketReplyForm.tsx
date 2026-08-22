@@ -11,6 +11,7 @@ export function TicketReplyForm({ ticketId }: Props) {
 
   function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault()
+    // A Server Action replaces this `console.warn` in Chapter 8
     console.warn(`Reply to ${ticketId}: ${reply}`)
     setReply('')
   }

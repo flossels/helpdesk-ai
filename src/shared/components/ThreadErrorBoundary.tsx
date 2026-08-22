@@ -3,6 +3,8 @@
 import { catchError } from 'next/error'
 import type { ErrorInfo } from 'next/error'
 
+// The fallback takes the boundary's own props first, then the error info.
+// This one needs no props of its own, so the first parameter is unused.
 function ThreadFallback(_props: object, { retry }: ErrorInfo) {
   return (
     <div>

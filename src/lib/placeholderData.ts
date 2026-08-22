@@ -22,6 +22,23 @@ const TICKETS = [
   }
 ]
 
+function delayExecution(delay: number) {
+  return new Promise((r) => setTimeout(r, delay))
+}
+
+export async function getTickets() {
+  // Simulate database latency
+  await delayExecution(500)
+
+  return TICKETS
+}
+
+export async function getTicketById(id: string) {
+  await delayExecution(300)
+
+  return TICKETS.find((t) => t.id === id) ?? null
+}
+
 type User = {
   id: string
   name: string
@@ -32,6 +49,12 @@ const CURRENT_USER: User = {
   id: 'user-1',
   name: 'John Doe',
   role: 'admin'
+}
+
+export async function getCurrentUser() {
+  await delayExecution(50)
+
+  return CURRENT_USER
 }
 
 const ARTICLES = [
@@ -55,28 +78,6 @@ const ARTICLES = [
   }
 ]
 
-function delayExecution(delay: number) {
-  return new Promise((r) => setTimeout(r, delay))
-}
-
-export async function getTickets() {
-  await delayExecution(500)
-
-  return TICKETS
-}
-
-export async function getTicketById(id: string) {
-  await delayExecution(300)
-
-  return TICKETS.find((t) => t.id === id) ?? null
-}
-
-export async function getCurrentUser() {
-  await delayExecution(50)
-
-  return CURRENT_USER
-}
-
 export async function getPublishedArticles() {
   await delayExecution(200)
 
@@ -90,6 +91,7 @@ export async function getArticleBySlug(slug: string) {
 }
 
 export async function getTicketThread() {
+  // Simulate slow query
   await delayExecution(2000)
 
   return [
@@ -109,6 +111,7 @@ export async function getTicketThread() {
 }
 
 export async function getTicketSummary() {
+  // Simulate expensive AI call
   await delayExecution(3000)
 
   return 'Customer unable to reset password. Likely a token expiration issue.'
