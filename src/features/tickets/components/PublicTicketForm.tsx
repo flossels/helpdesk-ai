@@ -17,7 +17,12 @@ import { PrioritySelect } from '@/features/tickets/components/PrioritySelect'
 import { CategorySelect } from '@/features/tickets/components/CategorySelect'
 import type { PublicTicketInput } from '@/features/tickets/schemas'
 
-type CategoryOption = { id: string; name: string }
+type Props = {
+  categories: Array<{
+    id: string
+    name: string
+  }>
+}
 
 const inputClasses = cn(
   'w-full rounded-lg border px-3 py-2 text-sm text-slate-900',
@@ -27,7 +32,7 @@ const inputClasses = cn(
 
 const labelClasses = cn('mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300')
 
-export function PublicTicketForm({ categories }: { categories: CategoryOption[] }) {
+export function PublicTicketForm({ categories }: Props) {
   const router = useRouter()
   const [files, setFiles] = useState<File[]>([])
   const methods = useForm<PublicTicketInput>({

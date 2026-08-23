@@ -5,9 +5,14 @@ import { SearchableSelect } from '@/shared/components/ui/SearchableSelect'
 import { cn } from '@/shared/lib/cn'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
 
-type CategoryOption = { id: string; name: string }
+type Props = {
+  categories: Array<{
+    id: string
+    name: string
+  }>
+}
 
-export function CategorySelect({ categories }: { categories: CategoryOption[] }) {
+export function CategorySelect({ categories }: Props) {
   const { control } = useFormContext<CreateTicketInput>()
   const { field, fieldState } = useController({ name: 'categoryId', control })
 

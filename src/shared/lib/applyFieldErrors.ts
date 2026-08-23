@@ -5,8 +5,10 @@ export function applyFieldErrors<T extends FieldValues>(
   setError: UseFormSetError<T>
 ): boolean {
   const entries = Object.entries(fieldErrors ?? {})
+
   for (const [field, messages] of entries) {
     setError(field as Path<T>, { message: messages[0] })
   }
+
   return entries.length > 0
 }

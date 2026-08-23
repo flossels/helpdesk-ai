@@ -17,8 +17,6 @@ import { PrioritySelect } from '@/features/tickets/components/PrioritySelect'
 import { CategorySelect } from '@/features/tickets/components/CategorySelect'
 import type { CreateTicketInput } from '@/features/tickets/schemas'
 
-type CategoryOption = { id: string; name: string }
-
 const inputClasses = cn(
   'w-full rounded-lg border px-3 py-2 text-sm text-slate-900',
   'focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none',
@@ -28,7 +26,10 @@ const inputClasses = cn(
 const labelClasses = cn('mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300')
 
 type Props = {
-  categories: CategoryOption[]
+  categories: Array<{
+    id: string
+    name: string
+  }>
 }
 
 export function CreateTicketForm({ categories }: Props) {
